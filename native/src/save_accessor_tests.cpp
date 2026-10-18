@@ -1,0 +1,6 @@
+#include <Game/System/SaveDataFileAccessor.hpp>
+#include <cassert>
+#include <cstring>
+#include <cstdio>
+namespace MR {bool isEqualString(const char* a,const char* b){return std::strcmp(a,b)==0;}}
+int main(){alignas(SaveDataFile) u8 buffer[256]{};auto header=reinterpret_cast<SaveDataFileHeader*>(buffer);header->mUserFileInfoNum=4;header->mFileSize=256;auto infos=reinterpret_cast<SaveDataFileInfo*>(buffer+16);const char* names[]={"mario0","luigi0","config0","sysconf"};const u32 offsets[]={80,128,176,208};for(int i=0;i<4;++i){std::strcpy(infos[i].mName,names[i]);infos[i].mOffset=offsets[i];}SaveDataFileAccessor accessor(buffer);assert(accessor.getHeader()==header);for(int i=0;i<4;++i){SaveDataUserFileInfo result{};accessor.makeUserFileInfo(&result,names[i]);assert(result.mData==buffer+offsets[i]);assert(result.mDataSize==(i==3?256:offsets[i+1])-offsets[i]);assert(result.mKind==(i<2?0:i==2?1:2));assert(accessor.getFileInfo(i)==infos+i);}SaveDataUserFileInfo missing{};accessor.makeUserFileInfo(&missing,"missing");assert(!missing.mData&&missing.mDataSize==0&&missing.mKind==1);std::puts("PASS original save accessor: Mario/Luigi/config/system slot lookup, offsets, final slot size and missing names");}

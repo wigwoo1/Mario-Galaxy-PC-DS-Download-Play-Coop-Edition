@@ -1,0 +1,20 @@
+#pragma once
+#include "point_gravity.hpp"
+struct NativeSegmentGravity {
+    NativePointGravity parameters;CollisionPoint end{},axis{0,1,0},sectorAxis{1,0,0};float length=1000,sectorCos=-1;bool baseEdge=true,endEdge=true;
+    std::optional<CollisionPoint> attraction(const CollisionPoint& position)const{
+        CollisionPoint relative{};for(size_t k=0;k<3;++k){assetCheck(std::isfinite(position[k]),"Invalid segment gravity position");relative[k]=position[k]-parameters.center[k];}float along=collisionDot(relative,axis);
+        if(sectorCos>-1){CollisionPoint radial{};for(size_t k=0;k<3;++k)radial[k]=relative[k]-axis[k]*along;float size=std::sqrt(collisionDot(radial,radial));if(size>.001)for(float& value:radial)value/=size;else radial={0,0,0};if(collisionDot(radial,sectorAxis)<sectorCos)return {};}
+        if(along<0)return baseEdge?std::optional<CollisionPoint>(parameters.center):std::nullopt;if(along>length)return endEdge?std::optional<CollisionPoint>(end):std::nullopt;CollisionPoint target=parameters.center;for(size_t k=0;k<3;++k)target[k]+=axis[k]*along;return target;
+    }
+    std::optional<float> distance(const CollisionPoint& position)const{auto target=attraction(position);if(!target)return {};float squared=0;for(size_t k=0;k<3;++k){float delta=(*target)[k]-position[k];squared+=delta*delta;}return std::sqrt(squared);}
+    std::optional<CollisionPoint> direction(const CollisionPoint& position)const{auto target=attraction(position);if(!target)return {};auto size=*distance(position);if(parameters.range>=0&&size>=parameters.range+parameters.distant)return {};CollisionPoint result{};if(size>.001)for(size_t k=0;k<3;++k)result[k]=((*target)[k]-position[k])/size*(parameters.inverse?-1:1);return result;}
+};
+inline NativeSegmentGravity decodeSegmentGravity(const StagePlacement& placement,const StageTable& table){
+    NativeSegmentGravity segment;auto defaults=placement;defaults.scale[0]=0;segment.parameters=decodePointGravity(defaults,table);auto matrix=placementMatrix(placement);CollisionPoint side{matrix[0],matrix[4],matrix[8]};segment.axis={matrix[1],matrix[5],matrix[9]};float size=std::sqrt(collisionDot(segment.axis,segment.axis));assetCheck(size>.001,"Degenerate segment gravity axis");segment.length=size*1000;
+    for(size_t k=0;k<3;++k){segment.end[k]=placement.position[k]+segment.axis[k]*1000;segment.axis[k]/=size;}float along=collisionDot(side,segment.axis);for(size_t k=0;k<3;++k)side[k]-=along*segment.axis[k];float sideLength=std::sqrt(collisionDot(side,side));assetCheck(sideLength>.001,"Degenerate segment side axis");for(float& value:side)value/=sideLength;
+    auto argument=[&](const char* key){int field=table.find(key);if(field<0)return int32_t(-1);auto value=table.read(placement.row,size_t(field));assetCheck(std::holds_alternative<uint32_t>(value),"Segment argument type mismatch");return int32_t(std::get<uint32_t>(value));};auto edges=argument("Obj_arg0");segment.baseEdge=edges!=0&&edges!=2;segment.endEdge=edges!=0&&edges!=1;auto angle=argument("Obj_arg1");float half=(angle<0?360.f:float(angle))*.5f*3.14159265358979323846f/180;segment.sectorCos=std::cos(half);auto cross=collisionCross(segment.axis,side);for(size_t k=0;k<3;++k)segment.sectorAxis[k]=side[k]*std::cos(half)+cross[k]*std::sin(half);return segment;
+}
+inline void segmentGravityTests(){
+    NativeSegmentGravity segment;segment.length=10;segment.end={0,10,0};assetCheck(segment.direction({2,5,0})==std::optional<CollisionPoint>({-1,0,0}),"Segment side direction failed");auto base=segment.direction({0,-2,0}),end=segment.direction({0,12,0});assetCheck(base&&(*base)[1]==1&&end&&(*end)[1]==-1,"Segment endpoint direction failed");segment.baseEdge=false;assetCheck(!segment.direction({0,-2,0}),"Disabled segment endpoint accepted");segment.parameters.range=2;assetCheck(!segment.direction({2,5,0}),"Segment exclusive range failed");segment.parameters.range=-1;segment.parameters.inverse=true;assetCheck((*segment.direction({2,5,0}))[0]==1,"Inverse segment gravity failed");segment.sectorCos=0;segment.sectorAxis={1,0,0};assetCheck(!segment.direction({-2,5,0})&&segment.direction({2,5,0}),"Segment sector filtering failed");
+}

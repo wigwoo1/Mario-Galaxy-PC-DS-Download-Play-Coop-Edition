@@ -1,0 +1,6 @@
+#pragma once
+#include "player_stock.hpp"
+#include <windows.h>
+#include <fstream>
+inline void writePlayerStatusFile(const std::filesystem::path& path,const NativePlayerStock& stock){auto bytes=stock.saveBytes();auto temporary=path;temporary+=L".tmp."+std::to_wstring(GetCurrentProcessId())+L"."+std::to_wstring(GetTickCount64());try{std::ofstream file(temporary,std::ios::binary|std::ios::trunc);assetCheck(bool(file),"Cannot create temporary player save");file.write(reinterpret_cast<const char*>(bytes.data()),std::streamsize(bytes.size()));file.flush();assetCheck(bool(file),"Player save write failed");file.close();assetCheck(bool(file),"Player save close failed");assetCheck(MoveFileExW(temporary.c_str(),path.c_str(),MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH)!=0,"Player save replacement failed");}catch(...){std::error_code ignored;std::filesystem::remove(temporary,ignored);throw;}}
+inline bool readPlayerStatusFile(const std::filesystem::path& path,NativePlayerStock& stock){std::ifstream file(path,std::ios::binary|std::ios::ate);if(!file)return false;auto size=file.tellg();if(size<0||size>4096)return false;std::vector<uint8_t> bytes(static_cast<size_t>(size));file.seekg(0);file.read(reinterpret_cast<char*>(bytes.data()),std::streamsize(bytes.size()));return bool(file)&&stock.loadBytes(bytes);}

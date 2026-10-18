@@ -1,0 +1,274 @@
+#include <JSystem/JKernel/JKRHeap.hpp>
+JKRHeap* JKRHeap::sSystemHeap;
+JKRHeap* JKRHeap::sCurrentHeap;
+JKRHeap* JKRHeap::sRootHeap;
+void JKRHeap::destroy(JKRHeap* pHeap) {
+    pHeap->do_destroy();
+}
+
+void* JKRHeap::alloc(u32 size, int align, JKRHeap* pHeap) {
+    if (pHeap != nullptr) {
+        return pHeap->alloc(size, align);
+    }
+
+    if (JKRHeap::sCurrentHeap != nullptr) {
+        return JKRHeap::sCurrentHeap->alloc(size, align);
+    }
+
+    return nullptr;
+}
+
+void* JKRHeap::alloc(u32 size, int align) {
+    return do_alloc(size, align);
+}
+
+void JKRHeap::free(void* pData, JKRHeap* pHeap) {
+    if (!pHeap) {
+        pHeap = findFromRoot(pData);
+
+        if (!pHeap) {
+            return;
+        }
+    }
+
+    pHeap->do_free(pData);
+}
+
+void JKRHeap::free(void* pData) {
+    do_free(pData);
+}
+
+void JKRHeap::callAllDisposer() {
+    while (mDisposerList.mHead != nullptr) {
+        reinterpret_cast< JKRDisposer* >(mDisposerList.mHead->mData)->~JKRDisposer();
+    }
+}
+
+void JKRHeap::freeAll() {
+    do_freeAll();
+}
+
+void JKRHeap::freeTail() {
+    do_freeTail();
+}
+
+s32 JKRHeap::resize(void* pData, u32 size) {
+    return do_resize(pData, size);
+}
+
+s32 JKRHeap::getFreeSize() {
+    return do_getFreeSize();
+}
+
+void* JKRHeap::getMaxFreeBlock() {
+    return do_getMaxFreeBlock();
+}
+
+s32 JKRHeap::getTotalFreeSize() {
+    return do_getTotalFreeSize();
+}
+
+JKRHeap* JKRHeap::findFromRoot(void* pData) {
+    JKRHeap* root = sRootHeap;
+
+    if (root == nullptr) {
+        return nullptr;
+    }
+
+    if ((void*)root->mStart <= pData && pData < (void*)root->mEnd) {
+        return root->find(pData);
+    }
+
+    return root->findAllHeap(pData);
+}
+
+JKRHeap* JKRHeap::find(void* pData) const {
+    if (mStart <= pData && pData < mEnd) {
+        const JSUTree< JKRHeap >& tree = mChildTree;
+
+        if (tree.getNumChildren() != 0) {
+            for (JSUTreeIterator< JKRHeap > iterator(mChildTree.getFirstChild()); iterator != mChildTree.getEndChild(); ++iterator) {
+                JKRHeap* result = iterator->find(pData);
+
+                if (result) {
+                    return result;
+                }
+            }
+        }
+
+        return const_cast< JKRHeap* >(this);
+    }
+
+    return nullptr;
+}
+
+JKRHeap* JKRHeap::findAllHeap(void* ptr) const {
+    if (mChildTree.getNumChildren() != 0) {
+        for (JSUTreeIterator< JKRHeap > iterator(mChildTree.getFirstChild()); iterator != mChildTree.getEndChild(); ++iterator) {
+            JKRHeap* heap = iterator->findAllHeap(ptr);
+
+            if (heap != nullptr) {
+                return heap;
+            }
+        }
+    }
+
+    if (mStart <= ptr && ptr < mEnd) {
+        return const_cast< JKRHeap* >(this);
+    }
+
+    return nullptr;
+}
+
+void JKRHeap::dispose_subroutine(uintptr_t start, uintptr_t end) {
+    JSUListIterator< JKRDisposer > it(mDisposerList.getFirst());
+    JSUListIterator< JKRDisposer > last_it;
+
+    JSULink< JKRDisposer >* link;
+    while ((link = it.mLink) != nullptr) {
+        JKRDisposer* disp = link->getObject();
+
+        if (reinterpret_cast< void* >(start) <= disp && disp < reinterpret_cast< void* >(end)) {
+            disp->~JKRDisposer();
+
+            if (last_it == nullptr) {
+                it = mDisposerList.getFirst();
+            } else {
+                it = last_it;
+                it++;
+            }
+        } else {
+            last_it = it;
+            it++;
+        }
+    }
+}
+
+bool JKRHeap::dispose(void* ptr, u32 size) {
+    uintptr_t begin = (uintptr_t)ptr;
+    uintptr_t end = (uintptr_t)ptr + size;
+    dispose_subroutine(begin, end);
+    return false;
+}
+
+void JKRHeap::dispose(void* begin, void* end) {
+    dispose_subroutine((uintptr_t)begin, (uintptr_t)end);
+}
+
+void JKRHeap::dispose() {
+    const JSUList< JKRDisposer >& list = mDisposerList;
+    JSUListIterator< JKRDisposer > iterator;
+
+    while (list.getFirst() != list.getEnd()) {
+        iterator = list.getFirst();
+        iterator->~JKRDisposer();
+    }
+}
+
+
+void JKRHeap::dispose_subroutine(u32 start,u32 end){dispose_subroutine(uintptr_t(start),uintptr_t(end));}
+
+JKRErrorHandler JKRHeap::mErrorHandler;
+static bool byte_806B70B8;
+static bool byte_806B26D8=true;
+JKRHeap::JKRHeap(void* data, u32 size, JKRHeap* parent, bool error) : JKRDisposer(), mChildTree(this), mDisposerList() {
+    OSInitMutex(&mMutex);
+    mSize = size;
+    mStart = (u8*)data;
+    mEnd = (u8*)data + size;
+
+    if (parent == nullptr) {
+        JKRHeap::sSystemHeap = this;
+        JKRHeap::sCurrentHeap = this;
+    } else {
+        parent->mChildTree.appendChild(&mChildTree);
+
+        if (JKRHeap::sSystemHeap == JKRHeap::sRootHeap) {
+            JKRHeap::sSystemHeap = this;
+        }
+
+        if (JKRHeap::sCurrentHeap == JKRHeap::sRootHeap) {
+            JKRHeap::sCurrentHeap = this;
+        }
+    }
+
+    mErrorFlag = error;
+
+    if (mErrorFlag == true && mErrorHandler == nullptr) {
+        mErrorHandler = JKRDefaultMemoryErrorRoutine;
+    }
+
+    _3C = byte_806B26D8;
+    _3D = byte_806B70B8;
+    _69 = false;
+}
+
+JKRHeap::~JKRHeap() {
+    if (mChildTree.getParent()) mChildTree.getParent()->removeChild(&mChildTree);
+    if (sRootHeap == this) { if(sCurrentHeap==this)sCurrentHeap=nullptr; if(sSystemHeap==this)sSystemHeap=nullptr; sRootHeap=nullptr; return; } JSUTree< JKRHeap >* nextRootHeap = sRootHeap ? sRootHeap->mChildTree.getFirstChild() : nullptr;
+
+    if (sCurrentHeap == this)
+        sCurrentHeap = !nextRootHeap ? sRootHeap : nextRootHeap->getObject();
+
+    if (sSystemHeap == this)
+        sSystemHeap = !nextRootHeap ? sRootHeap : nextRootHeap->getObject();
+}
+
+
+uintptr_t ARALT_AramStartAdr=0;
+void JKRHeap::state_register(TState*, u32) const {
+    return;
+}
+
+bool JKRHeap::state_compare(const TState& lhs, const TState& rhs) const {
+    return lhs.mCheckCode == rhs.mCheckCode;
+}
+
+void JKRHeap::state_dump(const TState&) const {
+    return;
+}
+
+void JKRHeap::setAltAramStartAdr(uintptr_t addr) {
+    ARALT_AramStartAdr = addr;
+}
+
+uintptr_t JKRHeap::getAltAramStartAdr() {
+    return ARALT_AramStartAdr;
+}
+
+s32 JKRHeap::do_changeGroupID(u8) {
+    return 0;
+}
+
+u8 JKRHeap::do_getCurrentGroupId() {
+    return 0;
+}
+
+bool JKRHeap::dump_sort() {
+    return true;
+}
+JKRErrorHandler JKRHeap::setErrorHandler(JKRErrorHandler errorHandler) {
+    JKRErrorHandler prev = JKRHeap::mErrorHandler;
+
+    if (!errorHandler) {
+        errorHandler = JKRDefaultMemoryErrorRoutine;
+    }
+
+    JKRHeap::mErrorHandler = errorHandler;
+    return prev;
+}
+
+
+u32 JKRHeap::getMaxAllocatableSize(int alignment){ int64_t requested=alignment<0?-int64_t(alignment):int64_t(alignment);if(!requested)requested=4;if((requested & (requested-1)) || requested>UINT32_MAX)return 0;lock();s32 available=getFreeSize();uintptr_t start=reinterpret_cast<uintptr_t>(getMaxFreeBlock());uintptr_t padding=(-start)&uintptr_t(requested-1);u32 result=available>0 && start && padding<u32(available)?u32(available)-u32(padding):0;unlock();return result;}
+JKRHeap* JKRHeap::becomeSystemHeap() {
+    JKRHeap* sys = sSystemHeap;
+    sSystemHeap = this;
+    return sys;
+}
+
+JKRHeap* JKRHeap::becomeCurrentHeap() {
+    JKRHeap* cur = sCurrentHeap;
+    sCurrentHeap = this;
+    return cur;
+}
+

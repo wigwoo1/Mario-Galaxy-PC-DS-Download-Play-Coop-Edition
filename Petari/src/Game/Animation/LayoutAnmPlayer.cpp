@@ -1,0 +1,59 @@
+#include "Game/Animation/LayoutAnmPlayer.hpp"
+#include "Game/Screen/LayoutManager.hpp"
+#include <nw4r/lyt/animation.h>
+
+void LayoutAnmPlayer_FORCE_MATCH_SDATA2() {
+    (void)1.0f;
+    (void)0.0f;
+}
+
+LayoutAnmPlayer::LayoutAnmPlayer(const LayoutManager* pManager) : mManager(pManager), mAnimName(), mAnimTransform(), mFrameCtrl(0) {
+}
+
+void LayoutAnmPlayer::movement() {
+    if (mAnimTransform != nullptr) {
+        mFrameCtrl.update();
+    }
+}
+
+void LayoutAnmPlayer::reflectFrame() {
+    if (mAnimTransform != nullptr) {
+        mAnimTransform->mFrame = mFrameCtrl.getFrame();
+    }
+}
+
+void LayoutAnmPlayer::start(const char* pAnimName) {
+    nw4r::lyt::AnimTransform* pAnimTransform = mManager->getAnimTransform(pAnimName);
+
+    // Some layouts legitimately omit optional animations.  Treat an absent
+    // resource as a static pane instead of dereferencing a null transform.
+    if (pAnimTransform == nullptr) {
+        mAnimTransform = nullptr;
+        mAnimName = pAnimName;
+        mFrameCtrl.init(0);
+        mFrameCtrl.setRate(0.0f);
+        return;
+    }
+
+    if (pAnimTransform != mAnimTransform) {
+        mAnimTransform = pAnimTransform;
+    }
+
+    u32 frameSize = mAnimTransform->GetFrameSize();
+
+    mFrameCtrl.init(static_cast< s16 >(frameSize));
+
+    if (mAnimTransform->IsLoopData()) {
+        mFrameCtrl.setAttribute(2);
+    } else {
+        mFrameCtrl.setAttribute(0);
+    }
+
+    mFrameCtrl.setFrame(0.0f);
+    mFrameCtrl.setRate(1.0f);
+    mAnimName = pAnimName;
+}
+
+void LayoutAnmPlayer::stop() {
+    mFrameCtrl.setRate(0.0f);
+}

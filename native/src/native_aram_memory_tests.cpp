@@ -1,0 +1,5 @@
+#include "native_aram_memory.hpp"
+#include <array>
+#include <cassert>
+#include <cstdio>
+int main(){std::array<uint8_t,1024> aram{};std::array<uint8_t,96> source{},destination{};for(unsigned i=0;i<source.size();++i)source[i]=i*13+7;NativeAramMemory memory(aram.data(),aram.size());auto src=memory.bindCpu(source.data(),source.size());auto dst=memory.bindCpu(destination.data(),destination.size());assert(src && dst && src!=dst);assert(memory.transfer(0,src+32,64,64));assert(memory.transfer(1,dst+32,64,64));for(unsigned i=0;i<96;++i)assert(destination[i]==(i>=32?source[i]:0));auto snapshot=aram;assert(!memory.transfer(0,src+64,0,64));assert(!memory.transfer(0,src,992,64));assert(!memory.transfer(2,src,0,32));assert(!memory.transfer(0,src+1,0,32));assert(!memory.transfer(0,src,0,31));assert(aram==snapshot);assert(memory.unbindCpu(src));assert(!memory.transfer(0,src,0,32));auto next=memory.bindCpu(source.data(),source.size());assert(next>dst && next!=src);std::puts("PASS native ARAM mapped transfer directions, offsets, bounds and stale-token rejection");}

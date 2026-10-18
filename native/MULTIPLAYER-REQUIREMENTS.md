@@ -1,0 +1,19 @@
+# Multiplayer requirements
+
+Status: requested design, not implemented or verified. Working original single-player gameplay remains the first priority.
+
+The multiplayer menu offers **Host Game** and **Join Game**, with P2P, LAN, and Download Play modes. The first screen is shared; choosing Host or Join then presents the available connection modes and their status.
+
+- P2P: two desktop players connect over the internet.
+- LAN: two desktop players connect on a local network.
+- Download Play: selecting this mode launches or opens a real browser build, then presents **Host Game** / **Join Game** in that browser session. It must not merely wrap the desktop executable in a browser window. The browser build needs its own WebAssembly-compatible game/runtime and rendering/audio backend. The host starts a session and shares a protected join URL; the guest opens the link and waits on a loading screen showing received bytes, total bytes, percentage, transfer rate, and connection/error status. For a redistributable browser game bundle, the guest can join without separately installing that bundle: the host may transfer its explicitly redistributable assets. The guest may start only after authorized assets have been received and integrity-checked.
+
+  **Asset-sharing boundary:** do not implement host-to-guest transfer of the commercial game's proprietary game files, extracted data, or WBFS/ISO contents. For a Galaxy session that needs those files, each guest must provide their own authorized game data. A guest with no game files can only join a build whose needed content is explicitly redistributable (for example, original/homebrew content), which the host may transfer. Transfer may carry only those redistributable assets and session-specific data. This preserves the requested loading/progress flow for allowed bundles without turning the host into a distributor of the game's assets.
+
+  A shareable URL should use HTTPS and an unguessable, short-lived session token; it should not expose arbitrary host paths or act as a raw file-server URL. A URL containing a host's private LAN IP will not work for an internet guest. Internet connectivity needs NAT traversal (for example, WebRTC ICE with STUN and, when necessary, a TURN relay) or a reachable signaling/relay service. LAN discovery and direct local connections are separate from public internet joining.
+
+Download Play needs a real browser-compatible runtime and rendering/audio backend, a desktop-to-browser launcher, connection setup, and bounded validated transfer for explicitly redistributable assets only. A browser window around the desktop executable does not satisfy this requirement. Define asset manifests, chunking, integrity verification, cancellation/retry, and guest cache lifetime before implementation. Never expose arbitrary host files or transfer proprietary game data. Authentication and an unguessable session token must scope access to the intended guest.
+
+Player 1 is Mario; player 2 is Luigi. Each player has an independent camera and can explore independently. When player 1 triggers a cutscene or talks to an NPC, player 2 teleports to player 1. Synchronize that relocation and event entry across both clients, then restore independent exploration when the event ends.
+
+Verification milestones: native single-player boot and campaign first; desktop two-player state/camera/event synchronization; P2P and LAN connection checks; browser runtime parity; Download Play transfer and integrity checks using a redistributable test bundle; end-to-end host and guest gameplay with each participant supplying any required proprietary game data. Report estimated completion of the entire project at meaningful updates, separate from compilation statistics. Do not claim these multiplayer modes work before end-to-end verification.

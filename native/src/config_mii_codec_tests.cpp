@@ -1,0 +1,8 @@
+#include <Game/System/ConfigDataMii.hpp>
+#include <RFL_Types.h>
+#include <cassert>
+#include <cstring>
+#include <cstdio>
+#include <vector>
+namespace MR{void copyMemory(void*d,const void*s,u32 n){std::memcpy(d,s,n);}void fillMemory(void*d,u8 v,u32 n){std::memset(d,v,n);}void zeroMemory(void*d,u32 n){std::memset(d,0,n);}}
+int main(){ConfigDataMii c;u32 icon=99;assert(c.getIconId(&icon)&&icon==1);RFLCreateID id;for(u32 i=0;i<sizeof(id);++i)id.data[i]=u8(i+17);c.setMiiOrIconId(&id,nullptr);assert(!c.getIconId(&icon)&&icon==0);std::vector<u8> bytes(sizeof(id)+4,0xcc);assert(c.serialize(bytes.data()+1,sizeof(id)+2)==sizeof(id)+2&&bytes.front()==0xcc&&bytes.back()==0xcc&&bytes[1]==2&&bytes[sizeof(id)+2]==0);assert(!std::memcmp(bytes.data()+2,&id,sizeof(id)));ConfigDataMii d;assert(d.deserialize(bytes.data()+1,sizeof(id)+2)==0);RFLCreateID actual;assert(d.getMiiId(&actual)&&!std::memcmp(&id,&actual,sizeof(id)));for(u32 size=0;size<sizeof(id)+1;++size){assert(d.deserialize(bytes.data()+1,size)==-1);assert(d.getMiiId(&actual)&&!std::memcmp(&id,&actual,sizeof(id)));}assert(d.deserialize(nullptr,sizeof(id)+2)==-1);for(u32 size=0;size<sizeof(id)+2;++size){std::vector<u8> out(bytes.size(),0xcc);assert(d.serialize(out.data()+1,size)==-1);for(u8 b:out)assert(b==0xcc);}bytes[1]=1;assert(d.deserialize(bytes.data()+1,sizeof(id)+1)==0&&d.getMiiId(&actual));bytes[1]=0;assert(d.deserialize(bytes.data()+1,sizeof(id)+1)==0&&d.getIconId(&icon)&&icon==1);icon=5;d.setMiiOrIconId(nullptr,&icon);assert(d.getIconId(&icon)&&icon==5);d.getMiiId(&actual);for(auto b:actual.data)assert(b==0);assert(d.getSignature()==0x4d494920&&d.makeHeaderHashCode()==0x2836e9);std::puts("PASS original MII codec: exact ID bytes, icons, legacy flags, truncated-read rollback and bounded writes");}

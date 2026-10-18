@@ -1,0 +1,4 @@
+#include <Game/System/ConfigDataHolder.hpp>
+#include <cassert>
+#include <cstdio>
+int main(){ConfigDataCreateChunk c;u8 output[3]={0xcc,0xcc,0xcc};assert(c.serialize(output+1,1)==1&&output[1]==0&&output[0]==0xcc&&output[2]==0xcc);for(int value=0;value<256;++value){u8 in=u8(value);assert(c.deserialize(&in,1)==0);assert(c.serialize(output+1,1)==1&&output[1]==(value?255:0));}assert(c.deserialize(nullptr,1)==-1);u8 zero=0;assert(c.deserialize(&zero,0)==-1);assert(c.serialize(output+1,1)==1&&output[1]==255);output[1]=0xcc;assert(c.serialize(output+1,0)==-1&&output[1]==0xcc);assert(c.serialize(nullptr,1)==-1);assert(c.getSignature()==0x434f4e46&&c.makeHeaderHashCode()==0x2432da);c.initializeData();assert(c.serialize(output+1,1)==1&&output[1]==0);std::puts("PASS original CONF codec: all byte values, exact encoding, canaries, short/null input state preservation and bounded writes");}

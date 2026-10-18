@@ -1,0 +1,49 @@
+Galaxy native PC port development
+
+Status: native asset, rendering and scenario diagnostics run; the game is NOT PLAYABLE.
+No normal game boot, title/menu flow, production Mario controller, or campaign playthrough has been verified.
+
+Latest diagnostic (2026-10-13): a native retail WBFS boot now survives audio-file cleanup, completes async audio initialization, and reaches a sustained diagnostic run after a verified first-frame render/update/retrace trace. This was a hidden test launcher; a visible interactive window, working controls, or a playable scene is still unverified. See native\PROGRESS.md for the heap-ownership correction and test details. Rough overall project estimate: about 1.7%; verified playable: 0%.
+
+Useful entry points:
+- Preview title texture.cmd: native Direct3D preview of the title-logo texture (not the game title screen).
+- Preview Mario animation.cmd: animated Mario model preview (not gameplay).
+- Preview Soramame zone.cmd: static scenario-zone rendering.
+- Preview game gravity body.cmd: diagnostic body/collision preview.
+
+Source and roadmap: native\README.md
+Multiplayer requirements: native\MULTIPLAYER-REQUIREMENTS.md
+Audio/DSP roadmap: native\AUDIO-DSP-ROADMAP.md
+Build/tests: native\build.ps1
+Asset checks: native\verify-assets.ps1
+Graphics checks: native\verify-graphics.ps1
+Executable: native\build\galaxy-probe.exe
+Logs and sample assets: native\build\
+
+Current update (2026-10-12): native\INPUT-ROADMAP.md specifies viewport-aware mouse pointing, mouse trigger semantics, configurable keyboard/controller shake bindings, settings-screen flow, and in-game acceptance tests; UI and gameplay validation remain outstanding. Host NAND compatibility covers private file aliases and callback I/O; native GX display-list capture supports bounded nested buffers. Wii Message Board services now fail explicitly as unavailable on PC, the original PAL60 advisory window and Petari's original JAISoundChild/JAIStreamMgr audio providers are integrated. The host stream-manager build uses a checked Wii ARAM address conversion. OS sound-mode selection tests pass. Petari's missing RFLiFormatAsync routine is now implemented for initializing a missing FaceLib save database and fails closed for corrupt databases; all 14 original FaceLib units compile. A host Wii AI adapter now resolves the six AI DMA imports through mapped 32-bit addresses and Windows waveOut PCM, with a silent timing fallback and a passing callback/address-range test. Latest full link audit: 1590 providers, only DspBoot unresolved, 0 duplicates. It still fails to link; no DSP-generated game audio, normal boot or campaign play is verified; overall end-to-end completion 0%.
+
+Startup entry link check (2026-10-12): the reproducible host audit now extracts Petari's `nativeOriginalGameMain` body into a separate object, exports it, and checks it against the provider set without executing it. The audit reaches the same single unresolved `DspBoot` at 1590 providers with no duplicate symbols; it is still a failed link-only DLL, not the game executable. A separate tested DSP ROM boot-protocol component validates the original 7,936-byte uCode image and upload/initialization mails, but is not connected to the live DSP mailbox or ongoing Zelda audio commands.
+
+Latest audio-runtime step (2026-10-11): Added a tested 32-bit guest-address bridge for DSP command buffers (`native\include\Native\DspAddressSpace.hpp`; `native\test-dsp-address-space.ps1`) and a reproducible microcode identifier check (`native\test-dsp-ucode-hash.ps1`). Petari's 0x1F00-byte big-endian `jdsp` image hashes to `0xD643001F`, matching Dolphin's Super Mario Galaxy Zelda-UCode HLE entry and flags. This identifies the HLE path but does not execute the microcode or produce PCM; DSP/mailbox integration, audible audio, normal boot, and gameplay remain unverified.
+
+Historical provider integration checkpoint (2026-10-11):
+- Added original Petari MoviePlayingSequence, ScenarioSelectStar, pause flow, PlanetMapCreator, planet/area/lava-stage, end-of-campaign StaffRoll, BGM manager, NPC actor, and stage-area providers to the link-only LiveActor integration. Focused sweeps compile all 78/78 NPC units and 37/37 AreaObj units; 64 new NPC and 21 new AreaObj objects are included after excluding shared/explicit providers.
+- 717 original/host-compatible providers compile in the integration set; one unrelated source remains skipped because SpinDriverPathDrawer requires the Wii GXWGFifo register. The latest link reports 1,062 undefined occurrences / 1,058 unique symbols and zero duplicate definitions. It exits unsuccessfully without producing an executable; area/NPC constructors close while downstream actor/audio/platform dependencies remain. Native matrix, quaternion, and paired-single compatibility tests pass.
+- The standard native build and its included self-test suite pass after the host math/type-shim changes. These are format/runtime component tests, not a normal game boot or gameplay run.
+- This does not verify title boot, a playable scene, campaign progress, or audible audio. Wii graphics/audio services and the wider map-actor factory dependency graph are still incomplete. Overall verified project completion remains 0%.
+
+Verified 2026-10-10:
+- Native probe --self-test passes when TEMP/TMP point to a writable workspace.
+- EggStarGalaxy scenario 1 / SoramameZone Mario diagnostic smoke passes with 274 actor adapters, collision/gravity, and checkpoint retry.
+- Focused host mutex and thread lifecycle tests passed earlier today.
+- Native OS alarm tests pass one-shot/periodic scheduling and cancellation synchronization. DrawSyncManager and its worker also pass lifecycle/callback checks. The latest link-only probe uses 235 successfully compiled providers, including the original stage loader and demo/cutscene runtime slice. It has zero duplicate definitions and 1,637 unresolved-symbol occurrences. The DLL probe is not executed; the native game is not linked or playable.
+- Supplied WBFS is read-only; diagnostics do not modify it.
+
+These are not normal game startup or playable gameplay checks. Audio device output/settings, a settings menu, resolution/FPS options, HD texture/HUD integration, Luigi co-op, netplay, and browser Download Play remain incomplete. Browser asset transfer is limited to explicitly redistributable assets; guests must supply any required proprietary game data. Overall verified project completion: 0% (no normal game boot or campaign milestone).
+Mouse pointer and keyboard/controller shake plan: native\INPUT-ROADMAP.md
+
+Input regression update (2026-10-11): KPAD adapter tests and original WPad integration tests pass, including keyboard/controller shake overlap, source handoff without duplicate trigger, and release/rearm. Settings UI and in-game validation remain unverified; overall verified end-to-end completion remains 0%.
+
+DSP integration update (2026-10-11): Original JASAiCtrl and JASDSPInterface providers now compile through host adapters and use the shared 32-bit DSP address map for DMA/table pointers. Provider sweep passes 10/10 and eight DSP/address tests pass. Link remains failing at 549 unresolved symbols; DSP execution/audio output and normal game boot are still absent. Project remains 0% verified end-to-end.
+
+Native build check (2026-10-12): native\build.ps1 supports NATIVE_ZIG_CACHE_DIR and NATIVE_BUILD_EXE; the full diagnostic build and self-tests pass with a fresh cache/output under TEMP, including DSP ROM upload, live-mailbox, DspBoot handshake, and base mailbox tests. Replaying the saved 1,590-provider link response with the three new DSP sources produces a link-only DLL. The scripted audit itself is blocked at an ACL-denied generated speaker header; no normal game boot or playable build is verified.

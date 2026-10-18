@@ -1,0 +1,7 @@
+#include <JSystem/JAudio2/JASLfo.hpp>
+#include <JSystem/JAudio2/JASOscillator.hpp>
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+int main(){JASOscillator envelope;assert(envelope.isStop()&&!envelope.isValid());JASOscillator::Data data{JASOscillator::TARGET_VOLUME,1,nullptr,nullptr,.5f,.25f};envelope.initStart(&data);assert(envelope.isValid()&&envelope.getValue()==.75f);envelope.incCounter(10);assert(envelope.getValue()==.75f);envelope.setDirectRelease(4);envelope.release();assert(envelope.isRelease());envelope.incCounter(2);assert(std::fabs(envelope.getValue()-.5f)<.00001f);envelope.incCounter(2);assert(envelope.isStop()&&envelope.getValue()==.25f);envelope.initStart(&data);envelope.release();assert(envelope.isStop());envelope.initStart(nullptr);assert(!envelope.isValid()&&envelope.isStop());
+JASLfo lfo;assert(lfo.getValue()==0);lfo.setDepth(.5f);lfo.setDelay(2);lfo.resetCounter();lfo.incCounter(18);assert(lfo._8==0&&lfo.getValue()==0);lfo.incCounter(18);assert(lfo._8==0);lfo.incCounter(18);assert(std::fabs(lfo.getValue()-.5f)<.001f);lfo.incCounter(54);assert(lfo._8==0&&lfo.getValue()==0);lfo.setDelay(0);lfo.setPitch(2);lfo.resetCounter();lfo.incCounter(9);assert(std::fabs(lfo.getValue()-.5f)<.001f);JASLfo::updateFreeRun(18);lfo._4=0;lfo.resetCounter();assert(lfo._8==JASLfo::sFreeRunLfo._8);std::puts("PASS original audio LFO and envelope direct release, scaling, sustain and stop");}

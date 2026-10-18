@@ -1,0 +1,6 @@
+#include "Game/System/BinaryDataChunkHolder.hpp"
+#include <cassert>
+#include <cstring>
+#include <cstdio>
+struct Chunk:BinaryDataChunkBase {u8 value=7;u32 makeHeaderHashCode()const override{return 0x01020304;}u32 getSignature()const override{return 0x504c4159;}s32 serialize(u8* p,u32 n)const override{if(n<1)return -1;*p=value;return 1;}s32 deserialize(const u8* p,u32 n)override{if(n!=1)return 3;value=*p;return 0;}void initializeData()override{value=0;}};
+int main(){Chunk chunk;BinaryDataChunkHolder holder(64,1);holder.addChunk(&chunk);u8 bytes[32]{};auto size=holder.makeFileBinary(bytes,sizeof(bytes));const u8 expected[]={1,1,0,0,0x50,0x4c,0x41,0x59,1,2,3,4,0,0,0,13,7};assert(size==sizeof(expected)&&!std::memcmp(bytes,expected,size));assert(BinaryDataChunkHolder::calcBinarySize(bytes)==size);chunk.value=0;assert(holder.loadFromFileBinary(bytes,size)&&chunk.value==7);u8 small[16];std::memset(small,0xaa,sizeof(small));assert(holder.makeFileBinary(small,sizeof(small))==0&&small[0]==0xaa);for(u32 n=0;n<size;++n){chunk.value=9;assert(!holder.loadFromFileBinary(bytes,n)&&chunk.value==9);}bytes[8]^=1;assert(!holder.loadFromFileBinary(bytes,size));bytes[8]^=1;bytes[15]=0;assert(!holder.loadFromFileBinary(bytes,size));std::puts("PASS native chunk holder: exact Wii endian layout, round trip, capacity preservation, every truncation and corrupt header");}

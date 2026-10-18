@@ -1,0 +1,7 @@
+#pragma once
+#include "bck_settings.hpp"
+inline void bckSettingsTests(){
+ XanimePlayer player;player.controller.init(60);BckCtrlData data;data.mStartFrame=10;data.mEndFrame=40;data.mRepeatFrame=20;data.mPlayFrame=15;data.mInterpole=6;data.mLoopMode=1;BckCtrlFunction::reflectBckCtrlData(data,&player);assetCheck(player.controller.getStart()==10&&player.controller.getFrame()==10&&player.controller.getEnd()==40&&player.controller.getLoop()==20&&player.controller.getRate()==2&&player.interpolation==6&&player.controller.getAttribute()==1&&player._84==10,"Original BCK settings application failed");
+ data=BckCtrlData();data.mPlayFrame=0;BckCtrlFunction::reflectBckCtrlData(data,&player);assetCheck(player.controller.getRate()==0,"Original zero-play-frame stop failed");data=BckCtrlData();data.mStartFrame=100;data.mEndFrame=100;data.mRepeatFrame=100;BckCtrlFunction::reflectBckCtrlData(data,&player);assetCheck(player.controller.getStart()==10&&player.controller.getEnd()==40&&player.controller.getLoop()==20&&player.controller.getRate()==0&&player.interpolation==6,"Ignored BCK settings changed controller");
+ XanimePlayer fresh;fresh.controller.init(30);BckCtrlData defaults;BckCtrlFunction::reflectBckCtrlData(defaults,&fresh);assetCheck(fresh.controller.getStart()==0&&fresh.controller.getEnd()==30&&fresh.controller.getRate()==1&&fresh.controller.getAttribute()==2&&fresh.interpolation==-1,"Default BCK settings changed player");
+}

@@ -1,0 +1,47 @@
+Existing diagnostic executable self-test; exit 0.
+PASS: native affine matrix composition, aliased operands, rotation/translation and scale semantics
+PASS: pointer-safe hash payloads, original duplicate order, buckets, indices and mutation guards
+PASS: animation identifier comparisons, ASCII case folding and UTF-8 byte preservation
+PASS: native member callbacks, const dispatch, cloned receiver and explicit heap rejection
+PASS: native Petari Nerve, Spine, NerveExecutor, ActorStateKeeper and ActorStateBase
+PASS: diagnostic heading diagonal normalization, idle retention, gravity projection and degenerate fallback
+PASS: named main collision selection, ambiguous archive rejection and single-resource compatibility
+PASS: original factory primary archive aliases and case lookup
+PASS: BTI mip dimensions, offsets, pixels and invalid/truncated chain rejection
+PASS: segment gravity side/endpoints, disabled edges, range, inverse and sectors
+PASS: MarioNo start lookup, missing IDs and repeated-zone ambiguity
+PASS: original NerveExecutor diagnostic motion first-step/transition timing
+PASS: diagnostic pose interpolation, shortest-angle wrap, endpoints and invalid weights
+PASS: weighted animation track SRT/quaternion skinning, zero-weight fallback and invalid rig/weight rejection
+PASS: scalar JMA quaternion interpolation, Euler rotation agreement and antipodal/invalid cases
+PASS: original Mario animation names roundtrip UTF-8/Shift-JIS, encoded lookup and malformed-name rejection
+PASS: original BCK clip settings, playback speed, loop, interpolation request and ignored/default fields
+PASS: original actor step helpers and timed scene-scheduled state transition
+PASS: scene-scheduled actor states, message reactions, suspend/resume and dead/clipped guards
+PASS: original actor nerve initialization, message-triggered transitions, end callbacks and step timing
+PASS: original LiveActor message dispatcher across 256 values, handler order, sender/receiver and reply propagation
+PASS: original actor sensor contact messages, accepted/rejected replies and directional attack position restoration
+PASS: runtime sensor reclassification, validity preservation, contact clearing and failed-capacity rollback
+PASS: original sensor type routing across 256 values and automatic player/item overlap
+PASS: named sensor position-overlap-contact pipeline, stale contact clearing, validity, dead targets and shared capacity
+PASS: original sensor keeper named lookup, immediate/bulk updates, validity and contact dispatch with native bounded ownership
+PASS: original sensor positions, matrix offsets, host callbacks and live contact dispatch
+PASS: original HitSensor registration, validity, contacts, type changes and message dispatch
+PASS: original sensor overlap, tangency, validity, clipping, same-host/eye rules and native bounded ownership
+PASS: original JMapInfo host tables, signed/float lookup, row search and JGadget hash
+PASS: original Petari NameObj registration, virtual initialization, movement, deferred suspend/resume and request cancellation
+PASS: fixed-step diagnostic sphere fall, grounding, directional movement and jump
+PASS: floor/corner sliding, clear sphere movement and near-floor tangent sweep
+PASS: fast/reverse sphere sweep, clear travel, stationary sphere and initial overlap
+PASS: sphere face/corner separation, stationary clear sphere and repeat stability
+PASS: sphere face/edge/vertex contacts, penetration, tangency, metadata and invalid radius
+PASS: collision nearest segment, metadata, reverse direction, edge, miss and parallel cases
+PASS: stage table fields, masked values, string bounds, placement SRT and zone composition
+PASS: BCK interpolation, duplicate timestamps, rotation, animation clock modes and fixed-step cadence
+PASS: WBFS block boundaries, sparse blocks, bounds, malformed headers, mappings and truncation
+PASS: AES/SHA1 known answers, H0 corruption rejection, FST paths/bounds, Yaz0 overlap/truncation, RARC/U8 resources/cycles/bounds
+PASS: 11 GX texture formats, palette/alpha/tiling, TPL, J3D positions/embedded textures and malformed graphics
+PASS: joint hierarchy/transforms, invalid remaps, duplicate joints, unbalanced hierarchy and non-finite transforms
+PASS: mesh primitive winding, triangulation and incomplete primitive rejection
+PASS: joint rotation, parent transforms, Maya scale compensation, weighted skinning and cycle rejection
+PASS: indexed normals/colors/UVs, shape-material mapping, texture references and invalid appearance data
