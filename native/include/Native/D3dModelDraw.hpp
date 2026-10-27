@@ -72,7 +72,7 @@ public:
   }
   std::string shader="struct O{float4 p:SV_Position;float4 c:COLOR;float3 uv[8]:TEXCOORD;};";
   for(unsigned slot=0;slot<8;++slot)shader+="Texture2D image"+std::to_string(slot)+":register(t"+std::to_string(slot)+");SamplerState sampling"+std::to_string(slot)+":register(s"+std::to_string(slot)+");";
-  shader+=tevProgramHlsl(state);
+  shader+=tevProgramHlsl(state,true);
   auto destinationAlpha=state.destinationAlpha();
   const bool textureDepth=writesTextureDepth(state),structuredOutput=destinationAlpha.enabled||textureDepth;
   if(structuredOutput){
@@ -98,7 +98,12 @@ public:
   auto replacement=detail::d3dModelPixelShader(device.Get(),shader);
   auto depthReplacement=createDepthMode(state);
   auto rasterReplacement=createCullMode(state);auto blendReplacement=createBlendMode(state);
+  const auto constants=tevProgramConstants(state);
+  D3D11_BUFFER_DESC constantDescription{};constantDescription.ByteWidth=sizeof(constants);constantDescription.Usage=D3D11_USAGE_IMMUTABLE;constantDescription.BindFlags=D3D11_BIND_CONSTANT_BUFFER;
+  D3D11_SUBRESOURCE_DATA constantData{&constants,0,0};Microsoft::WRL::ComPtr<ID3D11Buffer> constantReplacement;
+  check(device->CreateBuffer(&constantDescription,&constantData,&constantReplacement));
   ps=std::move(replacement);blendState=std::move(blendReplacement);depthState=std::move(depthReplacement);rasterizer=std::move(rasterReplacement);cullAll=((state.bp(0)>>14)&3)==3;
+  tevConstants=std::move(constantReplacement);
   shaderDestinationAlphaEnabled=destinationAlpha.enabled;shaderDestinationAlpha=destinationAlpha.alpha;
   for(unsigned i=0;i<8;++i){materialViews[i]=views[i];materialSamplers[i]=samplers[i];}
  }
@@ -137,6 +142,7 @@ public:
   context->OMSetDepthStencilState(depthState.Get(),0);context->OMSetBlendState(blendState.Get(),nullptr,0xffffffff);
   context->IASetInputLayout(layout.Get());context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);UINT stride=sizeof(ProjectedVertex),offset=0;auto* input=buffer.Get();context->IASetVertexBuffers(0,1,&input,&stride,&offset);
   context->VSSetShader(vs.Get(),nullptr,0);context->PSSetShader(ps.Get(),nullptr,0);ID3D11ShaderResourceView* views[8];ID3D11SamplerState* samplers[8];
+  auto* constants=tevConstants.Get();context->PSSetConstantBuffers(0,1,&constants);
   for(unsigned i=0;i<8;++i){views[i]=materialViews[i].Get();samplers[i]=materialSamplers[i].Get();}
   context->PSSetShaderResources(0,8,views);context->PSSetSamplers(0,8,samplers);
   context->Draw(UINT(vertices.size()),0);
@@ -191,6 +197,7 @@ private:
  D3D11_VIEWPORT authoredViewport{};bool hasViewport=false;
  Microsoft::WRL::ComPtr<ID3D11Device> device;Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
  Microsoft::WRL::ComPtr<ID3D11VertexShader> vs;Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;Microsoft::WRL::ComPtr<ID3D11InputLayout> layout;
+ Microsoft::WRL::ComPtr<ID3D11Buffer> tevConstants;
  Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizer;Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthState;
 };
 }

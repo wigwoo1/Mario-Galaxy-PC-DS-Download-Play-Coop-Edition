@@ -2,19 +2,35 @@
 #include <Native/GxCommandState.hpp>
 #include <Native/TevArithmeticHlsl.hpp>
 #include <sstream>
+#include <cstdint>
 namespace Native {
-// Specializes only the combiner from an immutable draw-state snapshot.
-// Caller supplies already sampled textures and lit raster colors per stage.
-inline std::string tevProgramHlsl(const GxCommandState& state){
+// HLSL int4 arrays have 16-byte elements. Own one immutable copy per draw so
+// later animation updates cannot change a material already being prepared.
+struct TevProgramConstants {
+ std::array<std::int32_t,4> colors[4]{};
+ std::array<std::int32_t,4> konst[16]{};
+};
+static_assert(sizeof(TevProgramConstants)==320,"TEV constant-buffer layout");
+inline TevProgramConstants tevProgramConstants(const GxCommandState& state){
+ TevProgramConstants result;
+ for(unsigned i=0;i<4;++i){auto v=state.tevColor(i);std::copy(v.begin(),v.end(),result.colors[i].begin());}
+ for(unsigned i=0;i<state.tevStageCount();++i){auto v=state.tevKonstValue(i);std::copy(v.begin(),v.end(),result.konst[i].begin());}
+ return result;
+}
+// Literal mode retains the standalone reference generator. Uniform mode keeps
+// color-only changes out of the compiled program; the caller binds its draw's
+// TevProgramConstants at b0. Textures and lit raster inputs are supplied per stage.
+inline std::string tevProgramHlsl(const GxCommandState& state,bool uniformColors=false){
  std::ostringstream s;s<<tevArithmeticHlsl;
+ if(uniformColors)s<<"cbuffer TevProgramConstants:register(b0){int4 tevRegisterColors[4];int4 tevStageKonst[16];};\n";
  auto rgba=[](const std::array<int,4>& v){return "int4("+std::to_string(v[0])+","+std::to_string(v[1])+","+std::to_string(v[2])+","+std::to_string(v[3])+")";};
  s<<"int4 evaluateTevProgram(int4 textures[16],int4 rasters[16]){int4 r[4];\n";
- for(unsigned i=0;i<4;++i)s<<"r["<<i<<"]="<<rgba(state.tevColor(i))<<";\n";
+ for(unsigned i=0;i<4;++i)s<<"r["<<i<<"]="<<(uniformColors?"tevRegisterColors["+std::to_string(i)+"]":rgba(state.tevColor(i)))<<";\n";
  for(unsigned i=0;i<state.tevStageCount();++i){
   auto stage=state.tevStage(i);
   s<<"{int4 p[4];for(uint j=0;j<4;++j)p[j]=r[j];int4 t=";
   if(state.tevOrder(i).enabled)s<<"textures["<<i<<"]";else s<<"int4(255,255,255,255)";
-  s<<";int4 v=rasters["<<i<<"];int4 k="<<rgba(state.tevKonstValue(i))<<";\n";
+  s<<";int4 v=rasters["<<i<<"];int4 k="<<(uniformColors?"tevStageKonst["+std::to_string(i)+"]":rgba(state.tevKonstValue(i)))<<";\n";
   auto swap=[&](const char* name,unsigned table){
    auto order=state.tevSwapTable(table);s<<name<<"="<<name<<".";
    for(auto c:order)s<<"xyzw"[c];s<<";\n";

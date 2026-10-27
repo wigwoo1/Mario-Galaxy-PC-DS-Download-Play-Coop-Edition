@@ -9,7 +9,13 @@ $runtime=Join-Path $env:TEMP 'galaxy-dspboot-link-verification'
 $evidence=Join-Path $PSScriptRoot 'build\startup-verification-20261014'
 New-Item -ItemType Directory -Force -Path $evidence | Out-Null
 . (Join-Path $PSScriptRoot 'native-runtime-manifest.ps1')
+Assert-NativeDiagnosticOptions
 $verified=Get-VerifiedNativeRuntime -RuntimeDirectory $runtime
+$inputRequested=$false
+foreach($name in @('GALAXY_DIAGNOSTIC_PRESS_AB','GALAXY_DIAGNOSTIC_SELECT_EMPTY_SLOT','GALAXY_DIAGNOSTIC_CREATE_PROFILE','GALAXY_DIAGNOSTIC_SELECT_SAVED_SLOT','GALAXY_DIAGNOSTIC_SELECT_START_BUTTON')){
+ if($null-ne [Environment]::GetEnvironmentVariable($name)){$inputRequested=$true}
+}
+Assert-NativeRuntimeDiagnosticInput -RuntimeDirectory $runtime -VerifiedRuntime $verified -InputRequested $inputRequested
 $launcher=$verified.Launcher
 $traces=@(@('galaxy-native-boot.log','boot.log'),@('galaxy-native-firstchance.log','firstchance.log'),@('galaxy-native-launcher-error.log','error.log'))
 if(!$ExistingProcessId){foreach($trace in $traces){$path=Join-Path $env:TEMP $trace[0];if(Test-Path -LiteralPath $path){Clear-Content -LiteralPath $path}}}

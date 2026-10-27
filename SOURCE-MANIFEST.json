@@ -146,8 +146,8 @@
     },
     {
       "path": "native/generate-actor-runtime.ps1",
-      "sha256": "643a1cc48b29bb8a4ca796a82ab26710c3c7b49647f23262a21417e8c2b5d9e0",
-      "gitBlobSha": "1ab9cb5c909003dca8ab580780fcb2cd559ee83c"
+      "sha256": "4527bed99dbf5f4f930ec0dc2f49dacdfa544e15a168bcde94a38b33e766891b",
+      "gitBlobSha": "19afbe178b944dce2caad705d5cdd83da2b212f4"
     },
     {
       "path": "native/generate-animation-helper-runtime.ps1",
@@ -1951,8 +1951,8 @@
     },
     {
       "path": "native/include-runtime/revolution/os.h",
-      "sha256": "cafc42c8f0d4107204477ecd274c92857a49fb1cc4e20167684ad0d8e4aaacc2",
-      "gitBlobSha": "9ffc0838f425e5487322c6365c0625f40e629c99"
+      "sha256": "7d5131aea79a38a841c8611009462dfacc44a01d495bb999f872d935d9eb73d4",
+      "gitBlobSha": "a7b3d389d06376553c86389ba9839c4c72678f2b"
     },
     {
       "path": "native/include-runtime/revolution/os/OSMutex.h",
@@ -2296,8 +2296,8 @@
     },
     {
       "path": "native/include/Native/D3dModelDraw.hpp",
-      "sha256": "0f82765280d69fff9d1a3d29cba978fa5ce98f342ffc733a5f725f9fc4a88585",
-      "gitBlobSha": "fae34653d75f3392931c99e14a9691b212d41566"
+      "sha256": "6ce000e8fd1ef1daa98f79e2049cca796f442b61e06c865d9796724979d42ed7",
+      "gitBlobSha": "b38585881408de19cfb7e85efa45b5493e7005bb"
     },
     {
       "path": "native/include/Native/DepthPeek.hpp",
@@ -2611,8 +2611,8 @@
     },
     {
       "path": "native/include/Native/TevProgramHlsl.hpp",
-      "sha256": "c880eecc563b578935ea109c642a98d707abe3f777d01a508eb350b61a6e8f44",
-      "gitBlobSha": "b7f339bed8e8d6495f6ba5ce9cefcf3ea6de6b90"
+      "sha256": "83ba82266edbd344362e807751e4f63d7816eab3b41bdfdb82c0abed6aa99487",
+      "gitBlobSha": "be49480eace18f6b72a20039728174c037876e18"
     },
     {
       "path": "native/include/Native/TevStage.hpp",
@@ -2771,8 +2771,8 @@
     },
     {
       "path": "native/native-runtime-manifest.ps1",
-      "sha256": "358348ace763f394b098b210cc08efe9e1baf7e2893507e78b90dfb9e61ccaba",
-      "gitBlobSha": "57edc14f20484f1f0dcfc2c27f8a5c40532da1ae"
+      "sha256": "062c1da35286c2b8920df332300c502fefece5153475b297a4e392d513888d91",
+      "gitBlobSha": "f9e5f324f81a550f0ba1f999b9aa33101b8dbc9c"
     },
     {
       "path": "native/native-save-providers.ps1",
@@ -2866,8 +2866,8 @@
     },
     {
       "path": "native/PROGRESS.md",
-      "sha256": "e499a934bb8dd586b879684446e59da1f56fd14a502e71f6d49268e7989108c4",
-      "gitBlobSha": "f45dba12cdc9271529404b149c594fff91341298"
+      "sha256": "90d648c515ddb694300f8934e752b22f4294e8cd1014ffddf6ad0fc2b29c2af2",
+      "gitBlobSha": "301a0ba0eacc9962ac0b4c09d62693060c32dccb"
     },
     {
       "path": "native/README.md",
@@ -2891,8 +2891,8 @@
     },
     {
       "path": "native/run-startup-probe.ps1",
-      "sha256": "dbd5eec3ea0ddbd22405009dc0a630e948deab2f4adb5be0718e78d3285f9242",
-      "gitBlobSha": "f91a3fb3c6ba3f67a453ac6a0ec25820eff34535"
+      "sha256": "56c35d248fb01899424f938dc384a83593859f2fb55a3ff14109585b2e457574",
+      "gitBlobSha": "6779d7994a3b2906489ab43f17da0569751f0f12"
     },
     {
       "path": "native/scan-retail-speaker.ps1",
@@ -6566,8 +6566,8 @@
     },
     {
       "path": "native/src/generated/ResourceHolder.cpp",
-      "sha256": "867d525561a36682890cf18ff3769b958eef5c00f53cde0bd342d5085a01800a",
-      "gitBlobSha": "0eb2172d8e73dae2106ad27a59f389bb8260f5b2"
+      "sha256": "4ac4dc38fbb46bc794a98dae25be1fe57e2d1a6c5fe32a52f82c0086ed6dbec8",
+      "gitBlobSha": "6b3f76778b00f9d23d6a4b530367c3231eb3a0a1"
     },
     {
       "path": "native/src/generated/ResourceHolderManager.cpp",
@@ -7756,8 +7756,8 @@
     },
     {
       "path": "native/src/material_creation_tests.cpp",
-      "sha256": "6bdab71d25322b1d5035ccf0ca0c317d2c1a2c85012fa4a4735efd6891445751",
-      "gitBlobSha": "15e2f4165f4495bb6e5c6cb011023768d763caf3"
+      "sha256": "449ed6f43c0137c89882cd98bf4035fb6a6b90d447ea96912ce948a00dc09008",
+      "gitBlobSha": "5e2bc45af3dcfed7e5069ae0b21c94a8b9cd883f"
     },
     {
       "path": "native/src/material_header_tests.cpp",
@@ -8256,8 +8256,8 @@
     },
     {
       "path": "native/src/native_model_resource.hpp",
-      "sha256": "9d2cf8e7ef31cb9e7ef8b3e04ee68fbb6fee9bb5fb62ec5769f698c837668352",
-      "gitBlobSha": "7b58947d2b97371b49395303bf07fe3907760f65"
+      "sha256": "e37fd31e778705c7d07089dbc1c1c9058618e0411438ca18fb26a2b738397074",
+      "gitBlobSha": "8ae6c266316ee55de93f467fdb9a5dac33de9594"
     },
     {
       "path": "native/src/native_model_texgen.hpp",
@@ -9466,8 +9466,8 @@
     },
     {
       "path": "native/src/tev_program_gpu_tests.cpp",
-      "sha256": "ea518790b65f56e7f5164eb199c27916d3299e92865b6ef8d89bb2533c290bd1",
-      "gitBlobSha": "8bde9f434955157da5920fe7cae3de72a0f9dab0"
+      "sha256": "825110d3f673f0a6c98054042de2bf7c7361df4a4b16e5f786e1a8caee57f85f",
+      "gitBlobSha": "7d9b19149612bd93ca217a3f7a16293babe0f5c2"
     },
     {
       "path": "native/src/text_layout_tests.cpp",
@@ -9686,8 +9686,8 @@
     },
     {
       "path": "native/test-actor-runtime-dsp-boot-link.ps1",
-      "sha256": "8775c3ebeed92d8a506e0374b950b8212a887d1bb06aced23fa40e913905d59b",
-      "gitBlobSha": "b21d15cba1358161d96b36cd9fd5c98642bb5904"
+      "sha256": "fedfe266feec0cd2fb3f7cfc9e1213af4f2209a80dbfed628ef53ed714b4104a",
+      "gitBlobSha": "2dbba576dce5cf1bd4fb45cb1ddfae576284e8d0"
     },
     {
       "path": "native/test-alpha8-copy.ps1",
@@ -10381,8 +10381,8 @@
     },
     {
       "path": "native/test-material-creation.ps1",
-      "sha256": "c184103caa22392923ee44d5d6cd78f6015d4b776de87d8ad143a6dd34bf2dc7",
-      "gitBlobSha": "2d153748465be51374dd1f333ec0bdcbcb42a505"
+      "sha256": "7226eaa8a08919ff557a2f2ebc0e2f06b355ba6e2640f307e39c8ede9ee6361f",
+      "gitBlobSha": "b93113b16f90447f39b22ec122e7494b4283682e"
     },
     {
       "path": "native/test-material-header.ps1",
@@ -34316,13 +34316,13 @@
     },
     {
       "path": "README.md",
-      "sha256": "b086ca88c8b79a2f28302fdc0e84ffdfb7d9afdbd4aea7c8d467f5d5e520805a",
-      "gitBlobSha": "9a5c9a3d371b61767b104970a19c832e9c7c8956"
+      "sha256": "1d21b41663d091d17ea73da4d4fbe5f7170a168657f542df0b58021c592a4a53",
+      "gitBlobSha": "0d5e16101ee1b2fe74824cea6c510dc46a345a55"
     },
     {
       "path": "BUILDING.md",
-      "sha256": "042e249eed44a14138f57703a384ab343f2394ece4584c0e62e94d73d40bfa85",
-      "gitBlobSha": "1f2c7318938a9a6c56f3093136eac0a663be05ed"
+      "sha256": "16f2938a4ee893ce5209a6e4b8cab601f3644015163f7b5620dc9e3acf354913",
+      "gitBlobSha": "b0591dd327cc8da1f98d729da28d0359159474b3"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -34331,13 +34331,13 @@
     },
     {
       "path": "docs/STATUS.md",
-      "sha256": "a9500877f4aa271df825dc916dd13949557a28181695db3fbfb674da0401f353",
-      "gitBlobSha": "ffbc77a0cc9d456ac7395233bfb10bf1dd7627e9"
+      "sha256": "3e99c3dbfb4c369febbb3d1eb8ce609bd4c89004c70ba1a101d3e5c583942ed9",
+      "gitBlobSha": "cde75faf38fb98a1b2b1a398cf97943e9dbea7eb"
     },
     {
       "path": "docs/DAILY-STATUS.md",
-      "sha256": "6e558ee39c6a7dd4b18809e749e45f55ed7ba3208d4905fbfc1d02ed81da5e93",
-      "gitBlobSha": "0c3e052171858b3f1d00871930d96ded5a686c2d"
+      "sha256": "ac6c7ba7cb8110c42ef283e88d112b6e43e884423a1c91e82e878d68ffa9f7ba",
+      "gitBlobSha": "34d8b80ec91d1630c2c63d1d253b9c67f02a523d"
     },
     {
       "path": "docs/verification/2026-10-16-bloom-factory.md",
@@ -34366,14 +34366,69 @@
     },
     {
       "path": "builds/manifest.json",
-      "sha256": "639137a5086770afed8a79f1daa82e5069994cc4abb4efed30f310d90bf88889",
-      "gitBlobSha": "745ede6a4cf01c7340557a09d72bb3aa1cf0afdf"
+      "sha256": "fc8037e8d4500d6193f107a3c222fce7e17847661fb08e38b8d28402ba902b6e",
+      "gitBlobSha": "187e77879652592f5e11fde121d0b068f58532e7"
     },
     {
       "path": "docs/verification/probe-self-test-2026-10-18.txt",
       "sha256": "f4ca77c3f44ff5b38d8d1a387c7801bfb2779dc57b3a498fa109cf6d4233559b",
       "gitBlobSha": "5f2b4c0f19fc63584cd2bb72f5beaa92fbac5282"
+    },
+    {
+      "path": "native/generate-tev-reg-resource.ps1",
+      "sha256": "f28392c9b306ad4ce5795e267f697db738eb8b546e88bb850a4c6074251dc50b",
+      "gitBlobSha": "18855d455028aa336f6ec2b5646fa8797c1d1bc9"
+    },
+    {
+      "path": "native/src/brk_material_tests.hpp",
+      "sha256": "bc2010089dd1033a5dbef6c38b43e918c0ec30f83d0fb3b04d9453dafac326c3",
+      "gitBlobSha": "f9e27857cd4110308749a3e63165f2e56a847ed8"
+    },
+    {
+      "path": "native/src/d3d_tev_constants_tests.cpp",
+      "sha256": "c0f9e78a0be95a7d05dfda12157234d12c52ad9798a347caac65f55013b3a389",
+      "gitBlobSha": "d97c7a2744419afc6ef911bc50549f341b9e974b"
+    },
+    {
+      "path": "native/src/native_model_material_flags.hpp",
+      "sha256": "5db0ae82074ecf05178052f6717022beccb01da2e9c0745cae0457a05bbca1ca",
+      "gitBlobSha": "49db3d2931d575769ac61912c65bbd5e04a2cd7a"
+    },
+    {
+      "path": "native/src/native_owned_tev_reg.hpp",
+      "sha256": "c171b54f949672748446e3c025532af6b86f75d0118a86d42d005add7817469f",
+      "gitBlobSha": "3607179056d1f5fdfe4543d98554ac522ec2f208"
+    },
+    {
+      "path": "native/src/native_tev_reg_animation.hpp",
+      "sha256": "22f01f9855c7b16c812490854a75933d84481a2c8d1bcff168e16652f81f95d9",
+      "gitBlobSha": "d91f66245501cc1eb6a3031fc19efd873ea3f2f7"
+    },
+    {
+      "path": "native/src/tev_reg_animation_tests.cpp",
+      "sha256": "117dfd31796c29442967dc26b417130b327cb1ba1ea154d6bd9595cadcaf6777",
+      "gitBlobSha": "3fbb97416cac1e6629877e8350dafea7a5afcfb6"
+    },
+    {
+      "path": "native/test-d3d-tev-constants.ps1",
+      "sha256": "7796d92d3aa09040821c59db976a731f47388d07215c0f590797054504c71b91",
+      "gitBlobSha": "045a5bee67e9d6049eebb325ab30c4d3d1cbb9fe"
+    },
+    {
+      "path": "native/test-tev-reg-animation.ps1",
+      "sha256": "ae2bdee045f754cd82249cb4b5d8cfe079d2ec36532d49841e682d2a471b1eec",
+      "gitBlobSha": "d454c8a652f4b8051a9336d2e4fdd0418f655c7a"
+    },
+    {
+      "path": "docs/verification/2026-10-27-native-color-animation.md",
+      "sha256": "4f29367f5bb11de31d0f62490b7585ec6a07b2638fb23c09300da19f757efd31",
+      "gitBlobSha": "62011012739ce5824c7653ef5ace1738dcd88ddd"
+    },
+    {
+      "path": "builds/windows-x64-diagnostics.zip",
+      "sha256": "9f254a4ab00db7fc86292541a2b29483bd140303bb98af2f56d51b48283f8729",
+      "gitBlobSha": "9be1a7bb74b3ed5d35bd27146d0111906921ec30"
     }
   ],
-  "lastPublicationCheck": "2026-10-27T12:55:56Z"
+  "lastPublicationCheck": "2026-10-27T14:43:29Z"
 }

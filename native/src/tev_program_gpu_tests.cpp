@@ -27,7 +27,8 @@ int main(){try{
   for(unsigned j=0;j<16;++j)for(unsigned c=0;c<4;++c){inputs[i].textures[j][c]=(i*73+j*29+c*61)&255;inputs[i].raster[j][c]=(i*151+j*37+c*43)&255;}
   auto result=Native::evaluateTevProgram(state,inputs[i]);expected.insert(expected.end(),result.begin(),result.end());
  }
- std::string shader=Native::tevProgramHlsl(state);
+ for(bool uniform:{false,true}){
+ std::string shader=Native::tevProgramHlsl(state,uniform);
  shader+=R"(
  struct Input{int4 textures[16];int4 raster[16];};
  StructuredBuffer<Input> source:register(t0);RWStructuredBuffer<int> output:register(u0);
@@ -44,6 +45,9 @@ int main(){try{
  ComPtr<ID3D11ShaderResourceView> srv;check(device->CreateShaderResourceView(source.Get(),nullptr,&srv));
  desc.ByteWidth=UINT(expected.size()*sizeof(int));desc.Usage=D3D11_USAGE_DEFAULT;desc.BindFlags=D3D11_BIND_UNORDERED_ACCESS;desc.StructureByteStride=sizeof(int);
  ComPtr<ID3D11Buffer> output;check(device->CreateBuffer(&desc,nullptr,&output));ComPtr<ID3D11UnorderedAccessView> uav;check(device->CreateUnorderedAccessView(output.Get(),nullptr,&uav));
+ ComPtr<ID3D11Buffer> constants;
+ if(uniform){auto values=Native::tevProgramConstants(state);D3D11_BUFFER_DESC d{};d.ByteWidth=sizeof(values);d.Usage=D3D11_USAGE_IMMUTABLE;d.BindFlags=D3D11_BIND_CONSTANT_BUFFER;D3D11_SUBRESOURCE_DATA initial{&values,0,0};check(device->CreateBuffer(&d,&initial,&constants));}
+ auto* constant=constants.Get();context->CSSetConstantBuffers(0,1,&constant);
  context->CSSetShader(cs.Get(),nullptr,0);auto* s=srv.Get();auto* u=uav.Get();context->CSSetShaderResources(0,1,&s);context->CSSetUnorderedAccessViews(0,1,&u,nullptr);context->Dispatch(UINT(inputs.size()),1,1);
  u=nullptr;context->CSSetUnorderedAccessViews(0,1,&u,nullptr);
  desc.Usage=D3D11_USAGE_STAGING;desc.BindFlags=0;desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ;desc.MiscFlags=0;desc.StructureByteStride=0;
@@ -52,7 +56,8 @@ int main(){try{
  D3D11_MAPPED_SUBRESOURCE mapped{};check(context->Map(staging.Get(),0,D3D11_MAP_READ,0,&mapped));
  auto* actual=(const int*)mapped.pData;bool equal=true;for(size_t i=0;i<expected.size();++i)if(actual[i]!=expected[i]){std::cerr<<"Mismatch "<<i<<" expected "<<expected[i]<<" actual "<<actual[i]<<"\n";equal=false;break;}
  context->Unmap(staging.Get(),0);if(!equal)return 1;
- std::cout<<"PASS GPU 16-stage TEV program "<<inputs.size()<<" fragments\n";return 0;
+ std::cout<<"PASS GPU 16-stage TEV program "<<inputs.size()<<" fragments ("<<(uniform?"constant buffer":"literal reference")<<")\n";
+ }return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
 
 

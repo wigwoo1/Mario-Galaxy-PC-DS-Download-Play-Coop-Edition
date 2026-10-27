@@ -6,6 +6,7 @@
 #include "native_vertex_resource.hpp"
 #include "native_shape_resource.hpp"
 #include "native_material_init.hpp"
+#include "native_model_material_flags.hpp"
 #include "native_texture_tables.hpp"
 #include "native_material_display_list.hpp"
 #include <JSystem/J3DGraphAnimator/J3DModelData.hpp>
@@ -48,12 +49,11 @@ struct NativeModelResource {
         for(auto block:blocks.blocks)if(BinaryView(bytes,block.offset,block.length).tag(0)=="MAT3"){
             NativeMaterialInitTables tables(bytes.data()+block.offset,block.length);J3DMaterialFactory factory(tables);
             // The original BDL reader uses createPatchedMaterial, which always
-            // retains light-on color data and a full mutable PE/fog block.
+            // retains light-on color data, a full mutable PE/fog block, and
+            // mutable TEV register storage independent of authored stage count.
             // Native display lists are rebuilt from MAT3; preserve those same
             // capabilities instead of selecting compact normal-material blocks.
-            u32 materialFlags=loaderFlags;
-            if(!std::memcmp(bytes.data()+4,"bdl",3))
-                materialFlags=(materialFlags&~0xf0000000u)|J3DMLF_Material_Color_LightOn|J3DMLF_Material_PE_Full;
+            const u32 materialFlags=nativeModelMaterialFlags(binaryDisplayLists,loaderFlags);
             for(unsigned i=0;i<tables.header.materialCount;++i){materials.emplace_back(factory.createNormalMaterial(nullptr,int(i),materialFlags));assetCheck(bool(materials.back()),"Material creation failed");materialPointers.push_back(materials.back().get());}
             // Original readPatchedMaterial groups entries by their MAT3 remap ID.
             // Keep the pointer table stable before deriving its group namespace.

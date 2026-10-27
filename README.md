@@ -4,15 +4,15 @@ Experimental Windows x64 native port based on [SMGCommunity/Petari](https://gith
 
 ## Current state
 
-The native diagnostic selects an existing Mario save slot, accepts Start, initializes Mario and passes the former bloom scene-object failure. Stage loading then crashes while Toad (Kinopio) starts the ColorChange BRK animation. No completed stage rendering, player-controlled gameplay, campaign playthrough or multiplayer is verified. Rough overall progress is about 3%, an engineering estimate.
+The native diagnostic selects an existing Mario save slot, accepts Start, initializes Mario and passes the former bloom scene-object failure. It now passes that Kinopio animation start, then crashes during Butterfly initialization. Current source includes a later material-storage repair with a passing focused fixture; full-game rebuild and retest remain pending. No completed stage rendering, player-controlled gameplay, campaign playthrough or multiplayer is verified. Rough overall progress is about 3%, an engineering estimate.
 
-See [current status](docs/STATUS.md), [verification](docs/verification/2026-10-16-bloom-factory.md) and [native progress](native/PROGRESS.md). Older native documents describe historical milestones.
+See [current status](docs/STATUS.md), [verification](docs/verification/2026-10-27-native-color-animation.md) and [native progress](native/PROGRESS.md). Older native documents describe historical milestones.
 
 ## Download current diagnostic builds
 
 [Download Windows x64 diagnostics](https://github.com/wigwoo1/Mario-Galaxy-PC-DS-Download-Play-Coop-Edition/raw/refs/heads/main/builds/windows-x64-diagnostics.zip). Extract the ZIP, then double-click **Run diagnostic self-tests.cmd**. It reports PASS or FAIL and keeps the window open. This test does not require a game image and does not launch gameplay.
 
-The ZIP also contains the exact 2026-10-16 boot diagnostic launcher/DLL pair and its original manifest. It is a hidden research diagnostic with the known stage-loading crash, not a normal game launcher. The separate galaxy-probe executable is an existing diagnostic artifact. These are not claimed to be fresh rebuilds of every source file in this snapshot. [Build hashes](builds/manifest.json).
+The ZIP also contains the exact 2026-10-27 boot diagnostic launcher/DLL pair and its original manifest. It is a hidden research diagnostic with the known stage-loading crash, not a normal game launcher. The separate galaxy-probe executable is an existing diagnostic artifact. The runtime predates the last material-storage repair and is not a fresh rebuild by the publisher. [Build hashes](builds/manifest.json).
 
 No game image, extracted asset directory, texture pack, user save, crash dump or compiler cache is included. Disc-backed tools require your own locally supplied game data.
 

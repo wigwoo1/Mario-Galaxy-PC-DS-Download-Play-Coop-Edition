@@ -14,6 +14,7 @@
 #include <cstdio>
 #define NOMINMAX
 #include <windows.h>
+#include "brk_material_tests.hpp"
 
 int runMaterialChecks(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);
@@ -29,6 +30,7 @@ int runMaterialChecks(int argc, char** argv) {
     JKRHeap::sSystemHeap = &heap;
     heap.becomeCurrentHeap();
     WiiAssets disc(std::filesystem::u8path(argv[1]));
+    verifyRetailBrkMaterials(disc,heap);
     Rarc archive(disc.readFile("/ObjectData/Mario.arc"));
     unsigned created = 0;
     for (const auto& file : archive.files) {

@@ -11,6 +11,6 @@ The setup helper downloads the official pinned Zig archive and checks its SHA-25
 
 ## Full boot diagnostic
 
-The published launcher/DLL pair linked and ran locally on 2026-10-16. Rebuilding the complete boot diagnostic currently involves native/probe-actor-link.ps1, generated source providers and native/test-actor-runtime-dsp-boot-link.ps1. Historical scripts use generated object/response caches and some local paths. Caches and extracted data are excluded. A clean-checkout, one-command full boot rebuild has not been verified. See docs/verification/2026-10-16-bloom-factory.md for the current crash and builds/manifest.json for exact artifact hashes.
+The published launcher/DLL pair linked and ran locally on 2026-10-27. Rebuilding the complete boot diagnostic currently involves native/probe-actor-link.ps1, generated source providers and native/test-actor-runtime-dsp-boot-link.ps1. Historical scripts use generated object/response caches and some local paths. Caches and extracted data are excluded. A clean-checkout, one-command full boot rebuild has not been verified. See docs/verification/2026-10-27-native-color-animation.md for the current crash and builds/manifest.json for exact artifact hashes.
 
 Supply game data locally for disc-backed checks. Never commit images, extracted archives/models/textures, saves, dumps or texture packs. Existing upstream source constants remain under their notices; this snapshot is not an extracted retail filesystem.

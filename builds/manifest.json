@@ -1,16 +1,18 @@
 {
   "schema": 1,
-  "publishedOn": "2026-10-18",
+  "publishedOn": "2026-10-27",
   "status": "development diagnostics; not playable",
-  "fullRuntimeBuiltAt": "2026-10-16T09:48:25.1809405-04:00",
-  "fullRuntimeLastVerified": "2026-10-16",
-  "probeSelfTest": "PASS during 2026-10-18 publication preparation",
-  "knownFailure": "Kinopio ColorChange BRK animation during stage placement",
+  "fullRuntimeBuiltAt": "2026-10-27T09:54:44.1923363-04:00",
+  "fullRuntimeLastVerified": "2026-10-27",
+  "probeSelfTest": "unchanged binary; last PASS during 2026-10-18 publication preparation",
+  "knownFailure": "Butterfly initialization: null TEV material color destination",
   "freshFullRebuildClaimed": false,
+  "sourceAheadOfRuntime": "Current source includes a later BDL material-storage repair tested only in a component fixture; full-game rebuild/retest pending.",
   "archive": {
     "path": "builds/windows-x64-diagnostics.zip",
-    "bytes": 5630437,
-    "sha256": "b9a9944669d24c983f2ed7fe71c79a0ee48a8e1207581e333ea2787534f01dda"
+    "bytes": 5676845,
+    "sha256": "9f254a4ab00db7fc86292541a2b29483bd140303bb98af2f56d51b48283f8729",
+    "gitBlobSha": "9be1a7bb74b3ed5d35bd27146d0111906921ec30"
   },
   "files": [
     {
@@ -19,24 +21,19 @@
       "sha256": "9fd15e0e9f4dc6615e5ed847304c48add221f875c2eb4a2b43cec75529f02c69"
     },
     {
-      "path": "runtime/galaxy-native-2892e0e8c5f4460fb698025ad67061c0.exe",
+      "path": "runtime/galaxy-native-374d64b957cd484c982e59a4e809f2e1.exe",
       "bytes": 914944,
-      "sha256": "0488513655bbb8f95d57f843bff91471d81946679b1482a7812da9a0e04c6ca4"
+      "sha256": "72c98303e5d8e162943c0ab7464c137705f0f7213e7067f40ab45363da47d095"
     },
     {
       "path": "runtime/galaxy-native.dll",
-      "bytes": 10240512,
-      "sha256": "55203f84495a8ff04b99dae2feefa9a4cb6bb8bf23d608a5192839ea6a45e53b"
+      "bytes": 10255872,
+      "sha256": "5dbb341882ffef34b8ce33f87a7612abeaf01f2651b713e043ab5f260bb90c88"
     },
     {
       "path": "runtime/latest-native-runtime.json",
-      "bytes": 322,
-      "sha256": "5465e19bd94aab81425ac53767d84e912ec3b8a6fb5d5038295af391255cd46d"
-    },
-    {
-      "path": "README.txt",
-      "bytes": 456,
-      "sha256": "5d724656e86dbe1eee308b100aad71a41df0495f40887f6e5d6d5fd67edf6be1"
+      "bytes": 467,
+      "sha256": "6ba5530d5a3a7d74310ef1688097eb84de8bd84365fa2d2f3bd997d61661dca0"
     },
     {
       "path": "Run diagnostic self-tests.cmd",
@@ -52,6 +49,11 @@
       "path": "THIRD_PARTY_NOTICES.md",
       "bytes": 957,
       "sha256": "1555b6ccc06c7596ea464db40d042d6643413016353589b93ed5954eea21a7f1"
+    },
+    {
+      "path": "README.txt",
+      "bytes": 514,
+      "sha256": "4b76b5bdae740e39a0571bed677ebc224cb3b4a5d5fae8d97bca71ec96aaff8d"
     }
   ]
 }

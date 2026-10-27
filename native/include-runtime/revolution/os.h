@@ -139,6 +139,8 @@ inline s16 __OSf32tos16(__REGISTER f32 inF) {
         psq_st inF, 0(tmpPtr), 0x1, 5
         lha out, 0(tmpPtr)
     }
+#else
+    out = inF != inF ? 0 : inF <= -32768.0f ? -32768 : inF >= 32767.0f ? 32767 : static_cast<s16>(inF);
 #endif
     // clang-format on
 
@@ -159,6 +161,8 @@ inline u8 __OSf32tou8(__REGISTER f32 inF) {
         psq_st inF, 0(tmpPtr), 0x1, 2
         lbz out, 0(tmpPtr)
     }
+#else
+    out = inF != inF ? 0 : inF <= 0.0f ? 0 : inF >= 255.0f ? 255 : static_cast<u8>(inF);
 #endif
     // clang-format on
 

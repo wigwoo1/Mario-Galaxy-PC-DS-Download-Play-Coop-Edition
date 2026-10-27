@@ -1,3 +1,4 @@
+#include "../native_owned_tev_reg.hpp"
 #include "../native_owned_bas.hpp"
 #include <Native/NpcItemTable.hpp>
 #include "../native_texture_srt_animation.hpp"
@@ -209,7 +210,7 @@ ResFileInfo* ResourceHolder::createAndRegisterObject(const char* pName, void* pD
     }
 
     if (strstr(pName, ".brk") != nullptr) {
-        return mBrkResTable->add(pName, J3DAnmLoaderDataBase::load(pData), true);
+        return mBrkResTable->add(pName, loadNativeArchiveTevReg(*mArchive, pData, mHeap), true);
     }
 
     if (strstr(pName, ".blk") != nullptr) {

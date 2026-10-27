@@ -35,6 +35,7 @@ foreach($provider in $soundIdRefreshUnits){
 
 & (Join-Path $native 'generate-npc-item-table.ps1')
 & (Join-Path $native 'generate-bas-resource.ps1')
+& (Join-Path $native 'generate-tev-reg-resource.ps1')
 $tmp=Join-Path $env:TEMP 'galaxy-dspboot-link-verification'
 $runtimeManifestPath=Join-Path $tmp 'latest-native-runtime.json'
 if(Test-Path -LiteralPath $runtimeManifestPath){Remove-Item -LiteralPath $runtimeManifestPath}
@@ -611,6 +612,9 @@ $resourceHolderSource=Join-Path $native 'src\generated\ResourceHolder.cpp'
 $resourceHolderCommon=@("-I$functorInclude", "-I$heapFunctorInclude", "-I$heapPlacementInclude", '-include',$heapPlacementHeader) + $gameSystemCommon
 & $zig c++ @resourceHolderCommon $resourceHolderSource '-o' $resourceHolderObject
 if($LASTEXITCODE){throw 'Boot-traced ResourceHolder provider failed to compile.'}
+$tevSamplerObject=Join-Path $tmp 'J3DAnimation-native-color.obj'
+& $zig c++ @gameSystemCommon '-include' 'revolution/os.h' '-include' 'revolution/gx/GXVert.h' '-include' 'revolution/os/OSTime.h' '-include' 'JSystem/J3DGraphBase/J3DGD.hpp' '-include' 'JSystem/J3DGraphBase/J3DFifo.hpp' (Join-Path $native 'src\generated\J3DAnimation.cpp') '-o' $tevSamplerObject
+if($LASTEXITCODE){throw 'Original animation sampler with host color quantization failed to compile.'}
 $nativeBckSource=Join-Path $native 'src\native_bck_animation.cpp'
 $nativeBckText=Get-Content -LiteralPath $nativeBckSource -Raw
 $nativeBckText='#include <cstdio>' + "`n" + 'extern "C" void galaxyNativeBootTrace(const char*);' + "`n" + $nativeBckText
@@ -1970,6 +1974,9 @@ $response=$response.Replace($stationedLoaderMatch.Value,'"'+$stationedLoaderObje
 $resourceHolderMatch=[regex]::Match($response,'"[^"]*\\ResourceHolder\.obj"')
 if(!$resourceHolderMatch.Success){throw 'The response file does not contain the original ResourceHolder provider.'}
 $response=$response.Replace($resourceHolderMatch.Value,'"'+$resourceHolderObject+'"')
+$tevSamplerMatches=[regex]::Matches($response,'"[^"\r\n]*\\J3DAnimation\.obj"')
+if($tevSamplerMatches.Count-ne 1){throw 'Expected exactly one original J3DAnimation provider.'}
+$response=$response.Replace($tevSamplerMatches[0].Value,'"'+$tevSamplerObject+'"')
 $nativeBckMatch=[regex]::Match($response,'"[^"\r\n]*native_bck_animation\.cpp"')
 if(!$nativeBckMatch.Success){throw 'The response file does not contain the native animation decoder source.'}
 $response=$response.Replace($nativeBckMatch.Value,'"'+$nativeBckTraceObject+'"')
@@ -2434,6 +2441,6 @@ $launcherText=$launcherText.Replace('int main() {','int main() {' + [Environment
 & $zig c++ -std=c++17 -O2 -target x86_64-windows-gnu $launcherSource '-lshell32' '-luser32' '-ldbghelp' '-o' $launcher
 if($LASTEXITCODE){throw 'Native Windows launcher failed to compile.'}
 if(!(Test-Path -LiteralPath $launcher) -or (Get-Item -LiteralPath $launcher).Length -lt 1){throw 'The launcher compiler returned success without producing its executable.'}
-[pscustomobject]@{Schema=1;LauncherName=[IO.Path]::GetFileName($launcher);LauncherSHA256=(Get-FileHash -LiteralPath $launcher -Algorithm SHA256).Hash;LibrarySHA256=(Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash;BuiltAt=(Get-Date -Format o)} | ConvertTo-Json | Set-Content -LiteralPath $runtimeManifestPath
+[pscustomobject]@{Schema=1;LauncherName=[IO.Path]::GetFileName($launcher);LauncherSHA256=(Get-FileHash -LiteralPath $launcher -Algorithm SHA256).Hash;LibrarySHA256=(Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash;BuiltAt=(Get-Date -Format o);DiagnosticInputEnabled=[bool]$DiagnosticPressA;DiagnosticHardwareRequested=[bool]$DiagnosticHardware;DiagnosticHiddenWindow=[bool]$DiagnosticHiddenWindow;DiagnosticCaptureFrame=$DiagnosticCaptureFrame} | ConvertTo-Json | Set-Content -LiteralPath $runtimeManifestPath
 
 Write-Output ("PASS actor-runtime full link and launcher build with WBFS start export: DLL {0:N0} bytes, EXE {1:N0} bytes" -f (Get-Item -LiteralPath $dll).Length,(Get-Item -LiteralPath $launcher).Length)

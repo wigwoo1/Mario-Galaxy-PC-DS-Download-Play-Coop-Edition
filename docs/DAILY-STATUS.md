@@ -1,9 +1,10 @@
 # Daily publication check — 2026-10-27
 
-Check initiated at 12:55 UTC (08:55 America/Indianapolis).
+Additional check at 14:43 UTC, following the newer local development work. The delayed 2026-10-26 trigger was processed against today's actual files; no older date is being represented as a new test.
 
-- Compared 6,862 eligible current source, configuration, and support files with the 2026-10-18 published-source snapshot; every local file hash matches. The 2026-10-26 check confirmed that snapshot against the remote manifest. No code or source files changed.
-- The verified diagnostic launcher/DLL pair, standalone probe, runtime manifest, and diagnostic ZIP match their published hashes; no build changed. The runtime build is dated 2026-10-16. These artifacts are diagnostics, not playable or freshly rebuilt.
-- The probe self-test was not repeated because its binary did not change; it last passed during publication preparation on 2026-10-18.
-- Latest stage evidence remains from 2026-10-16: startup crashes while starting Kinopio's ColorChange BRK animation in `AnmPlayerBase::start`. No completed stage capture or playable gameplay is verified.
-- This publication check left the native-development goal status unchanged. The rough overall project estimate remains about 3%; gameplay remains unverified.
+- Reviewed 22 changed/new native source, test and progress files against the remote source manifest. Existing local Petari edits and provenance remain included; unchanged source is preserved. No credentials were found in the reviewed updates. Logs, build caches, game assets and saves are excluded.
+- Published native BRK resource conversion, host numeric conversion fallbacks, per-draw TEV color constants/shader reuse, diagnostic-mode guards and a later BDL mutable-color-storage repair with its focused test. The material fixture passes two real animation attachments, 18 register checks and nine Mario material GPU checks. The broader original-model regression and a full runtime rebuild with that last repair remain pending. No development was resumed by this publication job.
+- Packaged the existing 2026-10-27 diagnostic launcher/DLL pair, verified against its original runtime manifest and again inside the ZIP. This binary predates the final material-storage repair in current source. It is not a fresh rebuild by the publisher and is not playable.
+- The standalone probe is unchanged; its self-test was not repeated. Last publication self-test PASS: 2026-10-18.
+- Latest original runtime selected saved slot 1, accepted Start, loaded profile data and passed the former Kinopio BRK-start failure, then crashed during Butterfly initialization with C0000005. No completed stage frame or playable gameplay is verified. The actual save verifier passed and both before/after save hashes matched.
+- Publication leaves the native-development goal status unchanged. Overall project estimate remains approximately 3% (rough planning estimate); verified playable completion remains 0%.
