@@ -1,3 +1,4 @@
+#include <Native/ExtraModelMatrices.hpp>
 // Generated native aligned matrix allocation; rendering statements retained.
 #include <new>
 #include "Game/Player/MarioSearchLight.hpp"
@@ -131,7 +132,7 @@ namespace {
 
     inline void initExtraMtxBuffer(J3DModelX* pModel, s32 num) {
         for (u32 i = 0; i < pModel->_DD; i++) {
-            pModel->mExtraMtxBuffer[i] = new (std::align_val_t{32}) Mtx[num];
+            pModel->mExtraMtxBuffer[i] = Native::allocateExtraModelMatrices(num);
         }
     }
 }  // namespace

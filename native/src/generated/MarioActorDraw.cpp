@@ -1,3 +1,4 @@
+#include <Native/ExtraModelMatrices.hpp>
 #include <Native/GDCurrentScope.hpp>
 // Native aligned drawing arrays and original integer random ranges.
 #include <new>
@@ -60,7 +61,7 @@ void MarioActorDraw_FORCE_MATCH_SDATA2() {
 namespace {
     inline void initExtraMtxBuffer(J3DModelX* pModel) {
         for (u32 i = 0; i < pModel->_DD; i++) {
-            pModel->mExtraMtxBuffer[i] = new (std::align_val_t{32}) Mtx[0xC00 / sizeof(Mtx)];
+            pModel->mExtraMtxBuffer[i] = Native::allocateExtraModelMatrices(0xC00 / sizeof(Mtx));
         }
     }
 }  // namespace

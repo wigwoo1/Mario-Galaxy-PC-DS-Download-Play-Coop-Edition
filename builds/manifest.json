@@ -2,38 +2,23 @@
   "schema": 1,
   "publishedOn": "2026-10-27",
   "status": "development diagnostics; not playable",
-  "fullRuntimeBuiltAt": "2026-10-27T09:54:44.1923363-04:00",
+  "fullRuntimeBuiltAt": "2026-10-27T12:13:04.6700080-04:00",
   "fullRuntimeLastVerified": "2026-10-27",
   "probeSelfTest": "unchanged binary; last PASS during 2026-10-18 publication preparation",
-  "knownFailure": "Butterfly initialization: null TEV material color destination",
+  "knownFailure": "Unregistered private display-list buffer in GXCallDisplayList during normal Mario draw; no complete stage frame",
   "freshFullRebuildClaimed": false,
-  "sourceAheadOfRuntime": "Current source includes a later BDL material-storage repair tested only in a component fixture; full-game rebuild/retest pending.",
+  "sourceAheadOfRuntime": "Published source includes the compiled factory and extra-matrix repairs. Existing provider caches were reused; publisher did not compile or resume development.",
   "archive": {
     "path": "builds/windows-x64-diagnostics.zip",
-    "bytes": 5676845,
-    "sha256": "9f254a4ab00db7fc86292541a2b29483bd140303bb98af2f56d51b48283f8729",
-    "gitBlobSha": "9be1a7bb74b3ed5d35bd27146d0111906921ec30"
+    "bytes": 5681143,
+    "sha256": "ab7d25d98c2e79a73de660435e162e81620f8f78859a7ad1441c19e5c310b28c",
+    "gitBlobSha": "4c7f1eeb4ac12674df0316fcbe5d2c9fa6f039ef"
   },
   "files": [
     {
       "path": "galaxy-probe.exe",
       "bytes": 2591744,
       "sha256": "9fd15e0e9f4dc6615e5ed847304c48add221f875c2eb4a2b43cec75529f02c69"
-    },
-    {
-      "path": "runtime/galaxy-native-374d64b957cd484c982e59a4e809f2e1.exe",
-      "bytes": 914944,
-      "sha256": "72c98303e5d8e162943c0ab7464c137705f0f7213e7067f40ab45363da47d095"
-    },
-    {
-      "path": "runtime/galaxy-native.dll",
-      "bytes": 10255872,
-      "sha256": "5dbb341882ffef34b8ce33f87a7612abeaf01f2651b713e043ab5f260bb90c88"
-    },
-    {
-      "path": "runtime/latest-native-runtime.json",
-      "bytes": 467,
-      "sha256": "6ba5530d5a3a7d74310ef1688097eb84de8bd84365fa2d2f3bd997d61661dca0"
     },
     {
       "path": "Run diagnostic self-tests.cmd",
@@ -51,9 +36,24 @@
       "sha256": "1555b6ccc06c7596ea464db40d042d6643413016353589b93ed5954eea21a7f1"
     },
     {
+      "path": "runtime/galaxy-native-2b2deaf0b3a84d38aad00516fe180e80.exe",
+      "bytes": 914944,
+      "sha256": "27d3baa09b27f7ad67a8b4d6b3ff6ece31d6e77597b8fe2e1812898d85cc05f0"
+    },
+    {
+      "path": "runtime/galaxy-native.dll",
+      "bytes": 10269696,
+      "sha256": "3af1088216345cd06bfd75bbc236cb5385b683dd96b5335d5141d54d79d0dcda"
+    },
+    {
+      "path": "runtime/latest-native-runtime.json",
+      "bytes": 467,
+      "sha256": "68031844e98ab26ae19d9201ace4a532524c5148146d62db6601863ec32a95fb"
+    },
+    {
       "path": "README.txt",
-      "bytes": 514,
-      "sha256": "4b76b5bdae740e39a0571bed677ebc224cb3b4a5d5fae8d97bca71ec96aaff8d"
+      "bytes": 619,
+      "sha256": "8a907f35a650dacec94d1da68e8377c2b463bec3579a3b9dceb2b8de8726acd7"
     }
   ]
 }

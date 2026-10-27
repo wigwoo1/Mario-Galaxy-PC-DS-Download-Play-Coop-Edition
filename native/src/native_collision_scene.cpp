@@ -21,6 +21,7 @@
 #include <Game/Map/KCollision.hpp>
 #ifdef GALAXY_ORIGINAL_MOVEMENT_CONTROLLER
 #include <Game/Scene/SceneDataInitializer.hpp>
+#include "generated/OriginalSceneObjFactory.hpp"
 #include <Game/Effect/EffectSystem.hpp>
 #include <Game/GameAudio/AudCameraWatcher.hpp>
 #include <Game/GameAudio/AudEffectDirector.hpp>
@@ -31,6 +32,8 @@
 #include <Game/Util/FurCtrl.hpp>
 #include <Game/Scene/PlacementStateChecker.hpp>
 #include <Game/Screen/ScreenAlphaCapture.hpp>
+#include <Game/Screen/MoviePlayerSimple.hpp>
+#include <Game/Screen/MoviePlayingSequence.hpp>
 #include <Game/Screen/BloomEffect.hpp>
 #include <Game/Screen/BloomEffectSimple.hpp>
 #include <Game/Screen/DepthOfFieldBlur.hpp>
@@ -178,6 +181,8 @@ NameObj* SceneObjHolder::newEachObj(int id){
  if(id==SceneObj_FurDrawManager)return new FurDrawManager(64);
  if(id==SceneObj_PlacementStateChecker)return new PlacementStateChecker("オブジェクト配置状態の監視");
  if(id==SceneObj_ScreenAlphaCapture)return new ScreenAlphaCapture("アルファテクスチャ取り込み");
+ if(id==SceneObj_MoviePlayerSimple)return new MoviePlayerSimple();
+ if(id==SceneObj_MoviePlayingSequenceHolder)return new MoviePlayingSequenceHolder("ムービー管理保持");
  if(id==SceneObj_ImageEffectSystemHolder)return new ImageEffectSystemHolder();
  if(id==SceneObj_BloomEffect)return new BloomEffect("ブルーム");
  if(id==SceneObj_BloomEffectSimple)return new BloomEffectSimple();
@@ -225,6 +230,8 @@ NameObj* SceneObjHolder::newEachObj(int id){
  if(id==SceneObj_SensorHitChecker)return new SensorHitChecker("Sensor hit checker");
  if(id==SceneObj_GroupCheckManager)return new GroupCheckManager("Group checker");
  if(id==SceneObj_PlanetGravityManager)return new PlanetGravityManager("Planet gravity manager");
+ // Retain already integrated routes, then use the original authored factory.
+ if(auto* original=nativeOriginalSceneObject(id))return original;
 #endif
  throw std::logic_error("Unsupported native collision scene object");
 }

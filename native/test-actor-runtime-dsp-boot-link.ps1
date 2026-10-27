@@ -36,6 +36,9 @@ foreach($provider in $soundIdRefreshUnits){
 & (Join-Path $native 'generate-npc-item-table.ps1')
 & (Join-Path $native 'generate-bas-resource.ps1')
 & (Join-Path $native 'generate-tev-reg-resource.ps1')
+& (Join-Path $native 'generate-scene-object-factory.ps1')
+& (Join-Path $native 'generate-native-heat-haze.ps1')
+& (Join-Path $native 'generate-extra-model-matrices.ps1')
 $tmp=Join-Path $env:TEMP 'galaxy-dspboot-link-verification'
 $runtimeManifestPath=Join-Path $tmp 'latest-native-runtime.json'
 if(Test-Path -LiteralPath $runtimeManifestPath){Remove-Item -LiteralPath $runtimeManifestPath}
@@ -1995,6 +1998,16 @@ $response=$response.Replace($oldSceneFunction,'"'+$sceneFunctionObject+'"')
 $oldNativeCollision='"'+$native+'\src\native_collision_scene.cpp"'
 if(!$response.Contains($oldNativeCollision)){throw 'The response file does not contain the native collision-scene provider.'}
 $response=$response.Replace($oldNativeCollision,'"'+$collisionSource+'"')
+# Original factory fallback requires these existing effect providers too.
+foreach($provider in @(
+ @{Unit='HeatHazeEffect';Source=(Join-Path $native 'src\generated\HeatHazeEffect.cpp')},
+ @{Unit='QuakeEffectGenerator';Source=(Join-Path $root 'Petari\src\Game\Map\QuakeEffectGenerator.cpp')}
+)){
+ $matches=[regex]::Matches($response,'"[^"\r\n]*\\'+$provider.Unit+'\.(?:obj|cpp)"')
+ $selected='"'+$provider.Source+'"'
+ if($matches.Count-gt 1){throw ('Duplicate original scene factory provider: '+$provider.Unit)}
+ if($matches.Count-eq 1){$response=$response.Replace($matches[0].Value,$selected)}else{$response+=' '+$selected}
+}
 $oldMiiIcon='"'+(Join-Path $native 'build\actor-runtime-probe\MiiFaceIcon.obj')+'"'
 if(-not $response.Contains($oldMiiIcon)){throw 'Original Mii icon provider missing from response.'}
 $response=$response.Replace($oldMiiIcon,'"'+$miiFaceIconObject+'"')
@@ -2091,6 +2104,13 @@ foreach($originalCallbackObject in (Get-Content -LiteralPath $callbackManifest))
  if(!$response.Contains($quotedOriginal)){throw "Callback manifest provider is absent from link response: $unit"}
  $response=$response.Replace($quotedOriginal,'"'+$refreshedObject+'"')
 }
+# Refresh searchlight only after the cached callback closure has been validated.
+$searchlightMatrixObject=Join-Path $tmp 'MarioSearchLight-extra-matrices.obj'
+& $zig c++ @gameSceneCommon (Join-Path $native 'src\generated\MarioSearchLight.cpp') '-o' $searchlightMatrixObject
+if($LASTEXITCODE){throw 'Current searchlight extra-matrix provider failed to compile.'}
+$searchlightMatches=[regex]::Matches($response,'"[^"\r\n]*\\MarioSearchLight\.obj"')
+if($searchlightMatches.Count-ne 1){throw 'Expected one callback-validated searchlight provider.'}
+$response=$response.Replace($searchlightMatches[0].Value,'"'+$searchlightMatrixObject+'"')
 $oldFileSelectorFont='"'+(Join-Path $callbackRefreshRoot 'FileSelector.obj')+'"'
 if(-not $response.Contains($oldFileSelectorFont)){throw 'Current callback-ABI FileSelector provider missing from response.'}
 $response=$response.Replace($oldFileSelectorFont,'"'+$fileSelectorFontObject+'"')

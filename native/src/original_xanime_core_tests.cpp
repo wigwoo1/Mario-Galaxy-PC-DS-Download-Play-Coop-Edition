@@ -72,6 +72,7 @@ static LONG WINAPI modelCrashDiagnostic(EXCEPTION_POINTERS* exception) {
         std::fprintf(stderr,"CRASH symbol %s + %llu\n",symbol->Name,displacement);
     return EXCEPTION_CONTINUE_SEARCH;
 }
+#include "extra_model_matrices_tests.hpp"
 int main(int argc,char** argv){ AddVectoredExceptionHandler(1,modelCrashDiagnostic); SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX); _set_error_mode(_OUT_TO_STDERR); _set_abort_behavior(0,_WRITE_ABORT_MSG|_CALL_REPORTFAULT);
     std::setvbuf(stdout,nullptr,_IONBF,0);assert(argc==2);alignas(32) static unsigned char storage[8*1024*1024]{};
     JKRExpHeap heap(storage,sizeof(storage),nullptr,false);JKRHeap::sRootHeap=&heap;JKRHeap::sSystemHeap=&heap;heap.becomeCurrentHeap();
@@ -114,7 +115,7 @@ int main(int argc,char** argv){ AddVectoredExceptionHandler(1,modelCrashDiagnost
       heap.becomeCurrentHeap();JKRHeap::destroy(matrixHeap);
       for(auto address:addresses){bool removed=false;try{Native::gpuResources().resolve(address,1);}catch(const std::out_of_range&){removed=true;}assert(removed);}
       std::puts("PASS original matrix buffers: both sides/two views, native float byte order, cache-flush updates and heap teardown");}
-    WiiAssets disc(std::filesystem::u8path(argv[1]));Rarc archive(disc.readFile("/ObjectData/MarioAnime.arc"));
+    WiiAssets disc(std::filesystem::u8path(argv[1]));verifyRetailExtraModelMatrices(disc,heap);Rarc archive(disc.readFile("/ObjectData/MarioAnime.arc"));
     auto bytes=archive.readFile("/run.bck");auto decoded=decodeBck(BinaryView(bytes));
     std::unique_ptr<J3DAnmBase> loaded(Native::createBckAnimation(bytes.data(),bytes.size()));
     auto* animation=static_cast<J3DAnmTransformKey*>(loaded.get());

@@ -843,3 +843,5 @@ $stringExtra+='}'+[Environment]::NewLine
 & (Join-Path $n 'generate-npc-item-table.ps1')
 & (Join-Path $n 'generate-bas-resource.ps1')
 & (Join-Path $n 'generate-tev-reg-resource.ps1')
+
+& (Join-Path $n 'generate-scene-object-factory.ps1')

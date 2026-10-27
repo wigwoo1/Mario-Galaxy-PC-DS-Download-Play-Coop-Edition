@@ -146,8 +146,8 @@
     },
     {
       "path": "native/generate-actor-runtime.ps1",
-      "sha256": "4527bed99dbf5f4f930ec0dc2f49dacdfa544e15a168bcde94a38b33e766891b",
-      "gitBlobSha": "19afbe178b944dce2caad705d5cdd83da2b212f4"
+      "sha256": "31311d9a49b153385bdc77f16d36df7c4c45af1338b13bc4c498b22d45e10557",
+      "gitBlobSha": "8f4d1ee4b6f914fc21f0b51d252b813bc892b63c"
     },
     {
       "path": "native/generate-animation-helper-runtime.ps1",
@@ -636,8 +636,8 @@
     },
     {
       "path": "native/generate-mario-runtime.ps1",
-      "sha256": "c26ae13514c056112f5e43253a5222b01a484e252c4f098ab9a50e794d5ea6f1",
-      "gitBlobSha": "a1cd87808cdd31b99545b4e07cab77fd37b20b96"
+      "sha256": "0e7c9a04d80d0f9ee167668e5f6a0fbcfb1aca74664ccecd2e71718fb856ffd2",
+      "gitBlobSha": "85c536ab9cdfdb0e9e2217b0c151b59445e07a31"
     },
     {
       "path": "native/generate-material-queries.ps1",
@@ -2866,8 +2866,8 @@
     },
     {
       "path": "native/PROGRESS.md",
-      "sha256": "90d648c515ddb694300f8934e752b22f4294e8cd1014ffddf6ad0fc2b29c2af2",
-      "gitBlobSha": "301a0ba0eacc9962ac0b4c09d62693060c32dccb"
+      "sha256": "06923925a440d397094d1a511e9e6231b3bb81079c1b73b1ac84b5764f002fd9",
+      "gitBlobSha": "c5266c3e21e7acc5ccfe8b13b2ffbb963232de23"
     },
     {
       "path": "native/README.md",
@@ -5891,8 +5891,8 @@
     },
     {
       "path": "native/src/generated/MarioActorDraw.cpp",
-      "sha256": "885d478a3d7d35945f893142f6d9094da9e5533817f2a7bf3ca27949dea5e30b",
-      "gitBlobSha": "1af9086e5b0625d654ef73b4c308770e1707b88b"
+      "sha256": "2b7201df65dcce4e331fba809c57516704e862d801f619ec6f6981e27fa23fed",
+      "gitBlobSha": "ee35cfe455cbcff9120c497028c752c54db6c4ae"
     },
     {
       "path": "native/src/generated/MarioActorEye.cpp",
@@ -6021,8 +6021,8 @@
     },
     {
       "path": "native/src/generated/MarioSearchLight.cpp",
-      "sha256": "64f67ae2f9eb768eb04912dec9765a32dd8a3f65cf0843b31018c05fe6b1f37b",
-      "gitBlobSha": "2b94130652f856b095ef2552542cfbce0a9b2750"
+      "sha256": "ca558ebe83f2f361971b7cc30ede3d5781beae3ead952d548bbe3127c022c0cb",
+      "gitBlobSha": "a875b3024077074f8840bc865a1e42214348761f"
     },
     {
       "path": "native/src/generated/MarioShadow.cpp",
@@ -7936,8 +7936,8 @@
     },
     {
       "path": "native/src/native_collision_scene.cpp",
-      "sha256": "770a6ae0fb670e4e3e3c41f620d32383035969b1b3aa45656d27637705a3b915",
-      "gitBlobSha": "bc6af67f0e9db15f11a17037961e2598f68992d6"
+      "sha256": "eed018cf8444341a18070e1743e088956b5f5b892f7b95b252c1052850ee2250",
+      "gitBlobSha": "8dff570d2d569b3413cac194ed21a82d9408f7a7"
     },
     {
       "path": "native/src/native_collision_scene.hpp",
@@ -8681,8 +8681,8 @@
     },
     {
       "path": "native/src/original_xanime_core_tests.cpp",
-      "sha256": "adfc313b217a0a3ca5dc205e4d79e1d22c7f1d6a21066cda2bb97ba855a3df48",
-      "gitBlobSha": "1401b778a524e25475c5aaea5b56f5fd84d3eab7"
+      "sha256": "0fdae59b338b9195894c1511e3b2e8e734dcb4f7028efa9c6681a2f34b0074ae",
+      "gitBlobSha": "6b385662f3a66877b6ba7341020752553cba1864"
     },
     {
       "path": "native/src/os_alarm_port.cpp",
@@ -9686,8 +9686,8 @@
     },
     {
       "path": "native/test-actor-runtime-dsp-boot-link.ps1",
-      "sha256": "fedfe266feec0cd2fb3f7cfc9e1213af4f2209a80dbfed628ef53ed714b4104a",
-      "gitBlobSha": "2dbba576dce5cf1bd4fb45cb1ddfae576284e8d0"
+      "sha256": "63f4b803057f911240b8151a5ead6ae4a746260bddb0491e17cc2c77cac0d6e4",
+      "gitBlobSha": "6e740c75a3a9999be6837e2ca48658227542e7f1"
     },
     {
       "path": "native/test-alpha8-copy.ps1",
@@ -34331,13 +34331,13 @@
     },
     {
       "path": "docs/STATUS.md",
-      "sha256": "3e99c3dbfb4c369febbb3d1eb8ce609bd4c89004c70ba1a101d3e5c583942ed9",
-      "gitBlobSha": "cde75faf38fb98a1b2b1a398cf97943e9dbea7eb"
+      "sha256": "8c3f89200aed5c3d07d10f4b7754f9927d975441e9e2601a103e5b6437c4dd1a",
+      "gitBlobSha": "099cc4379c30ca9c0d61b3101c484ff9a81b3002"
     },
     {
       "path": "docs/DAILY-STATUS.md",
-      "sha256": "ac6c7ba7cb8110c42ef283e88d112b6e43e884423a1c91e82e878d68ffa9f7ba",
-      "gitBlobSha": "34d8b80ec91d1630c2c63d1d253b9c67f02a523d"
+      "sha256": "3d5985b07c850aa3161de629fe68a7e2e8fa0f3fab905e8bff23532a848b5475",
+      "gitBlobSha": "712c8348318e9dd875c3a6ff9e9d43e3fbe0b631"
     },
     {
       "path": "docs/verification/2026-10-16-bloom-factory.md",
@@ -34366,8 +34366,8 @@
     },
     {
       "path": "builds/manifest.json",
-      "sha256": "fc8037e8d4500d6193f107a3c222fce7e17847661fb08e38b8d28402ba902b6e",
-      "gitBlobSha": "187e77879652592f5e11fde121d0b068f58532e7"
+      "sha256": "8fdca05ce17c2996177eb8c998cf296b0095ffb0482a02be7e3c3914415ebb2d",
+      "gitBlobSha": "67c4195cc465c02b0b87f050d953fc863f1a7d07"
     },
     {
       "path": "docs/verification/probe-self-test-2026-10-18.txt",
@@ -34426,9 +34426,39 @@
     },
     {
       "path": "builds/windows-x64-diagnostics.zip",
-      "sha256": "9f254a4ab00db7fc86292541a2b29483bd140303bb98af2f56d51b48283f8729",
-      "gitBlobSha": "9be1a7bb74b3ed5d35bd27146d0111906921ec30"
+      "sha256": "ab7d25d98c2e79a73de660435e162e81620f8f78859a7ad1441c19e5c310b28c",
+      "gitBlobSha": "4c7f1eeb4ac12674df0316fcbe5d2c9fa6f039ef"
+    },
+    {
+      "path": "native/generate-extra-model-matrices.ps1",
+      "sha256": "a4ac1635a2cb904adf112acc71f63ffc27fe35c061a260ed3a174dadd1efaaeb",
+      "gitBlobSha": "0dde7bf1ff8a88eedf3a4bc9df9acf80ead89423"
+    },
+    {
+      "path": "native/generate-scene-object-factory.ps1",
+      "sha256": "7ba86842fdc525470fd029f53b523821305966d5cf95c75ae71e3f74efebddef",
+      "gitBlobSha": "52a0e129421376b7a3c6ef5baa29c78a3aa6c797"
+    },
+    {
+      "path": "native/include/Native/ExtraModelMatrices.hpp",
+      "sha256": "d9569c5df6c3ffbc86c44452fb96b7a3313fc31304a944cf5b17180b8bf34f8f",
+      "gitBlobSha": "1665c263429ea2d0469ea4b2c3c349158ee81eea"
+    },
+    {
+      "path": "native/src/extra_model_matrices_tests.hpp",
+      "sha256": "017c3ca4a62d95e8cc60b0d6190a1275e5b8fd4350f3bdeb457ba1631e665779",
+      "gitBlobSha": "6d71ef28761e9e0dd62412820f83b04d42cf9f14"
+    },
+    {
+      "path": "native/src/generated/OriginalSceneObjFactory.hpp",
+      "sha256": "94855feeb8c6393bccd858b46659341b1a84f9b080f53f0898df525f8a707630",
+      "gitBlobSha": "8c5eea143b886c56211273ab472cd3805328cb3f"
+    },
+    {
+      "path": "docs/verification/2026-10-27-scene-factory-extra-matrices.md",
+      "sha256": "b274255f39508c7602d90ad5b1398cfd3ac87734f04cda3f31b6d006b0b62795",
+      "gitBlobSha": "457727c8f355af114537be61d00550744585109a"
     }
   ],
-  "lastPublicationCheck": "2026-10-27T14:43:29Z"
+  "lastPublicationCheck": "2026-10-27T16:36:32.292Z"
 }

@@ -220,3 +220,5 @@ if(([regex]::Matches($seqSource,[regex]::Escape($seqInit))).Count -ne 1){throw '
 Set-Content -Encoding UTF8 -LiteralPath (Join-Path $generatedRoot 'JASSeqReader.cpp') -Value ("// Native numeric zero initialization; original sequence call/loop/MIDI methods retained.`r`n"+$seqSource.Replace($seqInit,'mLoopCounts[i] = 0;'))
 
 
+
+& (Join-Path $PSScriptRoot 'generate-extra-model-matrices.ps1')
