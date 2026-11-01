@@ -65,6 +65,5 @@ Set-Content "$n\src\generated\AudioDSPChannelKernel.cpp" ('#include <Native/Heap
 
 
 
-$source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASAudioThread.cpp" -Raw
-Set-Content "$n\src\generated\AudioThreadKernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+$source)
+& (Join-Path $n 'generate-native-audio-thread.ps1')
 

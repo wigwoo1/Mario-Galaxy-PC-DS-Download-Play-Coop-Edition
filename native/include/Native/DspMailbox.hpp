@@ -39,11 +39,26 @@ DspMailbox& nativeDspMailbox() noexcept;
 } // namespace Native
 
 extern "C" {
+// Optional audio renderer owned by the native audio thread. Callbacks/context
+// must remain alive until unregistered; registration/teardown is serialized
+// with command submission by the owner. Service runs outside the ROM mutex.
+using NativeDspAudioProcess=s32(*)(void*,const u32*,u32,u16*);
+using NativeDspAudioService=void(*)(void*);
+void nativeSetDspHostAudioBackend(NativeDspAudioProcess process,NativeDspAudioService service,void* context);
+void nativeDspServiceHostAudio();
+using NativeDspRequestCallback=void(*)(void*);
+using NativeDspAudioStart=bool(*)(NativeDspRequestCallback);
+using NativeDspAudioStop=void(*)();
+// Audio thread installs these factories before boot. SDK-only tests may omit
+// them; the full audio thread requires a real renderer rather than silence.
+void nativeSetDspAudioBootHooks(NativeDspAudioStart start,NativeDspAudioStop stop);
+bool nativeDspNotifyAudioReady(NativeDspRequestCallback request);
+NativeDspRequestCallback nativeDspBootRequestCallback();
 void nativeSetDspMailboxInterrupt(Native::DspMailbox::InterruptHandler handler,
                                   void* context);
-// Returns 0 until the verified SMG ROM boot HLE is running, 1 when a command
-// batch was accepted by the silent host control backend, or a negative status
-// for a malformed/unsupported packet. Accepted packets do not produce PCM.
+// Returns0 before ROM boot,1 for explicit legacy silence,2 when an installed
+// renderer owns deferred completion, or a negative error. Status2 alone does
+// not mean a frame completed: only its actual completion mail proves that.
 s32 nativeDspProcessHostAudioCommand(const u32* words, u32 count,
                                     u16* completionToken);
 // Start the tested SMG ROM-upload handshake backend for a uCode image.

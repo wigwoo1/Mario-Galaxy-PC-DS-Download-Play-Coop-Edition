@@ -7,6 +7,11 @@
 namespace {std::mutex transportMutex;std::shared_ptr<NativeAramMemory> transport;uint64_t allocationTop=0;bool initialized=false;}
 bool nativeBindAramTransport(std::shared_ptr<NativeAramMemory> memory){std::lock_guard<std::mutex> lock(transportMutex);if(!memory || transport)return false;transport=std::move(memory);initialized=false;allocationTop=0;return true;}
 void nativeReleaseAramTransport(){std::lock_guard<std::mutex> lock(transportMutex);transport.reset();initialized=false;allocationTop=0;}
+std::shared_ptr<NativeAramMemory> nativeAcquireAramTransport(){std::lock_guard<std::mutex> lock(transportMutex);return transport;}
+bool nativeReadBoundAramSamples(const NativeAramMemory* expected,uint32_t offset,void* data,size_t size){
+ std::lock_guard<std::mutex> lock(transportMutex);
+ return expected && transport.get()==expected && transport->readSampleBytes(offset,data,size);
+}
 void JKRAramPiece::sendCommand(JKRAMCommand* command){startDMA(command);}
 void JKRAramPiece::startDMA(JKRAMCommand* command){
  if(!command)throw std::invalid_argument("Null ARAM command");

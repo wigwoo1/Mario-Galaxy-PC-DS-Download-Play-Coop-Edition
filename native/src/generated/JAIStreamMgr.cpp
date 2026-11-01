@@ -43,7 +43,7 @@ bool JAIStreamMgr::startSound(JAISoundID id, JAISoundHandle* handle, const JGeom
         stream->attachHandle(handle);
     }
 
-    return false;
+    return true;
 }
 
 void JAIStreamMgr::freeDeadStream_() {

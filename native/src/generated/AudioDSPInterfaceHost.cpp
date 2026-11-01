@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <Native/DspAddressSpace.hpp>
 #include "JSystem/JAudio2/JASDSPInterface.hpp"
 #include "JSystem/JAudio2/JASCalc.hpp"
@@ -145,6 +146,11 @@ int JASDsp::setFXLine(u8 param_0, s16* buffer, JASDsp::FxlineConfig_* param_2) {
         puVar3->_0 = param_2->_0;
     } else {
         puVar3->_0 = 0;
+    }
+    // Register the complete native effects ring at its original configuration
+    // boundary; a DSP consumer must resolve it instead of truncating _4.
+    if (puVar3->_0 && !Native::nativeDspAddressSpace().map(puVar3->_4, std::size_t(puVar3->_2) * 0xA0)) {
+        return 0;
     }
     DCFlushRange(puVar3, sizeof(FxBuf));
     return 1;
@@ -334,6 +340,11 @@ void JASDsp::TChannel::setDistFilter(s16 param_0) {
 }
 
 void JASDsp::TChannel::setBusConnect(u8 param_0, u8 param_1) {
+    if (param_0 >= 6) throw std::out_of_range("DSP mixer slot outside channel");
+    // JASChannel's0xffff automatic-mixer sentinel has no explicit bus route.
+    // Dolby/automatic mixing ignores this table. Never index it with0xff.
+    if (param_1 == 0xff && _58) { _10[param_0][0] = 0; return; }
+    if (param_1 >= 12) throw std::out_of_range("Unknown DSP mixer bus");
     u16* tmp = _10[param_0];
     static u16 const connect_table[12] = {
         0x0000, 0x0D00, 0x0D60, 0x0DC0, 0x0E20, 0x0E80, 0x0EE0, 0x0CA0, 0x0F40, 0x0FA0, 0x0B00, 0x09A0,

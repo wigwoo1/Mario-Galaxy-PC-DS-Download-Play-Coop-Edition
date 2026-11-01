@@ -27,10 +27,32 @@ int main() {
            Native::DspAudioCommandHle::Result::AcceptedSilent);
     assert(token == 0x8207u);
 
-    const std::uint32_t halt[] = {0x00551234u};
-    assert(hle.processBatch(halt, 0, &token) ==
-           Native::DspAudioCommandHle::Result::AcceptedSilent);
-    assert(token == 0x0055u);
+    using Hle=Native::DspAudioCommandHle;
+    Hle::Command decoded;
+    assert(Hle::decodeBatch(varam,2,decoded)==Hle::Validation::Valid);
+    assert(decoded.kind==Hle::Kind::Varam&&decoded.arguments[0]==varam[1]);
+    assert(Hle::decodeBatch(table,5,decoded)==Hle::Validation::Valid);
+    assert(decoded.kind==Hle::Kind::Tables&&decoded.arguments[3]==0x4000);
+    assert(Hle::decodeBatch(frame,5,decoded)==Hle::Validation::Valid);
+    assert(decoded.kind==Hle::Kind::Frame&&decoded.subframes==7&&decoded.mixerLevel==0x2000);
+    assert(decoded.arguments[0]==frame[1]&&decoded.arguments[1]==frame[2]&&!decoded.arguments[2]&&!decoded.arguments[3]);
+    for(std::uint32_t group=0;group<4;++group){
+        for(std::uint32_t mask=0;mask<=0xFFFF;++mask){
+            const std::uint32_t word=group<<16|mask;
+            assert(Hle::decodeBatch(&word,0,decoded)==Hle::Validation::Valid);
+            assert(decoded.kind==Hle::Kind::ChannelGroup&&decoded.group==group&&decoded.activeChannels==mask);
+        }
+        const std::uint32_t halt[]={group<<16|0x1234u};
+        assert(hle.processBatch(halt,0,&token)==Hle::Result::AcceptedSilent&&token==group);
+        assert(hle.processBatch(halt,1,&token)==Hle::Result::AcceptedSilent);
+        const auto previous=decoded;
+        assert(Hle::decodeBatch(halt,2,decoded)==Hle::Validation::Malformed);
+        assert(decoded.kind==previous.kind&&decoded.activeChannels==previous.activeChannels&&decoded.group==previous.group);
+    }
+    for(std::uint32_t invalid:{0x00040000u,0x00551234u,0xFFFF1234u}){
+        token=0xABCD;
+        assert(hle.processBatch(&invalid,0,&token)==Hle::Result::Unsupported&&token==0xABCD);
+    }
 
     assert(hle.processBatch(varam, 1, &token) ==
            Native::DspAudioCommandHle::Result::Malformed);
@@ -45,5 +67,5 @@ int main() {
     assert(hle.processBatch(varam, 2, nullptr) ==
            Native::DspAudioCommandHle::Result::Malformed);
 
-    std::puts("PASS bounded host DSP command validation and explicit silent completion tokens");
+    std::puts("PASS bounded DSP packet decoding, all 262144 group masks, transactional rejection and explicit silent fallback tokens; no PCM execution");
 }

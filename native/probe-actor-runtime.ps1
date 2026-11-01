@@ -193,6 +193,7 @@ if($unit -eq 'StarPointerDirector'){$source="$n\src\generated\StarPointerDirecto
 if($unit -eq 'DemoDirector'){$source="$n\src\generated\DemoDirectorRuntime.cpp"}
 if($unit -eq 'CameraManGame'){$source="$n\src\generated\CameraManGameRuntime.cpp"}
 if($unit -eq 'CamTranslatorAnim'){$source="$n\src\generated\CamTranslatorAnimRuntime.cpp"}
+if($unit -eq 'CameraAnim'){$source="$n\src\generated\CameraAnimRuntime.cpp"}
 if($unit -eq 'CameraUtil'){$source="$n\src\generated\CameraUtilRuntime.cpp"}
 if($unit -eq 'DemoCameraFunction'){$source="$n\src\generated\DemoCameraFunction.cpp"}
 if($unit -eq 'DemoExecutor'){$source="$n\src\generated\DemoExecutorRuntime.cpp"}

@@ -3,6 +3,7 @@
 #include <Native/DspUcodeImage.hpp>
 
 #include <revolution/dsp.h>
+#include <stdexcept>
 
 void DspInitWork();
 void Dsp_Running_Start();
@@ -23,10 +24,9 @@ bool send(u32 word) {
 }
 
 // Host equivalent of Petari's DSPAddPriorTask boot path. It only completes
-// the validated ROM/uCode startup exchange; the Zelda audio command processor
-// and per-task completion callbacks are not implemented here.
+// the validated ROM/uCode startup exchange, then lets the audio thread's
+// registered factory bind the actual request callback and bounded ARAM reader.
 void DspBoot(void (*requestCallback)(void*)) {
-    (void)requestCallback;
     DspInitWork();
     DSPInit();
 
@@ -50,5 +50,6 @@ void DspBoot(void (*requestCallback)(void*)) {
     }
 
     if (!receive(kDspInit) || !receive(kZeldaHandshake)) return;
+    if(!nativeDspNotifyAudioReady(requestCallback))throw std::runtime_error("Native DSP audio renderer failed to bind its callback/ARAM transport");
     Dsp_Running_Start();
 }

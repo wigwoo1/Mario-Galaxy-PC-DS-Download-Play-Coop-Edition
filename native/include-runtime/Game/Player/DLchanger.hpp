@@ -1,5 +1,5 @@
 #pragma once
-#include <JSystem/JKernel/JKRHeap.hpp>
+#include <Native/PlayerDisplayList.hpp>
 #include <revolution/types.h>
 #include <new>
 #include <stdexcept>
@@ -10,7 +10,7 @@ public:
     DLchanger(u8 count,u32 size):mBuffers(nullptr),mBufferCount(count),mCurrentBuffer(0) {
         if(count==0)throw std::invalid_argument("DLchanger needs at least one buffer");
         mBuffers=new DLholder[count]{};
-        try { for(u32 i=0;i<count;++i)mBuffers[i].mDL=new (std::align_val_t{32}) u8[size]; }
+        try { for(u32 i=0;i<count;++i)mBuffers[i].mDL=Native::allocatePlayerDisplayList(size); }
         catch(...) { release();throw; }
     }
     ~DLchanger(){release();}
@@ -22,5 +22,5 @@ public:
     u8 mBufferCount;
     u8 mCurrentBuffer;
 private:
-    void release() noexcept {if(!mBuffers)return;for(u32 i=0;i<mBufferCount;++i)if(mBuffers[i].mDL)::operator delete[](mBuffers[i].mDL,std::align_val_t{32});delete[] mBuffers;mBuffers=nullptr;}
+    void release() noexcept {if(!mBuffers)return;for(u32 i=0;i<mBufferCount;++i)if(mBuffers[i].mDL)Native::releasePlayerDisplayList(mBuffers[i].mDL);delete[] mBuffers;mBuffers=nullptr;}
 };

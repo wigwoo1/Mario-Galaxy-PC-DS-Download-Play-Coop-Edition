@@ -13,6 +13,17 @@ std::unique_ptr<DspRomBootHle> gRomBoot;
 DspAddressSpace::Address gRomImageMapping = 0;
 bool gRomImageMappingOwned = false;
 DspAudioCommandHle gAudioCommandHle;
+NativeDspAudioProcess gRenderedProcess=nullptr;
+NativeDspAudioService gRenderedService=nullptr;
+void* gRenderedContext=nullptr;
+NativeDspAudioStart gAudioStart=nullptr;
+NativeDspAudioStop gAudioStop=nullptr;
+NativeDspRequestCallback gBootRequest=nullptr;
+void stopAudioRuntime(){
+    NativeDspAudioStop stop;
+    {std::lock_guard<std::mutex> lock(gRomRuntimeMutex);stop=gAudioStop;}
+    if(stop)stop(); // Runtime unregisters outside the ROM lock.
+}
 
 void serviceRomBootLocked(DspMailbox& mailbox) noexcept {
     if (!gRomBoot) return;
@@ -33,6 +44,8 @@ void serviceRomBootLocked(DspMailbox& mailbox) noexcept {
 }
 
 void resetRomBootLocked(DspMailbox& mailbox) noexcept {
+    gRenderedProcess=nullptr;gRenderedService=nullptr;gRenderedContext=nullptr;
+    gBootRequest=nullptr;
     gRomBoot.reset();
     if (gRomImageMapping && gRomImageMappingOwned) {
         nativeDspAddressSpace().unmap(gRomImageMapping);
@@ -146,8 +159,33 @@ extern "C" s32 nativeDspProcessHostAudioCommand(const u32* words, u32 count,
         Native::gRomBoot->state() != Native::DspRomBootHle::State::Running)
         return static_cast<s32>(Native::DspAudioCommandHle::Result::NoBackend);
 
+    if(Native::gRenderedProcess)return Native::gRenderedProcess(Native::gRenderedContext,words,count,completionToken);
     return static_cast<s32>(
         Native::gAudioCommandHle.processBatch(words, count, completionToken));
+}
+
+extern "C" void nativeSetDspHostAudioBackend(NativeDspAudioProcess process,NativeDspAudioService service,void* context){
+    std::lock_guard<std::mutex> lock(Native::gRomRuntimeMutex);
+    Native::gRenderedProcess=process;Native::gRenderedService=service;Native::gRenderedContext=context;
+}
+extern "C" void nativeDspServiceHostAudio(){
+    NativeDspAudioService service;void* context;
+    {std::lock_guard<std::mutex> lock(Native::gRomRuntimeMutex);service=Native::gRenderedService;context=Native::gRenderedContext;}
+    if(service)service(context);
+}
+extern "C" void nativeSetDspAudioBootHooks(NativeDspAudioStart start,NativeDspAudioStop stop){
+    std::lock_guard<std::mutex> lock(Native::gRomRuntimeMutex);
+    Native::gAudioStart=start;Native::gAudioStop=stop;
+}
+extern "C" bool nativeDspNotifyAudioReady(NativeDspRequestCallback request){
+    NativeDspAudioStart start;
+    {std::lock_guard<std::mutex> lock(Native::gRomRuntimeMutex);
+     if(!Native::gRomBoot||Native::gRomBoot->state()!=Native::DspRomBootHle::State::Running)return false;
+     Native::gBootRequest=request;start=Native::gAudioStart;}
+    return !start||start(request);
+}
+extern "C" NativeDspRequestCallback nativeDspBootRequestCallback(){
+    std::lock_guard<std::mutex> lock(Native::gRomRuntimeMutex);return Native::gBootRequest;
 }
 
 extern "C" u32 DSPCheckMailToDSP(void) {
@@ -189,12 +227,14 @@ extern "C" void DSPAssertInt(void) {
 }
 
 extern "C" void DSPInit(void) {
+    Native::stopAudioRuntime();
     std::lock_guard<std::mutex> lock(Native::gRomRuntimeMutex);
     Native::resetRomBootLocked(Native::nativeDspMailbox());
 }
 
 extern "C" bool nativeDspBeginRomTask(const void* image,
                                          std::size_t imageBytes) {
+    Native::stopAudioRuntime();
     auto& mailbox = Native::nativeDspMailbox();
     std::lock_guard<std::mutex> lock(Native::gRomRuntimeMutex);
     Native::resetRomBootLocked(mailbox);

@@ -1,0 +1,48 @@
+Dolphin Zelda audio renderer source
+Copyright 2008 Dolphin Emulator Project
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Zelda.cpp and Zelda.h are unmodified copies of the project's local Dolphin
+reference under external/dolphin-dsp-reference. Exact imported source hashes
+are recorded in SOURCE-HASHES.json; no upstream Git revision is claimed here.
+Upstream project: https://github.com/dolphin-emu/dolphin
+Upstream paths: Source/Core/Core/HW/DSPHLE/UCodes/Zelda.cpp and Zelda.h
+
+GPL-2.0.txt contains GNU GPL version2, obtained from
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt . The original per-file
+GPL-2.0-or-later designation and upstream COPYING notice are retained.
+The generated Native/ZeldaAudioRenderer.hpp and generated/ZeldaAudioRenderer.cpp
+and Native/DspAudioFrameExecutor.hpp/src/dsp_audio_frame_executor.cpp (sequencing
+adapted from ZeldaUCode::RenderAudio) are derivatives under GPL-2.0-or-later.
+Distribute their corresponding source,
+these upstream sources, adaptation generator and required license notices with
+redistributed builds that use this renderer.
+
+Native adaptations are explicit in generate-zelda-audio-renderer.ps1:
+- Extract only the renderer/voice state and its flags; omit Dolphin's system,
+  mail protocol and emulator save-state dependencies.
+- Replace emulator memory access with registered, bounded DSP wire-memory access.
+- Keep the sample synthesis, AFC decoding, resampling, mixing and filters.
+- Replace two BitField reads with equivalent explicit masks.
+- Enable upstream strict diagnostics and throw on unsupported operations;
+  reject invalid voice indices, zero-size active reverb and invalid output spans.
+
+This is an isolated native renderer component, not an integrated game audio
+backend. Existing upstream limitations remain, including variable FIR filtering
+and incomplete back-channel/Dolby postmix details. The port must not call unknown
+features successful or claim hardware-perfect output without comparison.
+Do not pass little-endian native JAS records directly as DSP wire memory; use
+DspVoiceWire's explicit translation. Reverb native-pointer layout integration,
+native scheduling/mailbox delivery, completion interrupts and Windows output
+integration remain separate required work. DspNativeAudioBridge now provides
+explicit native scalar/pointer/ring/output conversion in a standalone tested
+component. It is not connected to the production game backend.
+
+SMG reverb/window corrections are maintained in dsp_smg_reverb.inc and the
+adaptation generator, based on the exact D643001F jdsp instruction image:
+four 8-history/80-live-sample DRAM windows, distinct base/base+8 views, frame
+history/clearing, downloaded-block0x7FFF gain and ring write-back. The original
+SEND_TABLE0xDC8/0xE28/0xE88/0xEE8 destinations now resolve to their actual live
+offsets. A uCode-anchored absolute-DRAM fixture covers all four, signed feedback
+and pre/post/both/no reverb FIR. This is not a complete LLE/hardware-fidelity
+verification; voice FIR, Dolby/back postmix and production scheduling remain open.

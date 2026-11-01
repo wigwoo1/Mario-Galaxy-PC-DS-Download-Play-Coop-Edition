@@ -6,6 +6,7 @@
 void DspInitWork();static u32 sent[8];static unsigned count,interrupts,callbacks;static bool busy,enabled=true;
 void Dsp_Running_Start();u16 DSP_CreateMap2(u32){return 0;}
 extern "C" s32 nativeDspProcessHostAudioCommand(const u32*,u32,u16*){return 0;}
+extern "C" void nativeDspServiceHostAudio(){}
 extern "C" u32 DSPCheckMailToDSP(){return busy;}
 extern "C" void DSPSendMailToDSP(u32 word){assert(!enabled);sent[count++]=word;}
 extern "C" void DSPAssertInt(){++interrupts;}

@@ -499,6 +499,7 @@ $providers=$providers.Replace(' "$n\src\generated\AudioDacMixKernel.cpp"','').Re
 $providers+=' "$n\src\dsp_address_space.cpp" '
 $providers+=' "$n\src\dsp_mailbox_port.cpp" '
 $providers+=' "$n\src\dsp_audio_command_hle.cpp" '
+$providers+=' "$n\src\dsp_memory_view.cpp" "$n\src\dsp_audio_runtime.cpp" "$n\src\dsp_audio_dispatch.cpp" "$n\src\dsp_native_audio_bridge.cpp" "$n\src\dsp_audio_frame_executor.cpp" "$n\src\generated\ZeldaAudioRenderer.cpp" '
 $providers+=' "$n\src\dsp_rom_boot_hle.cpp" '
 $providers+=' "$n\src\dsp_boot_hle.cpp" '
 $providers+=' "$n\src\generated\DspUcodeImage.cpp" '

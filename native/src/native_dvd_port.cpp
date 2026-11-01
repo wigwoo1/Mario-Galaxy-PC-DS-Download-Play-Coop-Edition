@@ -32,8 +32,10 @@ extern "C" int DVDConvertPathToEntrynum(const char* path){if(!path)return -1;std
 
 extern "C" BOOL DVDFastOpen(s32 entry,DVDFileInfo* info){
  std::lock_guard<std::mutex> lock(dvdMutex);
- if(releasing || !catalog || !info || entry<0 || size_t(entry)>=catalog->entries.size() || catalog->entries[entry][0] || handles.count(info))return false;
- handles.emplace(info,unsigned(entry));
+ // Original dvdfs.c reinitializes an idle DVDFileInfo without requiring close.
+ // Keep the native asynchronous owner protected until its job/callback ends.
+ if(releasing || !catalog || !info || entry<0 || size_t(entry)>=catalog->entries.size() || catalog->entries[entry][0] || jobs.count(info))return false;
+ handles.insert_or_assign(info,unsigned(entry));
  *info={};info->startAddr=catalog->entries[entry][1];info->length=catalog->entries[entry][2];return true;
 }
 extern "C" BOOL DVDOpen(const char* path,DVDFileInfo* info){return DVDFastOpen(DVDConvertPathToEntrynum(path),info);}

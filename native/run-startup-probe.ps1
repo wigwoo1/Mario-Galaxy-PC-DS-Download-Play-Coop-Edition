@@ -75,6 +75,16 @@ public static class GalaxyProbeDump {
  Stop-Process -Id $process.Id
  $result+= $(if($caught){'Caught runtime error; stopped its launcher.'}elseif($completedCapture){'Stopped after requested framebuffer observation completed; inspect images before claiming playability.'}else{"Stopped at the $Seconds-second diagnostic limit; inspect traces before claiming stability."})
 }else{$result+="Exit=$($process.ExitCode)"}
+$identityFailure=$null
+try{
+ $after=Get-VerifiedNativeRuntime -RuntimeDirectory $runtime
+ if($after.Launcher.FullName-ne $launcher.FullName -or $after.Record.LauncherSHA256-ne $verified.Record.LauncherSHA256 -or $after.Record.LibrarySHA256-ne $verified.Record.LibrarySHA256){throw 'Runtime identity changed during observation.'}
+ $result+='Post-observation runtime identity verified.'
+}catch{
+ $identityFailure=$_.Exception.Message
+ $result+=('Post-observation runtime identity FAILED: '+$identityFailure)
+}
+if($FramebufferCompletionMarker){$result+=('Requested framebuffer observation complete: '+$completedCapture)}
 $result | Set-Content -LiteralPath (Join-Path $evidence "$Prefix.result.txt")
 $result | Write-Output
 foreach($trace in $traces){$path=Join-Path $env:TEMP $trace[0];if(Test-Path -LiteralPath $path){Copy-Item -LiteralPath $path -Destination (Join-Path $evidence "$Prefix.$($trace[1])")}}
@@ -82,3 +92,5 @@ $capture=Join-Path $runtime "retail-frame-$CaptureFrame-xfb.bmp"
 if((Test-Path -LiteralPath $capture) -and (Get-Item -LiteralPath $capture).LastWriteTime -ge $started){Copy-Item -LiteralPath $capture -Destination (Join-Path $evidence "$Prefix-frame$CaptureFrame.bmp")}
 Get-Content (Join-Path $evidence "$Prefix.boot.log") | Select-String 'XFB capture|Logo state' | Select-Object -Last 8 | ForEach-Object Line
 if($caught){Get-Content -LiteralPath $errorPath}
+if($identityFailure){throw ('Diagnostic runtime became unavailable or changed: '+$identityFailure)}
+if($FramebufferCompletionMarker -and !$completedCapture){throw 'Requested framebuffer observation did not complete; a zero process exit is not a passing stage test.'}

@@ -2,73 +2,34 @@
 #include <Native/DspMailbox.hpp>
 #include <revolution/dsp.h>
 #include <revolution/os.h>
-int Dsp_Running_Check(); int DspStartWork(u32,void(*)(u16));
+int Dsp_Running_Check();
+int DspStartWork(u32,void(*)(u16));
 void DspFinishWork(u16);
-int DSPSendCommands2(u32* pMessages, u32 param_2, void (*pCallback)(u16)) {
-    s32 i;
-    BOOL interruptFlag;
-    s32 startWorkStatus=0;
-
-    BOOL firstWarning = 1;
-    while (Dsp_Running_Check() == 0) {
-        if (firstWarning) {
-            OSReport("Warning:まだブートしてません\n");
+// Native adaptation of the original DSPSendCommands2 control path. The real
+// backend owns mail completion; legacy silence remains explicitly distinguished.
+int DspCanStartWork();
+int DSPSendCommands2(u32* messages,u32 count,void(*callback)(u16)){
+    if(!messages)return -1;
+    while(!Dsp_Running_Check()){}
+    const BOOL interrupts=OSDisableInterrupts();
+    if(callback&&!DspCanStartWork()){OSRestoreInterrupts(interrupts);return -1;}
+    u16 token=0;
+    const s32 result=nativeDspProcessHostAudioCommand(messages,count,&token);
+    if(result<0){OSReport("Native DSP HLE rejected command batch (%d)\n",result);OSRestoreInterrupts(interrupts);return -1;}
+    int task=0;
+    if(result>0){
+        if(callback){
+            task=DspStartWork(messages[0],callback);
+            if(!task){OSRestoreInterrupts(interrupts);return -1;}
+            if(result==1)DspFinishWork(token); // Explicit legacy AcceptedSilent only.
         }
-
-        firstWarning = 0;
+        OSRestoreInterrupts(interrupts);
+        if(interrupts)nativeDspServiceHostAudio();
+        return task;
     }
-
-    u16 completionToken = 0;
-    const s32 hostAudioResult =
-        nativeDspProcessHostAudioCommand(pMessages, param_2, &completionToken);
-    if (hostAudioResult != 0) {
-        if (hostAudioResult < 0) {
-            OSReport("Native DSP HLE rejected command batch (%d)\n", hostAudioResult);
-            return -1;
-        }
-
-        interruptFlag = OSDisableInterrupts();
-        if (pCallback != NULL) {
-            startWorkStatus = DspStartWork(pMessages[0], pCallback);
-            if (!startWorkStatus) {
-                OSRestoreInterrupts(interruptFlag);
-                return -1;
-            }
-            DspFinishWork(completionToken);
-        }
-        OSRestoreInterrupts(interruptFlag);
-        return startWorkStatus;
-    }
-
-    interruptFlag = OSDisableInterrupts();
-    if (DSPCheckMailToDSP()) {
-        OSReport("エラー::DSPがメッセージを受け取っていません\n");
-        OSRestoreInterrupts(interruptFlag);
-        return -1;
-    }
-
-    if (pCallback != NULL) {
-        startWorkStatus = DspStartWork(pMessages[0], pCallback);
-        if (!startWorkStatus) { OSRestoreInterrupts(interruptFlag); return -1; }
-    }
-    DSPSendMailToDSP(param_2);
-    DSPAssertInt();
-    while (DSPCheckMailToDSP() != 0) {
-    }
-
-    if (param_2 == 0) {
-        param_2 = 1;
-    }
-
-
-
-    for (i = 0; i < param_2; i++) {
-        DSPSendMailToDSP(pMessages[i]);
-        while (DSPCheckMailToDSP() != 0) {
-        }
-    }
-
-    OSRestoreInterrupts(interruptFlag);
-    return startWorkStatus;
+    if(DSPCheckMailToDSP()){OSRestoreInterrupts(interrupts);return -1;}
+    if(callback){task=DspStartWork(messages[0],callback);if(!task){OSRestoreInterrupts(interrupts);return -1;}}
+    DSPSendMailToDSP(count);DSPAssertInt();while(DSPCheckMailToDSP()){}
+    for(u32 i=0;i<(count?count:1);++i){DSPSendMailToDSP(messages[i]);while(DSPCheckMailToDSP()){}}
+    OSRestoreInterrupts(interrupts);return task;
 }
-

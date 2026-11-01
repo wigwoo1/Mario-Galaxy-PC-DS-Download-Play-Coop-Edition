@@ -183,7 +183,7 @@ $audioHeapSource=Get-Content -LiteralPath (Join-Path $petariRoot 'libs\JSystem\i
 foreach($anchor in @('static void* operator new(u32 size)','static void operator delete(void* addr, u32 size)','return memPool_.alloc(size);','memPool_.free(addr, size);')) {
  if(([regex]::Matches($audioHeapSource,[regex]::Escape($anchor))).Count -ne 2){throw 'Audio pool allocation signature anchors changed'}
 }
-$audioHeapSource=$audioHeapSource.Replace('static void* operator new(u32 size)','static void* operator new(std::size_t size)').Replace('static void operator delete(void* addr, u32 size)','static void operator delete(void* addr, std::size_t size)').Replace('return memPool_.alloc(size);','return memPool_.alloc(nativeAudioPoolSize(size));').Replace('memPool_.free(addr, size);','memPool_.free(addr, static_cast<u32>(size));')
+$audioHeapSource=$audioHeapSource.Replace('static void* operator new(u32 size)','static void* operator new(std::size_t size) noexcept').Replace('static void operator delete(void* addr, u32 size)','static void operator delete(void* addr, std::size_t size)').Replace('return memPool_.alloc(size);','return size > std::numeric_limits<u32>::max() ? nullptr : memPool_.alloc(static_cast<u32>(size));').Replace('memPool_.free(addr, size);','memPool_.free(addr, static_cast<u32>(size));')
 $audioHeapSource=$audioHeapSource.Replace('new (JASKernel::getSystemHeap(), 0) MemoryChunk','new (JASKernel::getSystemHeap(), alignof(MemoryChunk)) MemoryChunk').Replace('new (JKRHeap::getSystemHeap(), 0) MemoryChunk','new (JKRHeap::getSystemHeap(), alignof(MemoryChunk)) MemoryChunk').Replace('delete chunk;','chunk->~MemoryChunk(); JKRHeap::free(chunk, nullptr);')
 $audioHeapSource=$audioHeapSource.Replace('return (u8*)this + 0xc <= (u8*)ptr && (u8*)ptr < (u8*)this + (0xc + ChunkSize);','return mBuffer <= static_cast<const u8*>(ptr) && static_cast<const u8*>(ptr) < mBuffer + ChunkSize;').Replace('u8 mBuffer[ChunkSize];','alignas(std::max_align_t) u8 mBuffer[ChunkSize];').Replace('u32 freeSize = mChunk->getFreeSize();','if(size > ChunkSize) return nullptr; size = (size + alignof(std::max_align_t)-1) & ~(u32(alignof(std::max_align_t))-1); if(size > ChunkSize) return nullptr; u32 freeSize = mChunk->getFreeSize();')
 $audioHeapTarget=Join-Path $PSScriptRoot 'include\JSystem\JAudio2'
@@ -222,3 +222,4 @@ Set-Content -Encoding UTF8 -LiteralPath (Join-Path $generatedRoot 'JASSeqReader.
 
 
 & (Join-Path $PSScriptRoot 'generate-extra-model-matrices.ps1')
+& (Join-Path $PSScriptRoot 'generate-player-display-lists.ps1')

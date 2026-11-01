@@ -5,3 +5,5 @@ bool nativeBindAramTransport(std::shared_ptr<NativeAramMemory>);
 void nativeReleaseAramTransport();
 bool nativeUploadAram(uint32_t offset,const void* data,size_t size);
 bool nativeDownloadAram(uint32_t offset,void* data,size_t size);
+std::shared_ptr<NativeAramMemory> nativeAcquireAramTransport();
+bool nativeReadBoundAramSamples(const NativeAramMemory* expected,uint32_t offset,void* data,size_t size);

@@ -13,6 +13,13 @@ class NativeAramMemory {
  std::map<uint32_t,Span> cpu;
  std::mutex mutex;
 public:
+ // DSP sample decoding needs byte ranges that are not DMA-aligned. This is a
+ // bounded read-only snapshot; DMA transfer alignment and token rules stay intact.
+ bool readSampleBytes(uint32_t offset,void* destination,size_t size){
+  std::lock_guard<std::mutex> lock(mutex);
+  if(!destination || offset>capacity || size>capacity-offset)return false;
+  std::memmove(destination,backing+offset,size);return true;
+ }
  size_t size()const noexcept{return capacity;}
  NativeAramMemory(void* data,size_t size):backing(static_cast<uint8_t*>(data)),capacity(size){if(!data || !size || size>0x7fffffff)throw std::invalid_argument("Invalid native ARAM backing");}
  uint32_t bindCpu(void* data,size_t size){std::lock_guard<std::mutex> lock(mutex);if(!data || !size || size>0x7fffffff)return 0;uint64_t rounded=(uint64_t(size)+31)&~uint64_t(31);if(next+rounded>0x100000000ull)return 0;uint32_t token=uint32_t(next);cpu.emplace(token,Span{static_cast<uint8_t*>(data),size});next+=rounded;return token;}

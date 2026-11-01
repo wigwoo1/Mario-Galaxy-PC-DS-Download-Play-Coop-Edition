@@ -845,3 +845,5 @@ $stringExtra+='}'+[Environment]::NewLine
 & (Join-Path $n 'generate-tev-reg-resource.ps1')
 
 & (Join-Path $n 'generate-scene-object-factory.ps1')
+
+& (Join-Path $PSScriptRoot 'generate-flag-vertex-arrays.ps1')

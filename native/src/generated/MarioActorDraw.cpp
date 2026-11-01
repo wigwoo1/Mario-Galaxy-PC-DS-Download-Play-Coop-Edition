@@ -1,3 +1,4 @@
+#include <Native/PlayerDisplayList.hpp>
 #include <Native/ExtraModelMatrices.hpp>
 #include <Native/GDCurrentScope.hpp>
 // Native aligned drawing arrays and original integer random ranges.
@@ -116,8 +117,8 @@ void MarioActor::initDrawAndModel() {
 
     initFace();
 
-    mDL[0] = new (std::align_val_t{32}) u8[0x100];
-    mDL[1] = new (std::align_val_t{32}) u8[0x100];
+    mDL[0] = Native::allocatePlayerDisplayList(0x100);
+    mDL[1] = Native::allocatePlayerDisplayList(0x100);
     mCurrDL = 0;
 
     mDLchanger = new DLchanger(2, 0x100);
@@ -975,7 +976,7 @@ void MarioActor::createTextureDL(DLholder* pHolder, u16 texMapID, u16 texIndex) 
     const u32 alignedSize = (dlSize + 0x1F) & ~0x1F;
 
     pHolder->mSize = dlSize;
-    pHolder->mDL = new (std::align_val_t{32}) u8[alignedSize];
+    pHolder->mDL = Native::allocatePlayerDisplayList(alignedSize);
 
     MR::copyMemory(pHolder->mDL, tempDL, alignedSize);
     DCStoreRange(pHolder->mDL, alignedSize);

@@ -1,4 +1,6 @@
 #include <Native/HeapPlacement.hpp>
+#include <Native/DspAudioRuntime.hpp>
+#include <Native/DspMailbox.hpp>
 #include "JSystem/JAudio2/JASAudioThread.hpp"
 #include "JSystem/JAudio2/JASAiCtrl.hpp"
 #include "JSystem/JAudio2/JASChannel.hpp"
@@ -53,7 +55,9 @@ volatile int JASAudioThread::snIntCount;
 void* JASAudioThread::run() {
     OSInitFastCast();
     JASDriver::initAI(DMACallback);
+    nativeConfigureDspAudioRuntime();
     JASDsp::boot(DSPCallback);
+    if(!nativeDspAudioRuntimeActive())throw std::runtime_error("JAS audio thread has no bound native DSP renderer");
     JASDsp::initBuffer();
     JASDSPChannel::initAll();
 
@@ -67,6 +71,8 @@ void* JASAudioThread::run() {
 
     OSMessage msg;
     while (true) {
+        nativeDspServiceHostAudio();
+        if(nativeDspAudioRuntimeFailed())throw std::runtime_error("Native DSP audio rendering/completion failed");
         msg = waitMessageBlock();
         switch ((intptr_t)msg) {
         case AUDIOMSG_DMA:
@@ -94,6 +100,7 @@ void* JASAudioThread::run() {
 
         case AUDIOMSG_STOP:
             JASDriver::stopDMA();
+            nativeStopDspAudioRuntime();
             OSExitThread(nullptr);
             continue;
         }
@@ -124,4 +131,3 @@ void JASAudioThread::DSPCallback(void*) {
         }
     }
 }
-

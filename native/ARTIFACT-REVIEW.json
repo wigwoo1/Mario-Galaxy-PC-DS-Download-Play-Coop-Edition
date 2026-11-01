@@ -1,0 +1,14 @@
+{
+  "Schema": 1,
+  "Artifacts": [
+    {
+      "SHA256": "6C8801335C1DBC8D20F83D71870DD5B8C4D5342CE78D87D56BF3DD61400A8E86",
+      "Name": "galaxy-native-2aecf25fc0b34b588768313412243413.exe",
+      "Disposition": "security-review-required; do not run or publish copies",
+      "Detection": "Trojan:Win32/Bearfoos.A!ml",
+      "DetectedOn": "2026-11-01",
+      "ClassificationAdjudicated": false,
+      "Evidence": "build/camera-animation-runtime/launcher-defender-events.json"
+    }
+  ]
+}

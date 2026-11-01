@@ -1,4 +1,5 @@
 $ErrorActionPreference='Stop'
+& (Join-Path $PSScriptRoot 'generate-camera-animation-runtime.ps1')
 $n=$PSScriptRoot;$p=Split-Path $n -Parent
 function ReplaceOnce([string]$Text,[string]$Old,[string]$New,[string]$Name){$count=([regex]::Matches($Text,[regex]::Escape($Old))).Count;if($count -ne 1){throw "$Name anchor count $count (expected 1)"};return $Text.Replace($Old,$New)}
 function RemoveCxxDefinitionsAtLines([string]$Text,[int[]]$LineNumbers,[string]$Name){

@@ -1,4 +1,4 @@
-param([string]$ResponsePath,[switch]$DiagnosticSkipArcFinderFree,[switch]$DiagnosticPressA,[string]$BckCtrlObject,[string]$ResourceAccessorObject,[string]$ParticleResourceHolderObject,[string]$TextureObjectLodKernelObject,[ValidateRange(1,100000)][int]$DiagnosticCaptureFrame=240,[string]$ZigExePath,[switch]$DiagnosticHiddenWindow,[switch]$DiagnosticHardware)
+param([string]$ResponsePath,[switch]$DiagnosticSkipArcFinderFree,[switch]$DiagnosticPressA,[string]$BckCtrlObject,[string]$ResourceAccessorObject,[string]$ParticleResourceHolderObject,[string]$TextureObjectLodKernelObject,[ValidateRange(1,100000)][int]$DiagnosticCaptureFrame=240,[string]$ZigExePath,[switch]$DiagnosticHiddenWindow,[switch]$DiagnosticHardware,[switch]$DllOnly)
 
 $ErrorActionPreference='Stop'
 $native=$PSScriptRoot
@@ -39,6 +39,13 @@ foreach($provider in $soundIdRefreshUnits){
 & (Join-Path $native 'generate-scene-object-factory.ps1')
 & (Join-Path $native 'generate-native-heat-haze.ps1')
 & (Join-Path $native 'generate-extra-model-matrices.ps1')
+& (Join-Path $native 'generate-player-display-lists.ps1')
+& (Join-Path $native 'generate-flag-vertex-arrays.ps1')
+& (Join-Path $native 'generate-camera-animation-runtime.ps1')
+& (Join-Path $native 'generate-audio-frame.ps1')
+& (Join-Path $native 'generate-audio-dsp-host.ps1')
+& (Join-Path $native 'generate-native-audio-thread.ps1')
+& (Join-Path $native 'generate-zelda-audio-renderer.ps1')
 $tmp=Join-Path $env:TEMP 'galaxy-dspboot-link-verification'
 $runtimeManifestPath=Join-Path $tmp 'latest-native-runtime.json'
 if(Test-Path -LiteralPath $runtimeManifestPath){Remove-Item -LiteralPath $runtimeManifestPath}
@@ -52,10 +59,21 @@ $objects=@(
  @{Source=(Join-Path $native 'src\dsp_boot_hle.cpp');Name='dsp_boot_hle.obj'},
  @{Source=(Join-Path $native 'src\dsp_rom_boot_hle.cpp');Name='dsp_rom_boot_hle.obj'},
  @{Source=(Join-Path $native 'src\dsp_audio_command_hle.cpp');Name='dsp_audio_command_hle.obj'},
+ @{Source=(Join-Path $native 'src\dsp_mailbox_port.cpp');Name='dsp_mailbox_port.obj'},
+ @{Source=(Join-Path $native 'src\dsp_memory_view.cpp');Name='dsp_memory_view.obj'},
+ @{Source=(Join-Path $native 'src\dsp_audio_runtime.cpp');Name='dsp_audio_runtime.obj'},
+ @{Source=(Join-Path $native 'src\dsp_audio_dispatch.cpp');Name='dsp_audio_dispatch.obj'},
+ @{Source=(Join-Path $native 'src\dsp_native_audio_bridge.cpp');Name='dsp_native_audio_bridge.obj'},
+ @{Source=(Join-Path $native 'src\dsp_audio_frame_executor.cpp');Name='dsp_audio_frame_executor.obj'},
+ @{Source=(Join-Path $native 'src\generated\ZeldaAudioRenderer.cpp');Name='ZeldaAudioRenderer.obj'},
+ @{Source=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASChannel.cpp');Name='JASChannel.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\native_jkr_aram_port.cpp');Name='native_jkr_aram_port.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\remix_sequence_data.cpp');Name='remix_sequence_data.obj'},
  @{Source=(Join-Path $native 'src\generated\DspUcodeImage.cpp');Name='DspUcodeImage.obj'},
  @{Source=(Join-Path $native 'src\native_game_entry_host.cpp');Name='native_game_entry_host.obj'}
 )
+foreach($item in $objects){$item.OriginalSource=$item.Source}
+$refreshedAudioObjects=@($objects)
 $dspBootTraceSource=Join-Path $tmp 'dsp_boot_hle-boot-traced.cpp'
 $dspBootTraceText=Get-Content -LiteralPath (Join-Path $native 'src\dsp_boot_hle.cpp') -Raw
 $dspBootTraceText='#include <cstdio>' + "`n" + 'extern "C" void galaxyNativeBootTrace(const char*);' + "`n" + $dspBootTraceText
@@ -101,14 +119,15 @@ $newRomHandshake=@'
 if($dspBootTraceText.Contains($oldRomHandshake)){$dspBootTraceText=$dspBootTraceText.Replace($oldRomHandshake,$newRomHandshake.TrimEnd())}else{throw 'DspBoot ROM-task handshake trace replacement anchor missing.'}
 [IO.File]::WriteAllText($dspBootTraceSource,$dspBootTraceText,[Text.UTF8Encoding]::new($false))
 $objects[0].Source=$dspBootTraceSource
-$common=@('-DGALAXY_NATIVE_JAI_SOUND_ID=1','-std=c++17','-O2','-ffunction-sections','-fdata-sections','-target','x86_64-windows-gnu',
+$common=@('-DGALAXY_NATIVE_JAI_SOUND_ID=1','-std=c++17','-O2','-fwrapv','-ffunction-sections','-fdata-sections','-target','x86_64-windows-gnu',
  "-I$native\include-runtime", "-I$native\include", "-I$root\Petari\include",
  "-I$root\Petari\libs\JSystem\include", "-I$root\Petari\libs\RVL_SDK\include",
  '-include','revolution/types.h','-c')
 $common+="-I$root\Petari\libs\nw4r\include"
 foreach($item in $objects){
  $item.Path=Join-Path $tmp $item.Name
- & $zig c++ @common $item.Source '-o' $item.Path
+ $extra=if($item.HeapPlacement){@('-include',(Join-Path $native 'include\Native\HeapPlacement.hpp'))}else{@()}
+ & $zig c++ @common @extra $item.Source '-o' $item.Path
  if($LASTEXITCODE){throw "DSP boot link provider failed to compile: $($item.Source)"}
 }
 $entryObject=Join-Path $tmp 'GameSystemEntry.obj'
@@ -1998,6 +2017,20 @@ $response=$response.Replace($oldSceneFunction,'"'+$sceneFunctionObject+'"')
 $oldNativeCollision='"'+$native+'\src\native_collision_scene.cpp"'
 if(!$response.Contains($oldNativeCollision)){throw 'The response file does not contain the native collision-scene provider.'}
 $response=$response.Replace($oldNativeCollision,'"'+$collisionSource+'"')
+# Compile the current flag resource adapter instead of its original provider.
+$flagMatches=[regex]::Matches($response,'"[^"\r\n]*\\Flag\.(?:obj|cpp)"')
+if($flagMatches.Count-ne 1){throw 'Expected exactly one original flag provider'}
+$response=$response.Replace($flagMatches[0].Value,'"'+(Join-Path $native 'src\generated\Flag.cpp')+'"')
+$cameraAnimationMatches=[regex]::Matches($response,'"[^"\r\n]*\\CameraAnim\.obj"')
+if($cameraAnimationMatches.Count-ne 1){throw 'Expected exactly one original camera-animation provider'}
+$response=$response.Replace($cameraAnimationMatches[0].Value,'"'+(Join-Path $native 'src\generated\CameraAnimRuntime.cpp')+'"')
+$response='-DGALAXY_DIAGNOSTIC_CAMERA_ANIMATION=1 '+$response
+# Refresh the allocation call site: cached code predates the nullable pool-new contract.
+& (Join-Path $native 'build-jai-stream-manager.ps1') -DiagnosticPool
+if($LASTEXITCODE){throw 'Current stream-manager allocation provider failed to compile'}
+$streamManagerMatches=[regex]::Matches($response,'"[^"\r\n]*\\JAIStreamMgr\.obj"')
+if($streamManagerMatches.Count-ne 1){throw 'Expected exactly one original stream-manager provider'}
+$response=$response.Replace($streamManagerMatches[0].Value,'"'+(Join-Path $native 'build\actor-runtime-jai-stream-manager\JAIStreamMgr.obj')+'"')
 # Original factory fallback requires these existing effect providers too.
 foreach($provider in @(
  @{Unit='HeatHazeEffect';Source=(Join-Path $native 'src\generated\HeatHazeEffect.cpp')},
@@ -2265,9 +2298,21 @@ $oldOutput='"'+$native+'\build\actor-runtime-link-probe.dll"'
 if(!$response.Contains($oldOutput)){throw 'The selected response file does not target actor-runtime-link-probe.dll.'}
 $dll=Join-Path $tmp 'galaxy-native.dll'
 $response=$response.Replace($oldOutput,'"'+$dll+'"')
+foreach($item in $refreshedAudioObjects){
+ $raw='"'+$item.OriginalSource+'"'
+ if([regex]::Matches($response,[regex]::Escape($raw)).Count-gt 1){throw 'Duplicate original DSP source provider'}
+ $response=$response.Replace($raw,'')
+ $pattern='"[^"\r\n]*\\'+[regex]::Escape($item.Name)+'"'
+ if([regex]::Matches($response,$pattern).Count-gt 1){throw 'Duplicate cached DSP object provider'}
+ $response=[regex]::Replace($response,$pattern,'')
+}
 $providerArgs=($objects | ForEach-Object {' "'+$_.Path+'"'}) -join ''
 if(!$response.Contains(' -lbcrypt')){throw 'Expected native runtime link libraries were not found in the response file.'}
 $response=$response.Replace(' -lbcrypt',$providerArgs+' -ld3d11 -ld3dcompiler_47 -lbcrypt')
+@($refreshedAudioObjects | ForEach-Object{
+ if([regex]::Matches($response,[regex]::Escape('"'+$_.Path+'"')).Count-ne 1){throw 'DSP provider not selected exactly once'}
+ [pscustomobject]@{Source=$_.OriginalSource;CompiledSource=$_.Source;SourceSHA256=(Get-FileHash -LiteralPath $_.Source -Algorithm SHA256).Hash;Object=$_.Path;ObjectSHA256=(Get-FileHash -LiteralPath $_.Path -Algorithm SHA256).Hash}
+}) | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $tmp 'native-audio-providers.json')
 $probeResponse=Join-Path $tmp 'actor-runtime-link-with-dspboot.rsp'
 $log=Join-Path $tmp 'actor-runtime-link-with-dspboot.log'
 [IO.File]::WriteAllText($probeResponse,$response,[Text.UTF8Encoding]::new($false))
@@ -2285,6 +2330,11 @@ $ErrorActionPreference='Continue'
 $ErrorActionPreference=$oldErrorActionPreference
 if($LASTEXITCODE){Get-Content $log -Tail 60;exit $LASTEXITCODE}
 if(!(Test-Path -LiteralPath $dll) -or (Get-Item -LiteralPath $dll).Length -lt 1){throw 'The linker returned success without producing its DLL.'}
+if($DllOnly){
+ [pscustomobject]@{Library=$dll;LibrarySHA256=(Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash;BuiltAt=(Get-Date -Format o);DllOnly=$true;LauncherBuilt=$false;GameRun=$false} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $tmp 'dll-build.json')
+ Write-Output ("PASS actor-runtime DLL-only full link: {0:N0} bytes; no launcher built or game run" -f (Get-Item -LiteralPath $dll).Length)
+ exit 0
+}
 $launcher=Join-Path $tmp ('galaxy-native-'+[guid]::NewGuid().ToString('N')+'.exe')
 $launcherSource=Join-Path $tmp 'native_game_launcher-crashdump.cpp'
 $launcherText=Get-Content -LiteralPath (Join-Path $native 'src\native_game_launcher.cpp') -Raw

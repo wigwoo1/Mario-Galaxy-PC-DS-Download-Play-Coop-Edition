@@ -294,8 +294,8 @@ namespace JASKernel {
 template < typename T >
 class JASPoolAllocObject {
 public:
-    static void* operator new(std::size_t size) {
-        return memPool_.alloc(nativeAudioPoolSize(size));
+    static void* operator new(std::size_t size) noexcept {
+        return size > std::numeric_limits<u32>::max() ? nullptr : memPool_.alloc(static_cast<u32>(size));
     }
 
     static void operator delete(void* addr, std::size_t size) {
@@ -333,8 +333,8 @@ public:
 template < typename T >
 class JASPoolAllocObject_MultiThreaded {
 public:
-    static void* operator new(std::size_t size) {
-        return memPool_.alloc(nativeAudioPoolSize(size));
+    static void* operator new(std::size_t size) noexcept {
+        return size > std::numeric_limits<u32>::max() ? nullptr : memPool_.alloc(static_cast<u32>(size));
     }
 
     static void operator delete(void* addr, std::size_t size) {

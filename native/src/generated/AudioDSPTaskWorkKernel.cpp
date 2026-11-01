@@ -8,15 +8,18 @@ typedef struct {
 
 static TaskWorkStruct taskwork[16];
 
+static u32 taskreadp;
+static u32 taskwritep;
 void DspInitWork() {
+    taskreadp=taskwritep=0;
     for (int i = 0; i < 16; i++) {
         taskwork[i].field_0x4 = NULL;
     }
 }
 
-static u32 taskreadp;
 
-static u32 taskwritep;
+
+
 
 int DspStartWork(u32 param_0, void (*pCallback)(u16)) {
     u32 taskWritePrev = taskwritep;
@@ -44,3 +47,5 @@ void DspFinishWork(u16 param_0) {
     }
 }
 
+
+int DspCanStartWork(){return ((taskwritep+1)&0xF)!=taskreadp;}
