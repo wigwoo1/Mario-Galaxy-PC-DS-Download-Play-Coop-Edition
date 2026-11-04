@@ -1,9 +1,10 @@
+param([string]$OutputDirectory)
 $ErrorActionPreference='Stop'
 $n=$PSScriptRoot;$p=Split-Path $n -Parent
 & (Join-Path $n 'generate-audio-frame.ps1')
 & (Join-Path $n 'generate-audio-dsp-host.ps1')
 & (Join-Path $n 'generate-zelda-audio-renderer.ps1')
-$out=Join-Path $n 'build\audio-dac-dma';New-Item -ItemType Directory -Force -Path $out | Out-Null
+$out=if($OutputDirectory){$OutputDirectory}else{Join-Path $n 'build\audio-dac-dma'};New-Item -ItemType Directory -Force -Path $out | Out-Null
 # Exact DAC transfer methods only; scheduling is a deliberately unreachable trap
 # in the fixture, and this test does not claim whole-thread/device integration.
 $text=[IO.File]::ReadAllText((Join-Path $n 'src\generated\AudioAiCtrlHost.cpp'))

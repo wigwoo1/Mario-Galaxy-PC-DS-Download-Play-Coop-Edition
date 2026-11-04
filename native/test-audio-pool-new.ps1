@@ -1,11 +1,12 @@
 $ErrorActionPreference='Stop'
 $n=$PSScriptRoot;$p=Split-Path $n -Parent
+& (Join-Path $n 'generate-native-audio-heap.ps1')
 New-Item -ItemType Directory -Force -Path (Join-Path $n 'build\stream-pool') | Out-Null
 $backend=[IO.File]::ReadAllText((Join-Path $n 'src\generated\AudioHeapKernel.cpp'))
 $begin=$backend.IndexOf('JASGenericMemPool::JASGenericMemPool()')
 $end=$backend.IndexOf('u32 JASKernel::sAramBase;', $begin)
 if($begin-lt 0-or $end-lt $begin){throw 'Original generic pool boundaries changed'}
-$kernel='#include <Native/HeapPlacement.hpp>'+"`n"+'#include <JSystem/JAudio2/JASHeapCtrl.hpp>'+"`n"+'#include <JSystem/JKernel/JKRSolidHeap.hpp>'+"`n"+$backend.Substring($begin,$end-$begin)
+$kernel='#include <Native/HeapPlacement.hpp>'+"`n"+'#include <Native/AudioPoolHeapLifetime.hpp>'+"`n"+'#include <JSystem/JAudio2/JASHeapCtrl.hpp>'+"`n"+'#include <JSystem/JKernel/JKRSolidHeap.hpp>'+"`n"+$backend.Substring($begin,$end-$begin)
 [IO.File]::WriteAllText((Join-Path $n 'build\stream-pool\OriginalGenericPool.cpp'),$kernel,[Text.UTF8Encoding]::new($false))
 $env:ZIG_GLOBAL_CACHE_DIR=Join-Path $n 'build\zig-cache-player-display-lists'
 $env:ZIG_LOCAL_CACHE_DIR=Join-Path $n 'build\zig-local-cache'

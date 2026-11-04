@@ -8,6 +8,14 @@ function ReplaceOnce([string]$text,[string]$old,[string]$new,[string]$label){
 
 # Preserve original providers with native pointer mapping and bounded bus setup.
 $source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASAiCtrl.cpp" -Raw
+$old='void JASDriver::initAI(void (*param_0)(void)) {'
+$new=@'
+void JASDriver::initAI(void (*param_0)(void)) {
+    // A previous worker's DAC buffer may belong to a released native heap.
+    // Restart begins with the newly initialized DMA buffer, never that span.
+    lastRspMadep = nullptr;
+'@
+$source=ReplaceOnce $source $old $new 'Native DAC initialization discards retired output pointer'
 $old='    JASDsp::syncFrame(getSubFrames(), u32(sDspDacBuffer[sDspDacWriteBuffer]), u32(sDspDacBuffer[sDspDacWriteBuffer] + r27));'
 $new=@'
     s16* dspSamples = sDspDacBuffer[sDspDacWriteBuffer];
@@ -44,6 +52,11 @@ $source='#include <stdexcept>'+[Environment]::NewLine+'#include <Native/DspAddre
 Set-Content "$n\src\generated\AudioAiCtrlHost.cpp" $source
 
 $source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASDSPInterface.cpp" -Raw
+# The Wii boot-once flag outlives a stopped/released native renderer. Preserve
+# idempotence while it is active, but perform the real handshake after stop.
+$source=ReplaceOnce $source '    static bool sDspInit = true;' '' 'Native DSP boot lifetime flag'
+$source=ReplaceOnce $source '    if (sDspInit) {' '    if (!nativeDspAudioRuntimeActive()) {' 'Native DSP active-runtime boot guard'
+$source=ReplaceOnce $source '        sDspInit = false;' '' 'Native DSP obsolete one-time latch'
 $old='    DsetupTable(0x40, u32(CH_BUF), u32(&DSPRES_FILTER), u32(&DSPADPCM_FILTER), u32(FX_BUF));'
 $new='    DsetupTable(0x40, Native::nativeDspAddressSpace().map(CH_BUF, sizeof(TChannel) * 64), Native::nativeDspAddressSpace().map(DSPRES_FILTER, sizeof(DSPRES_FILTER)), Native::nativeDspAddressSpace().map(DSPADPCM_FILTER, sizeof(DSPADPCM_FILTER)), Native::nativeDspAddressSpace().map(FX_BUF, sizeof(FxBuf) * 4));'
 $source=ReplaceOnce $source $old $new 'JAudio DSP table pointer mapping'
@@ -67,5 +80,5 @@ void JASDsp::TChannel::setBusConnect(u8 param_0, u8 param_1) {
     if (param_1 >= 12) throw std::out_of_range("Unknown DSP mixer bus");
 '@
 $source=ReplaceOnce $source $old $new 'JAudio bus bounds and automatic-mixer sentinel'
-$source='#include <stdexcept>'+[Environment]::NewLine+'#include <Native/DspAddressSpace.hpp>'+[Environment]::NewLine+$source
+$source='#include <stdexcept>'+[Environment]::NewLine+'#include <Native/DspAudioRuntime.hpp>'+[Environment]::NewLine+'#include <Native/DspAddressSpace.hpp>'+[Environment]::NewLine+$source
 Set-Content "$n\src\generated\AudioDSPInterfaceHost.cpp" $source

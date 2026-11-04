@@ -1,7 +1,8 @@
+param([string]$OutputDirectory)
 $ErrorActionPreference='Stop'
 $n=$PSScriptRoot;$p=Split-Path $n -Parent
 & (Join-Path $n 'generate-native-audio-heap.ps1')
-$out=Join-Path $n 'build\audio-pool-destroy';New-Item -ItemType Directory -Force -Path $out|Out-Null
+$out=if($OutputDirectory){$OutputDirectory}else{Join-Path $n 'build\audio-pool-destroy'};New-Item -ItemType Directory -Force -Path $out|Out-Null
 $providers=@(
  'native\src\aram_manager_kernel.cpp',
  'native\src\aram_read_port.cpp',
@@ -76,9 +77,9 @@ $backend=[IO.File]::ReadAllText((Join-Path $n 'src\generated\AudioHeapKernel.cpp
 $begin=$backend.IndexOf('JASGenericMemPool::JASGenericMemPool()');$end=$backend.IndexOf('u32 JASKernel::sAramBase;',$begin)
 if($begin-lt 0-or $end-lt $begin){throw 'Generic pool boundaries changed'}
 $pool=Join-Path $out 'OriginalGenericPool.cpp'
-[IO.File]::WriteAllText($pool,'#include <Native/HeapPlacement.hpp>'+"`n"+'#include <JSystem/JAudio2/JASHeapCtrl.hpp>'+"`n"+'#include <JSystem/JKernel/JKRSolidHeap.hpp>'+"`n"+$backend.Substring($begin,$end-$begin),[Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText($pool,'#include <Native/HeapPlacement.hpp>'+"`n"+'#include <Native/AudioPoolHeapLifetime.hpp>'+"`n"+'#include <JSystem/JAudio2/JASHeapCtrl.hpp>'+"`n"+'#include <JSystem/JKernel/JKRSolidHeap.hpp>'+"`n"+$backend.Substring($begin,$end-$begin),[Text.UTF8Encoding]::new($false))
 $sources=@($providers|ForEach-Object{Join-Path $p $_})+@((Join-Path $n 'src\audio_pool_destroy_tests.cpp'),$pool)
-$evidence=$sources+@((Join-Path $n 'src\generated\AudioHeapKernel.cpp'),(Join-Path $n 'include\JSystem\JAudio2\JASHeapCtrl.hpp'),(Join-Path $n 'generate-native-audio-heap.ps1'),$PSCommandPath)
+$evidence=$sources+@((Join-Path $n 'src\generated\AudioHeapKernel.cpp'),(Join-Path $n 'include\JSystem\JAudio2\JASHeapCtrl.hpp'),(Join-Path $n 'include\Native\AudioPoolHeapLifetime.hpp'),(Join-Path $n 'generate-native-audio-heap.ps1'),$PSCommandPath)
 $evidence|ForEach-Object{[pscustomobject]@{Path=$_;SHA256=(Get-FileHash -LiteralPath $_).Hash}}|ConvertTo-Json|Set-Content -LiteralPath (Join-Path $out 'sources.json')
 $env:ZIG_GLOBAL_CACHE_DIR=Join-Path $p 'tools\zig-cache';$exe=Join-Path $out 'audio-pool-destroy-tests.exe'
 & (Join-Path $p 'tools\zig-x86_64-windows-0.16.0\zig.exe') c++ -std=c++17 -O2 -fwrapv -UNDEBUG -ffunction-sections -fdata-sections '-Wl,--gc-sections' -target x86_64-windows-gnu "-I$n\include-runtime" "-I$n\include" "-I$n\src" "-I$p\Petari\include" "-I$p\Petari\libs\JSystem\include" "-I$p\Petari\libs\RVL_SDK\include" -include revolution/types.h -include "$n\include\Native\HeapPlacement.hpp" @sources -lbcrypt -o $exe *> (Join-Path $out 'build.txt')

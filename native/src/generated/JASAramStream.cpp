@@ -1,3 +1,4 @@
+#include <Native/JasStreamSystemLifetime.hpp>
 #include <stdexcept>
 #include <Native/JasStreamEndian.hpp>
 #include <Native/HeapPlacement.hpp>
@@ -28,7 +29,9 @@ bool UNK_BOOL_B;
 
 void JASAramStream::initSystem(u32 block_size, u32 channel_max) {
     u32 readBytes; if (!Native::jasStreamReadBufferSize(block_size, channel_max, readBytes)) throw std::invalid_argument("invalid audio stream buffer dimensions");
-    if (JASDriver::registerSubFrameCallback(dvdErrorCheck, nullptr)) {
+    if (Native::reuseJasStreamSystem(JASDram, block_size, channel_max)) return;
+    Native::JasStreamSystemInit nativeLifetime(JASDram);
+    if (nativeLifetime.registerCallback()) {
         if (sLoadThread == nullptr) {
             sLoadThread = JASDvd::getThreadPointer();
         }
@@ -38,6 +41,7 @@ void JASAramStream::initSystem(u32 block_size, u32 channel_max) {
         sChannelMax = channel_max;
         UNK_BOOL_A = false;
         UNK_BOOL_B = false;
+        nativeLifetime.commit();
     }
 }
 

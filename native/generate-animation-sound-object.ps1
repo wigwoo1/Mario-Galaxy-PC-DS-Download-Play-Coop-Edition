@@ -48,8 +48,8 @@ foreach($unit in @('JASSimpleWaveBank','JASBasicWaveBank','JASWaveArcLoader')){
 $source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASTaskThread.cpp" -Raw
 $source=$source.Replace('u32 size = msgSize + 8;','if(!callback || (msgSize && !msg) || msgSize > 1024 - offsetof(JASThreadCallStack, msg)) return nullptr;'+[Environment]::NewLine+'    u32 size = u32(offsetof(JASThreadCallStack, msg)) + msgSize;').Replace('getCommandHeap()->alloc(12)','getCommandHeap()->alloc(u32(offsetof(JASThreadCallStack, msg) + sizeof(void*)))')
 Set-Content "$n\src\generated\AudioTaskThreadKernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+'#include <cstddef>'+[Environment]::NewLine+$source)
-$source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASDvdThread.cpp" -Raw
-Set-Content "$n\src\generated\AudioDvdThreadKernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+$source)
+& (Join-Path $n 'generate-native-audio-dvd-thread.ps1')
+& (Join-Path $n 'generate-native-track.ps1')
 
 $source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASDSPChannel.cpp" -Raw
 Set-Content "$n\src\generated\AudioDSPChannelKernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+$source)

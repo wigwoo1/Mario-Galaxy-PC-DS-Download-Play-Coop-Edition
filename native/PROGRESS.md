@@ -1,6 +1,6 @@
 # Native port progress
 
-Updated 2026-11-01
+Updated 2026-11-04
 ## 2026-11-01 — flag retest reaches scene-ready, then prologue stream-audio constructor crashes
 
 - Slot1/Start/profile and placement passed; SCENE READY displays1652 selected1654, no FRAME COMPLETE. Prior flag GPU range exception absent. New final stack JAISound constructor -> JAIStream/newStream_ -> AudSingleBgm/AudBgmMgr -> startStageBGM -> PrologueDirector picture book -> movement/update. frameLoop update follows draw/endRender; no complete captured stage frame/flag visual fidelity/control claim.
@@ -265,6 +265,7 @@ The new heap-range trace confirms `mStationedHeapGDDR3` is a non-null but invali
 
 Validation: diagnostic full link passed; one bounded launch with the supplied WBFS reproduced the crash. No gameplay, menu, or rendering success is claimed. Overall project estimate remains approximately **1.5% complete**; end-to-end verified playable remains **0%**. The mouse-pointer and shake-binding implementation plan is tracked in `INPUT-ROADMAP.md` and remains unverified in a live game session.
 
+
 ## 2026-10-13 — error-archive registration boundary
 
 - Extended the test-only WBFS link probe with before/after snapshots around `ResourceHolderManager` construction, archive resource counts, the `ResTable` “other” allocation, and layout mounting. The diagnostic PowerShell script parses, and the supplemental full link/launcher build succeeds (DLL 9,907,712 bytes; EXE 909,824 bytes).
@@ -285,12 +286,14 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - One 45-second run reached `GameSystem::init`, drew the first frame, and entered the initial `GXFlush`; an additional probe was added around command-observer notification and command-buffer reset. A subsequent run exited with `0xC0000005` during display-buffer allocation after async-executor setup. Runs remain nondeterministic. The diagnostic linker also contains a test-only poisoned-child fallback in heap lookup; this can change execution and must not be treated as a production fix or clean reproduction.
 - Reliable status: link closure passes for the diagnostic probe; normal game startup is still unstable, and a visible/presented frame, input, and playable gameplay remain **0% verified**. Keep the overall rough project estimate at **about 1.5%**. Next, run with the production heap lookup behavior and capture a debugger/crash dump or narrow the display/async heap lifetime; then confirm a stable presented frame before claiming runtime progress.
 
+
 ## 2026-10-13 — production heap lookup path isolated
 
 - Removed the supplemental link probe’s unconditional fallback for `0xA3`-poisoned child-heap pointers. This is test-harness-only; no production runtime behavior was changed. PowerShell parsing and the full diagnostic link/launcher build pass (DLL 9,912,320 bytes; EXE 909,824 bytes).
 - With ordinary recursive heap lookup restored, the WBFS launch exits with `0xC0000005` while mounting a message archive. The trace shows `JKRHeap::findFromRoot` traversing the primary heap’s child tree; the first child node is readable, but its `mData` already contains `0xA3A3A3A3A3A3A3A3`. The last trace point is entry into `JKRHeap::find` on that invalid object. Iterator advance markers show the preceding sibling links were valid. This localizes the immediate fault to a stale/corrupted child-heap object link, not to Yaz0 decoding.
 - No destructor or `JKRHeap::free` of that root child object was recorded. The writer/lifetime cause is still unknown; varying earlier traces mean this does not yet identify when the link was poisoned. Do not patch production heap traversal to skip it. Next: capture a minidump or instrument heap node removal/free and host arena writes to identify the overwrite, then fix the lifetime/list invariant and rerun against the WBFS.
 - The diagnostic process does not reach a verified rendered/presented frame or gameplay. Overall requested-project estimate remains about **1.5%**; playable progress remains **0%**.
+
 
 ## 2026-10-13 — first GX primitive observer barrier removed
 
@@ -300,11 +303,13 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - A bounded run with the supplied WBFS now parses the first 6,402-byte list, completes D3D submit decode/prepare/execute, and reaches `GameSystem first frame render ended`. It then fails to reach the marker after the first `GameSystem::update()` within 42 seconds. This removes one parser barrier but does not confirm a visible/presented frame, retrace completion, or player input. The independent `FileLoaderThread` Yaz0 read access violation from the earlier minidump remains a possible nondeterministic fault and is not claimed fixed.
 - Updated rough whole-project progress to **about 1.6%**; verified playable progress remains **0%**. Next: instrument first-frame update substeps and presentation/retrace, then verify player input. Resolution/FPS, Stereo/5.1, pointer/shake, HD HUD/textures, full campaign, and multiplayer/browser-transfer requirements remain outstanding.
 
+
 ## 2026-10-13 — initial update now narrowed to async-job allocation
 
 - Added test-only checkpoints inside the first system-update nerve and `FunctionAsyncExecutor`. A 40-second WBFS run reaches the initial audio nerve; the worker pool constructs and enters its message-wait state, and the callback functor clone returns.
 - The trace then stops during placement allocation of the first `FunctionAsyncExecInfo` record from the executor’s `JKRUnitHeap` (`FunctionAsyncExecutor::createAndAddExecInfo`), before task-list insertion or worker enqueue. This narrows the prior “updateNerve stalled” result. It does not yet distinguish heap allocation, heap locking, or corrupted heap state; no production allocator patch is justified yet.
 - The rendering progress remains: state observer can pass the first primitive list, and D3D decode/prepare/execute plus first-frame render return. The bounded test still does not confirm presentation/retrace or input. Overall estimate remains **about 1.6%**; verified playable remains **0%**. Next: add a bounded trace in the unit-heap allocation/lock path and inspect the record heap’s range/bitmap at the call boundary.
+
 
 ## 2026-10-13 — audio worker/DSP command boundary narrowed
 
@@ -344,12 +349,14 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - The frame still has no visible title/menu or world geometry. Next investigation should follow scene readiness and the origin of the startup quads, rather than patching D3D color math. The extra trace is confined to the diagnostic launcher path.
 - Overall requested-project estimate remains **about 1.9%**; verified playable progress remains **0%**.
 
+
 ## 2026-10-14 — logo-scene setup stalls during async callback clone
 
 - Extended the diagnostic-only startup harness to log the scene-initialization functor address, vtable/clone entry, and executor heap range immediately before the first logo-scene task clone. The object and clone entry are non-null; the 9,984-byte executor heap reports 9,960 bytes free. The trace enters `rFunc.clone(_414)` and never returns in the 20-second WBFS run, before task-record allocation, task-list insertion, or worker enqueue.
 - This supersedes the prior current-next-step note that focused on flat quad decoding: the flat blue EFB is the confirmed initial clear, and the next actionable startup boundary is async scene-task submission. The exact hang remains unresolved (virtual clone, placement-new dispatch, or heap mutex path); no production allocator or scene behavior was changed.
 - An attempt to compile the reconstructed `JKRExpHeap.cpp` with lock-boundary tracing failed because its 32-bit pointer-to-`u32` casts are ill-formed in the x64 host compiler. That diagnostic-only edit was removed. The existing test script parses and the full diagnostic DLL/launcher link passes after adding the callback/vtable snapshot. This link is not a playable build.
 - No title/menu, game scene, or input-driven play has been verified. Overall estimate remains **about 1.9%**; verified playable progress remains **0%**. Next: use a host-compatible allocator/placement-new probe or debugger on the clone call, then verify the Logo scene task is enqueued and initializes before revisiting render geometry.
+
 
 ## 2026-10-14 — layout texture references now decode Wii byte order
 
@@ -358,6 +365,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - The full diagnostic native link and launcher build passes. A real WBFS boot now resolves the first strap texture (index 2 of 4, offset 66) and returns a valid texture resource without the previous access violation; a 45-second run continued through layout parsing. This remains a diagnostic boot, not verified gameplay or a visible playable frame.
 - Heap-placement regression checks pass when compiler outputs are redirected to the temporary directory; the stock script's attempt to write its log under `native/build` was denied by the current environment. The native functor regression test passes.
 - Overall requested-project estimate: **about 2.0%**; verified playable progress remains **0%**. Next: let strap-layout construction and the logo/title sequence finish, then verify visible output and input-driven progression. Settings, 4K HUD/textures, full campaign, and requested multiplayer modes remain outstanding.
+
 
 ## 2026-10-14 — strap layout decodes TPLs; animation setup is the next blocker
 
@@ -383,6 +391,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Corrected the D3DCompile trace formatter to cap its inline HLSL excerpt at 96 bytes; full shader source remains separately captured using the measured readable length. The diagnostic DLL/launcher rebuilt successfully.
 - The bounded WBFS boot again reaches multiple generated TEV shader compiles (4033, 3824, and 3863-byte sources) before the process remains active for the full 30-second window. This repeat does not reproduce the prior immediate access violation. The saved last-source file matches its 3863-byte source size, so the earlier crash attribution is invalid; the underlying cause remains undetermined.
 - Project estimate: **about 2.3%**; verified playable progress: **0%**. Next: collect an explicit process exit/exception trace with the corrected probe and continue checking a visible title/menu frame and controls.
+
 
 ## 2026-10-14 — strap animation offsets now decode in native byte order
 
@@ -417,11 +426,13 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Rebuilt the full diagnostic DLL/launcher successfully. A bounded WBFS boot now resolves the formerly-null BPK resources (`end`, `start`, `timeoutlong`, `timeoutshort`, and `starpiececc`) into live animation objects in `MaterialAnmBuffer`. The process still exits with `0xC0000005` during later material-animation/model setup; there is still no verified menu, controllable scene, or playable game.
 - Overall requested-project estimate: **about 2.6%**; verified playable progress remains **0%**. Next: trace the remaining post-BPK material-animation access violation and decode the still-null BTK/BRK resources, then verify visible title flow and input-driven progression. Resolution/FPS, audio options, HD textures/HUD, full campaign, and co-op/netplay remain outstanding.
 
+
 ## 2026-10-14 — BPK lookup and diff-flag stages return before the remaining boot fault
 
 - Added trace-only checkpoints to the diagnostic `MaterialAnmBuffer` build. The latest bounded WBFS run shows BPK material-name lookup, `setDiffFlag`, and the BPK diff-flag operation all return; attachment reaches its per-material assignment, which also returns for the sampled one-material model.
 - The process still exits with access violation `0xC0000005` immediately after this setup path. The captured exception address moved within the same startup call chain, so the failure has not been fixed or proven to be BPK-specific. Further work should symbolize this post-attachment fault and inspect the subsequent model/animation consumer before changing runtime behavior.
 - Overall requested-project estimate remains **about 2.6%**; verified playable progress remains **0%**.
+
 
 ## 2026-10-14 — BANMT animation settings now attach through owned JMap conversion
 
@@ -429,6 +440,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - The BckCtrl source compiled, synthetic BCA/BPK lifetime and malformed-offset tests passed, and the real-disc JMap integration suite passed (82 tables, 243 rows, 5,524 cells). A bounded WBFS launch now passes the former JMap/BckCtrl crash and reaches a later layout/resource startup fault; it still exits with `0xC0000005`. No title screen, controllable gameplay, or playable game has been verified.
 - The stock BCK sampler wrapper and archive JMap wrapper still cannot write their normal generated logs/headers in this environment; direct builds to temporary output were used for tests. The instrumented link itself passes.
 - Overall requested-project estimate: **about 2.7%**; verified playable progress remains **0%**. Next: trace the new layout/resource startup fault. Multiplayer/browser transfer, independent cameras and teleport rules, settings, mouse pointer/shake bindings, audio options, and HD textures/HUD remain roadmap work.
+
 
 ## 2026-10-14 — narrowed the next layout startup fault to its allocation/constructor boundary
 
@@ -472,6 +484,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - The complete actor-runtime diagnostic DLL/launcher build passed after the heap change (DLL 10,009,600 bytes; EXE 917,504 bytes). The latest startup trace is saved as `build/startup-verification-20261014/latest-galaxy-native-boot.log`; captured stderr reports rejected DSP command batches. The run was stopped during diagnostics. A visible title/menu, stable boot through that boundary, rendered frame, and playable input remain unverified.
 - Whole-project estimate remains **about 3%**; verified playable progress remains **0%**. Next bounded step: reduce the excessive startup trace and identify why the boot remains in retail GX command parsing before continuing toward a visible frame. The completed heap-capacity fix is a reasonable checkpoint for switching to Luna; upgrade again if the subsequent runtime fault requires difficult reverse-engineering.
 
+
 ## 2026-10-14 — first-render image capture and startup crash boundary
 
 - Updated the diagnostic launcher to capture the 80th retail XFB frame rather than only the first one, and removed per-command GX parser logging that made the trace excessively large. The diagnostic build passed (DLL 10,006,528 bytes; launcher 917,504 bytes).
@@ -479,6 +492,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Saved `retail-frame-80-xfb.bmp`, `frame80-boot.log`, `frame80-firstchance.log`, and the reduced link/build log under `build/startup-verification-20261014/`. No `frame80-crash.dmp` exists in that directory. The 80th XFB is uniformly black. On the first draw, the D3D EFB readback contains one uniform blue color (`1E1EC800`), which confirms a clear-color output but not scene geometry. No title/menu or interactive gameplay is visible.
 - The working-tree fix for the previous 20 MiB stationed-heap exhaustion remains in place (32 MiB reservation); the boot passes the old save-data allocation failure and reaches graphics output before this new crash.
 - Whole-project estimate remains **about 3%**; verified playable progress remains **0%**. Next: use a source-line-capable symbol/debug workflow to resolve the `0xC0000005` in material-animation setup, then capture a nonblank retail scene before continuing to interactive input.
+
 
 ## 2026-10-14 — startup crash symbolization (corrected after checking DLL instructions)
 
@@ -553,6 +567,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Evidence prefix layout-colors-uv includes build/result/boot/error/firstchance/stderr logs, frame240 BMP, live .dmp and .threads.txt. Matching DLL/PDB/launcher are saved in layout-colors-uv-runtime. DLL SHA256 BCA71EE118F46E9BEE47103FCAAC8D7B6BCA7D1949F2E5F26A6306F01A9707BA.
 - Status PARTIALLY VERIFIED for the overall milestone; layout decoding and visible retail strap output are verified. Rough whole-project estimate remains about 3.1%; verified playable progress remains 0%. Next: identify the exact Logo nerve after fade-out (system-archive wait versus mount/save sequence), use the matching thread dump to trace pending startup work, and verify entry into title/menu. Sol Medium remains appropriate for this runtime/threading investigation; switch back to Luna once the next action is an isolated, understood implementation change.
 
+
 ## 2026-10-14 — persistent file completion clears resource initialization wait
 
 - Added exact Logo state flags and stationed-resource-loader phase tracing to the diagnostic build. The pre-fix 60-second run stopped inside InitializeGameData. Matching thread-dump candidates map to FileHolderFileEntry::waitReadDone, FileLoader::receiveArchive, and ScenarioDataParser construction; this localized the stalled file-completion boundary. Stack candidates remain scans, not complete debugger-unwound stacks.
@@ -561,6 +576,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - A fresh 60-second WBFS run reaches all stationed-loader phases through End, with system-done=1 by Logo draw 120. Retail strap artwork remains captured, with matching XFB/presentation centers FDFDFD. Diagnostic A triggers the later fade-out; Logo then reaches mount-data=1, wait-system=0, deactive=0 and remains there through draw 840. This proves passing the observed resource initialization wait in this launch, not complete startup stability or a playable game.
 - Evidence prefixes startup-phase (pre-fix) and file-completion (post-fix). file-completion-tests.txt contains the completion test result. Matching final DLL/PDB/launcher are saved in file-completion-runtime, and file-completion.dmp/.threads.txt retain the later startup snapshot. DLL SHA256 65294AE05092A714C83225177D5DDA7CCA92DAB28EE065A97AF336E8765BDE65.
 - Status PARTIALLY VERIFIED for whole startup; completion behavior and passing the observed resource-init boundary are verified. Rough overall estimate remains about 3.1%; verified playable progress remains 0%. Next: trace SaveDataHandleSequence started by LogoScene::exeMountGameData, its active condition, NameObj update registration, and native NAND completion, then verify departure from Logo to title/menu. Sol Medium remains suitable for the next runtime investigation. Settings, HD texture/HUD integration, full gameplay and all co-op modes remain outstanding.
+
 
 ## 2026-10-14 — save-data wait narrowed to completed NAND access denial
 
@@ -571,6 +587,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Final evidence prefix nand-current includes result/boot/error/firstchance/stderr, live dump and candidate stack report. Matching DLL/PDB/launcher are saved in nand-current-runtime, SHA256 B58059BCDFD9EB86766A6A07D826D47FE502C9E4AB028529B6B8152DCCD1013B. save-caller logs preserve the same state before refreshing NAND; save-phase/save-phase-abi logs record discarded diagnostic failures.
 - Status PARTIALLY VERIFIED: lifecycle diagnosis and NAND first-run tests are verified; game startup/save setup remain incomplete. Overall rough project estimate remains about 3.1%, verified playable progress 0%. Next bounded task: trace the game's actual NANDOpen name, configured save root, resolved path, errno/filesystem error, and return site without replacing SaveDataHandleSequence. Correct only the demonstrated access/path mismatch, then verify normal save setup and departure from Logo. Sol Medium remains appropriate. Stop further hypothesis-driven save fixes until this direct error evidence is captured.
 
+
 ## 2026-10-14 — save-capacity directory failure resolved; Logo departs
 
 - Added diagnostic-only NANDOpen path/errno/return tracing and NANDCheck filesystem-error tracing. Refreshed NANDManagerThread from current source with a read-result checkpoint and added request type to the caller trace. This showed read type 3 correctly returning NOEXISTS (-12), followed by a separate type-4 capacity check returning ACCESS (-1). The earlier description of a denied save-file read was incorrect: the later request reused the same object.
@@ -579,6 +596,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Final diagnostic build PASS: DLL 10,016,768 bytes, EXE 917,504 bytes. Recompiled current NAND source and ran the real disk/async/missing-root/capacity regression suite using temporary output/cache: PASS. The normal command launcher failed to refresh after the parent-directory permission update; approved alternate launcher commands successfully read evidence, ran checks, and saved the snapshot.
 - Evidence prefixes nand-path-trace, nand-worker, nand-capacity retain the operation/error diagnosis. save-directory-ready result/boot/firstchance/stderr logs retain the successful Logo departure and subsequent teardown crash. Matching runtime/PDB/launcher are saved in save-directory-ready-runtime; DLL SHA256 590C08BCB5D3609035D59C0CD0AFB05BC35ECA406B49C647C929044CFCDB1BE6.
 - Status PARTIALLY VERIFIED for overall startup; normal missing-save handling/capacity setup and departure from Logo are verified in this launch. Rough project estimate remains about 3.1%, verified playable progress 0%. Next: inspect NameObjListExecutor destruction and the allocation/ownership of its category-list members; use the matching symbols/instructions to identify which game-heap allocation is being passed to host free. Correct that demonstrated ownership mismatch and verify safe scene teardown followed by entry to Game/title. Sol Medium remains appropriate for this runtime heap investigation.
+
 
 ## 2026-10-14 — complete array element type fixes executor cleanup
 
@@ -589,6 +607,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Evidence: scene-cleanup-link.log, scene-cleanup result/boot/firstchance/stderr logs, and matching scene-cleanup-runtime DLL/PDB/launcher snapshot. DLL SHA256 96130243D2956149A4383BF5AF8E6E843AD726A011B9FAC2D50C29F1D4E77C26.
 - Next bounded fix: generated ArchiveHolder::createAndAdd allocates ArchiveHolderArchiveEntry using new(pHeap,0), while removeIfIsEqualHeap uses ordinary delete with no class-specific heap release. Preserve its archive/name destructor, then release the entry through its allocation heap, with a focused ownership regression and full startup check; retain this change in generate-file-runtime.ps1. This isolated next task is suitable for Luna Medium. Pause the goal for the user's requested model-switch checkpoint; upgrade again if a subsequent failure needs broader ABI/runtime investigation.
 - Status PARTIALLY VERIFIED overall; the executor array-cleanup fix is verified by a failing-before/passing-after regression and progress past the corresponding runtime crash. Rough whole-project estimate remains about3.1%; verified playable progress0%. All full-game/settings/HD-pack/co-op requirements remain outstanding.
+
 
 ## 2026-10-14 — ArchiveHolder entry cleanup now matches JKR heap ownership
 
@@ -609,9 +628,12 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Last saved WBFS runtime evidence remains `startup-verification-20261014`: it exits during Logo-to-Game cleanup with C0000374 after passing the earlier scene-executor cleanup. The later ArchiveHolder ownership fix has focused regressions, but has not yet been linked into a fresh runtime. Title/menu and gameplay remain unverified; whole-project estimate remains approximately 3.1%, verified playable progress 0%.
 - Next action: use a known-compatible C++ toolchain to compile the existing first translation unit and then perform the existing full diagnostic link/startup check. Do not alter game sources based on the frontend error alone. This requires a build environment/toolchain change; recommend Sol Medium to diagnose the compiler/toolchain path and continue the runtime reverse engineering. Once only isolated implementation work remains, switching back to Luna is appropriate.
 
+
 - Further toolchain check: launched Visual Studio 2026 Developer PowerShell directly (without cmd.exe) and confirmed cl.exe runs. The first DSP TU compile fails in Petari's Wii SDK header `revolution/os/OSInterrupt.h:96` because MSVC does not accept the GNU `__attribute__` syntax used there. No compatibility macro or SDK edit was applied. Thus Zig 0.16 and the installed MSVC compiler are both unsuitable for this project build as currently configured; no fresh DLL or runtime result is available. The reliable next step is a compatible Clang/MinGW GCC setup or the project's intended GNU-compatible frontend, then rerun the first TU and diagnostic link.
 
+
 - Final local toolchain check: Visual Studio's Clang++ accepts the project's GNU Windows target, but its configured GNU-target search paths do not provide the C++ standard library headers; compilation stops at `revolution/types.h:3` because `<cstdint>` cannot be found. No object was produced. MSVC separately rejects the SDK's `__attribute__` syntax, and Zig 0.16 returns `Unexpected` on the same first TU. Stop speculative compiler switching. Next required change is an installed GNU-compatible C++ standard-library/toolchain pair (or correctly configured Clang/MinGW environment), then a first-TU compile and only afterward a fresh diagnostic link and WBFS run.
+
 
 ## 2026-10-14 — compiler access restored; archive ownership clears Logo teardown
 
@@ -623,7 +645,9 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Corrected the startup probe's TMP/TEMP inheritance so Windows GetTempPath and PowerShell collect logs from the same directory. The pre-fix recovery probe wrote logs to the user's original TMP directory; those were recovered, and its first-chance log contains earlier appended events as well as the current failure. Final archive-owner-release logs are fresh.
 - Evidence prefix archive-owner-release includes build/test/result/boot/stderr logs and frame240 BMP. Matching DLL/PDB/launcher and archive sources are saved in archive-owner-release-runtime. The final frame240 capture remains the retail strap screen, not a title/gameplay frame.
 - Status PARTIALLY VERIFIED overall; heap-release regression and progress past the former Logo teardown crash are verified. Rough whole-project estimate remains approximately 3.1%, verified playable progress 0%. Next: trace the current Game scene initializer and explain the normal early exit, then capture title/menu output. Sol Medium remains appropriate for that runtime/threading investigation; return to Luna when the next work is an isolated, understood change. Settings, HD textures/HUD, all co-op modes, and full gameplay remain outstanding.
+
 - Snapshot DLL SHA256: 03677CAFFFDE520723C279A7332A7E039250D07DBDDAD7B10277E293552E57AD
+
 
 ## 2026-10-14 — original stage initializer now starts FileSelect resource loading
 
@@ -635,7 +659,9 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Added an optional StackBytes parameter to inspect-startup-dump.ps1. Both 2KB and bounded 64KB stack-candidate scans were inspected and symbolized against matching DLL/PDB snapshots. These remain candidate scans, not debugger-unwound stacks; the phase/exception trace supplies the direct diagnosis.
 - Evidence prefixes game-init-live, game-init-phases (pre-fix), and stage-init-factory (post-fix). Phase maps, symbolized candidate files, dumps, result/boot/build logs, and final frame900 are saved. Matching final DLL/PDB/launcher and traced sources are in stage-init-factory-runtime.
 - Status PARTIALLY VERIFIED overall. The factory fix and actual stage archive request are verified in the real WBFS startup. Whole-project estimate remains roughly 3.1%, verified playable progress 0%. Next: restore the original startup scene-object factories required by initForLiveActor, starting with AllLiveActorGroup, and validate the next startup boundary. Sol Medium remains appropriate because the diagnostic collision factory currently covers only a subset of the original game's global services; keep native diagnostics and original gameplay construction behavior distinct. Settings/HD pack/co-op/full gameplay remain outstanding.
+
 - Snapshot DLL SHA256: 98AC1B0172BF5B5F3C5615D331DCE344D794E8CAA7E3A5EA19E6E43557F41E0B
+
 
 ## 2026-10-14 — actor startup services restored; borrowed framebuffer write corrected
 
@@ -646,7 +672,9 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Frame900 is byte-identical to the previously inspected blue loading/intermission frame. No title/menu/gameplay output is verified. Existing cannot-free-memory warnings in runtime stderr remain unresolved; no claim of complete heap correctness is made.
 - Evidence: actor-startup-factories pre-fix GPU crash logs, actor-startup-gpu-copy final build/result/boot/stderr/dump/frame900, and borrowed-xfb-copy-tests.txt. Matching final DLL/PDB/launcher and relevant sources are in actor-startup-gpu-copy-runtime.
 - Status PARTIALLY VERIFIED overall; original actor-service construction and the borrowed-write correction are verified by runtime and focused regressions. Whole-project estimate remains roughly 3.1%, verified playable progress 0%. Next: restore original EffectSystem construction and verify effect resource initialization, then continue the remaining GameScene startup services. Sol Medium remains appropriate for effects/resource/runtime integration. Settings, HD pack/HUD, all co-op modes and full gameplay remain outstanding.
+
 - Snapshot DLL SHA256: CA9EEDEE171A1CD429475DF4C5D57CCDFB119B6005BEDD856FADEACC1E0EE5C4
+
 
 ## 2026-10-14 — effects initialize after callback ABI refresh; startup reaches planet metadata
 
@@ -658,7 +686,9 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Next failure occurs in phase23, PlanetMapCreator construction. C0000005 resolves to JMapInfo::searchItemInfo line41, called by MR::getCsvDataStr and PlanetMapCreator::addTableData for its planet table. Final run exits after30.3s; no new frame900 was reached and no title/menu/gameplay is verified. Inspect the actual CSV resource attach/extent/header and expected native representation before changing parsing or skipping table rows.
 - Evidence prefixes effect-startup-factories (missing event vtable), effect-startup-events (adaptor crash), effect-callback-abi (shared callback producer crash), and effect-callback-producers (final planet-table failure). ABI offsets, callback-producer manifest, adaptor test output and event ownership output are saved alongside the build/result/boot/firstchance logs. Matching final DLL/PDB/launcher, traced sources and callback consumer objects are saved in effect-callback-producers-runtime.
 - Status PARTIALLY VERIFIED overall. Effects and most remaining scene services initialize successfully, with callbacks verified by failing-before/passing-after regression and real startup progress. Whole-project estimate remains roughly3.1%, verified playable progress0%. Next: correct the demonstrated planet-CSV parsing boundary, then verify stage-data initialization and title/menu entry. Sol Medium remains suitable for resource parsing/runtime debugging. All settings, HD pack/HUD, co-op modes and complete gameplay remain outstanding.
+
 - Snapshot DLL SHA256: 676092E4163E2F611C391C51BABB57890AE8A3A75CF4EA82E1BC22F69A510391
+
 
 ## 2026-10-14 — bounded CSV/stage normalization clears planet and placement reads
 
@@ -671,7 +701,9 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Added run-csv-resource-checks.cmd for beginner-friendly reruns. Verified that it runs both real-disc CSV checks, prints BOTH CSV CHECKS PASSED, waits for a keypress and returns success. Log: csv-resource-launcher-tests.txt. It uses the user's WBFS and the bundled compiler; no downloaded game data is required.
 - Evidence prefixes planet-csv-normalized (post-CSV/pre-stage fix) and stage-tables-normalized (final). Matching final DLL/PDB/launcher, parser/stage sources and stage provider object are in stage-tables-normalized-runtime; native-table-ownership-tests.txt and csv-resource-launcher-tests.txt preserve checks.
 - Status PARTIALLY VERIFIED overall. Planet and live stage-table decoding are verified by real-resource comparisons and progress beyond both corresponding startup crashes. Whole-project estimate remains roughly3.1%, verified playable progress0%. Next: restore the original EventDirector and subsequent scenario-selected scene services, then validate actor placement and title/menu output. Sol Medium remains appropriate for scene/camera/runtime integration. All settings, HD pack/HUD, co-op modes and complete gameplay remain outstanding.
+
 - Snapshot DLL SHA256: C48815ED4C23DCAC23055E1151C3D9784CAAB0B487661262AD3E4784F98FE380
+
 
 ## 2026-10-14 - visible CSV check result launcher
 
@@ -785,6 +817,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Probe reached the60second limit; no C0000005 access violation recorded, but GameScene worker did not complete. Frame900 remains blue. Existing heap-free warnings remain unresolved. No menu, visible Mario rendering, input or playable campaign is verified.
 - Evidence prefix placement-queue-ownership: build/tests/boot/firstchance/stderr/result/frame/dump and readable summary. Matching binaries, response files, current stage provider and changed source/scripts saved under placement-queue-ownership-runtime. DLL SHA256 B30A6CF3C38B3D8E2FC7CFC751913B81B176FC1AF3BE37459A7012A7BAFD8EE0. Status PARTIALLY VERIFIED overall; whole-project planning estimate remains roughly3.1%, verified playable0%. Sol Medium remains appropriate for original runtime integration; no model switch or goal pause recommended.
 
+
 ## 2026-10-15 - original selector factory and game collision camera collection
 
 - Previous goal turn was progress: verified and fixed common/scenario placement table ownership. Revalidated current sources and the saved runtime failure before continuing.
@@ -796,6 +829,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Evidence prefixes sphere-selector-factory (intermediate build/probe) and game-camera-collection (final build/tests/probe/readable summary). Matching final binaries, response files, generated trace source, native adapter, camera RAII header and test sources saved in game-camera-collection-runtime. Final DLL SHA256 5021233854E35AC3E1F43872830AF312B15E7C558E3979974C193EFF7D00ED82.
 - Status PARTIALLY VERIFIED overall. Whole-project rough planning estimate remains3.1%, verified playable0%. Sol Medium remains appropriate for original scene/runtime integration; no model switch or goal pause recommended.
 
+
 ## 2026-10-15 - original Mii face holder reaches SDK heap initialization
 
 - Previous goal turn made progress: integrated SphereSelector and original game collision camera collection; current source/evidence confirmed the next missing factory id108.
@@ -805,6 +839,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Next milestone: a focused actual SDK expandable-heap regression with a real allocation above4GiB; reproduce failure, preserve full host pointers/alignment, verify allocation/free/containment and rebuild affected providers. Do not force low addresses or bypass FaceLib. Original SDK source paths: Petari/src/RVL_SDK/mem/mem_expHeap.c, mem_heapCommon.c; helper header Petari/libs/RVL_SDK/include/revolution/mem/heapCommon.h. Determine generation/cached object provenance before replacing providers.
 - Evidence prefix mii-holder-factory includes final build, boot/firstchance/stderr/result and readable summary. This probe terminated before a fresh frame900 capture; do not treat an older frame as new evidence. Matching final DLL/PDB/launcher/response, traced native adapter and changed source/build script are saved in mii-holder-factory-runtime. DLL SHA256 C39844E3037FBC820C3A6C80D2321EC78EB2D30930484D5C9B4D90B1B111682F.
 - Status PARTIALLY VERIFIED overall: build passes, runtime still fails; no playable game/menu/campaign verified. Whole-project estimate remains roughly3.1%, verified playable0%. Sol Medium remains appropriate for the SDK memory boundary; no model switch or goal pause recommended.
+
 
 ## 2026-10-15 - SDK MEM heaps retain full host addresses and alignment
 
@@ -817,6 +852,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Evidence prefix sdk-mem-host: full build, final relink, corrected tests, FaceLib rebuild, startup traces/result/frame/dump, dump candidate scan/symbols and readable summary. Matching final DLL/PDB/launcher/response, generated MEM sources/header/objects and build/generation/test scripts saved in sdk-mem-host-runtime. DLL SHA256 69895D7E077CF11923FEB9201A8252350BB5F7D49936F6FA3E55C778B9CB33EF. Thread scan is not a debugger-unwound call stack.
 - Status PARTIALLY VERIFIED overall. Whole-project rough planning estimate remains3.1%, verified playable0%. Sol Medium remains appropriate for FaceLib/NAND startup diagnosis; no model switch or goal pause recommended.
 
+
 ## 2026-10-15 - FaceLib middle database storage no longer corrupts busy state
 
 - Previous goal turn was progress: repaired SDK heap pointers/alignment. Revalidated the remaining FaceLib wait using current source and saved matching dump evidence.
@@ -827,6 +863,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Fresh WBFS startup confirms valid boot status Busy6, working1, last6, reason0; native NAND opens /shared2/menu/FaceLib/RFL_DB.dat, returns NOEXISTS(-12), and invokes the FaceLib callback. The false-busy wait is cleared. At47.9seconds a new C0000005 occurs in RFLiLoadResourceHeaderAsync:199 (inlined parseOnmemoryRes_), called by bootloadDB2Res_ on the NAND callback thread. Source reads cached RFL_Res.dat version/section offsets directly as host u16/u32. Next: inspect real resource bytes/extent and normalize/bounds-check cached resource header/length readers, preserving pixel/model payloads. Do not skip resource loading or treat missing database as fatal.
 - Evidence prefixes rfl-boot-status (diagnosis) and rfl-middle-storage (final build/relink, original/corrected regression reports, startup traces/result and readable summary). Final probe terminated before fresh frame900 capture; no new visual/menu/gameplay proof. Existing unrelated heap-free warnings remain.
 - Matching final DLL/PDB/launcher/response,14 FaceLib C objects, relevant generated headers/traced sources and changed scripts are saved under rfl-middle-storage-runtime. DLL SHA256 A040527FFC3F85CD69E068606A86010D6D75E96DFB76E6B88D029D06C37FC650. Status PARTIALLY VERIFIED overall; whole-project rough estimate3.1%, verified playable0%. Sol Medium remains appropriate; no model switch or goal pause recommended.
+
 
 ## 2026-10-15 - cached FaceLib resource sections decode with bounded host reads
 
@@ -839,6 +876,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Probe reached60.6second limit, with GameScene phase45 incomplete. No C0000005 recorded in final trace, but this is not stable gameplay. Frame900 remains the pre-game blue diagnostic capture; no visible Mario/menu/campaign verified. Existing unrelated heap-free warnings remain.
 - Evidence prefix rfl-cached-archive: build/relink/tests, startup logs/result/frame/dump, readable summary. Matching final DLL/PDB/launcher/response,14 FaceLib objects, adapted original loader, standalone decoder and generation/test scripts saved in rfl-cached-archive-runtime. DLL SHA256 2E2EF3B99542E2D067DB828462CF6E05BB26A14A816B2D44AC89E22887E59F00. Status PARTIALLY VERIFIED overall; whole-project rough estimate3.1%, verified playable0%. Sol Medium remains appropriate; no model switch or goal pause recommended.
 
+
 ## 2026-10-15 - Mii icon holder and heap-owned dynamic texture mappings
 
 - Previous goal turn made progress: cached FaceLib resource decoding passes and startup reached missing scene factory id109. Revalidated current original holder constructor and saved evidence.
@@ -849,6 +887,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Second WBFS probe passes Mii icon creation/texture initialization and reaches the final FileSelector::init step, createMiiFont. At48.5seconds C0000005 read0 in FileSelector::createMiiFont:362 (mFont->SetResource(pArchive->getResource("/MiiFont26.brfnt"))). Next: distinguish null archive/resource lookup from font internals, check MiiFont.arc request/mount lifetime and native resource-font normalization. Existing test-archive-fonts.ps1, test-resource-font-port.ps1 and compile-native-font-provider.ps1 may be relevant; do not assume the cause or skip font creation.
 - Evidence prefixes mii-icon-holder (intermediate build/probe) and mii-native-image (final build, model tests, startup traces/result/readable summary). Final process exits -1073741819; no fresh frame900 was captured before termination. GameScene phase45 remains incomplete, no visible menu/Mario/campaign verified. Existing unrelated heap-free warnings remain.
 - Matching final DLL/PDB/launcher/response, fresh Mii provider source/object, traced factory and changed helper/test/build sources saved in mii-native-image-runtime. DLL SHA256 3CE039E668DD13BC8E368AE05C8E0F3F9604658ABAF4A776400D5D882C5071D9. Status PARTIALLY VERIFIED overall; whole-project rough planning estimate3.1%, verified playable0%. Sol Medium remains appropriate for remaining font/startup integration; no model switch or goal pause recommended.
+
 
 ## 2026-10-15 - USA-disc Mii-name font completes file-selector placement
 
@@ -861,6 +900,7 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Evidence prefixes mii-font-archive-trace (diagnosis), mii-native-font (first final build/probe/tests) and mii-native-font-retry (same-binary retry reaching phase47). No fresh frame900 capture before termination; no visible working menu/Mario/gameplay verified. Existing heap-free warnings also remain.
 - Matching final DLL/PDB/launcher/response, refreshed FileSelector and traced FileUtil sources/objects, font API/backend/test sources and full build script saved in mii-native-font-runtime. DLL SHA256 2E9BA6FFDB970C0D991429280D96FE14288285039D0B827EEA71215BAF42026F. Status PARTIALLY VERIFIED overall; rough project estimate remains3.1%, verified playable0%. Sol Medium remains appropriate for animation resource diagnosis; no model switch or goal pause recommended.
 
+
 ## 2026-10-15 - BTK decoder completes phase47; bounded camera table reader follows
 
 - Completed native_texture_srt_animation.hpp and ResourceHolder BTK integration, preserved by generate-actor-runtime.ps1. Primary/post tracks, values, names, IDs, centers and matrix slots are owned and byte-order decoded for original J3DAnmTextureSRTKey evaluation. Real Gift checks compare original evaluator against independent curves at frames0/.5/5/end (16 float components plus rotations), material remapping, post metadata, source-release lifetime and malformed inputs. Existing3600-joint-update/120-transition model suite passes.
@@ -870,8 +910,10 @@ Validation: diagnostic full link passed; one bounded launch with the supplied WB
 - Camera follow-up in progress: original DotCamReaderInBin uses raw JMapInfo::attach; caller has actual camera file size. Added generate-dotcam-reader.ps1 creating native header/source plus refreshed CameraParamChunkHolder call passing signed extent. Reader validates size, uses existing owned attachNative, preserves missing-version default0/empty-table behavior, and owns decoded values/strings. Both providers must be rebuilt because embedded native JMapInfo has expanded ownership storage; other callers use unchanged DotCamReader virtual interface.
 - test-dotcam-reader.ps1 PASS actual FileSelect camera data:8rows/256cells/24vectors against independent reader, immutable source, archive-release lifetime, iteration termination and truncated/null/negative extent rejection. Initial test incorrectly expected stripping an unused trailing byte to reject; corrected test cuts into the referenced records, preserving valid padding handling. Full runtime build/probe is next.
 
+
 ### Visible checks launcher (2026-10-15)
 Added root Run native checks.cmd for double-click use. It pauses by default, records separate camera and animation exit codes, and saves native/build/visible-check-results/RESULT.txt plus logs. Verified via --no-pause: both compiled checks PASS, overall exit 0. This is resource/animation verification only; startup and gameplay remain unverified. Default pause branch reviewed; interactive window appearance not inspected.
+
 
 
 ### Camera scene lifetime correction (2026-10-15)
@@ -893,6 +935,7 @@ Recommended next model: Sol Medium for native rendering integration/debugging.
 Project planning estimate remains roughly 3 percent; gameplay completion verified: 0 percent. This is an estimate, not a measured completion score.
 
 
+
 ### Original material grouping restored (2026-10-15)
 PARTIALLY VERIFIED - Original material grouping restored (2026-10-15)
 
@@ -911,6 +954,7 @@ DLL SHA256: 83478297BE3BD86A14344BF8FBFD57B0C2F3BFB4E4DC18BCB6A52732B44E16E2
 Evidence: material-groups-before.txt, material-groups-after.txt, material-groups-build.txt, material-groups.result.txt, material-groups.boot.log, material-groups.firstchance.log, material-groups-dump.txt, material-groups-symbols.txt, material-groups-frame900.bmp.
 Recommended next model: Sol Medium for scene transition and runtime debugging.
 Overall project estimate remains approximately 3 percent (rough planning estimate); gameplay verified: 0 percent. Goal remains active.
+
 
 
 ### J3D packet writer restoration (2026-10-15)
@@ -934,6 +978,7 @@ Recommended next model: Sol Medium for remaining native graphics writer debuggin
 Project estimate remains roughly 3 percent, planning estimate only; gameplay verified 0 percent. Goal active.
 
 
+
 ### Player placement writer escalation checkpoint (2026-10-15)
 PARTIALLY VERIFIED - Player placement writer investigation (2026-10-15)
 
@@ -951,6 +996,7 @@ Matching runtime: shadow-writer-runtime
 DLL SHA256: 471D6C74ACCA60273D645DAF3DDF7F1C040C1FC51B5E04BA9F2D11B7C14D4E5A
 Evidence prefixes: selector-writer, placement-writer, shadow-writer. Report: SHADOW-WRITER-RESULT.txt.
 Overall project estimate remains roughly 3 percent (rough planning estimate), gameplay verified 0 percent. Full port remains incomplete. Goal remains active; no pause or completion claimed.
+
 
 
 ### Player startup writers resolved (2026-10-15)
@@ -974,6 +1020,7 @@ Recommended next model: Sol High for native rendering/copy integration. Switchin
 Overall project estimate remains roughly 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent. Goal active.
 
 
+
 ### Live texture-copy binding (2026-10-15)
 PARTIALLY VERIFIED - Live game texture-copy binding (2026-10-15)
 
@@ -991,6 +1038,7 @@ DLL SHA256: 254814D3058A316106E017E7975B241966603ADD7AC20EB2E595823DBB6B15A1
 Evidence prefixes: texture-copy-live-before/after/capture-tests/build, texture-copy-live probe logs/dump.
 Recommended next model: Sol High for rendering resource ownership/integration. No Luna downgrade yet for this task.
 Project estimate remains approximately 3 percent, rough planning estimate only; playable gameplay verified 0 percent. Goal remains active.
+
 
 
 ### Allocated J3D list ownership (2026-10-15)
@@ -1012,6 +1060,7 @@ DLL SHA256: 62CDB9DADEE9E0E47813BA765C07E8F4F33C90D4512DE27CA153B371B7C2ACD8
 Logs: allocated-list-before.txt, allocated-list-after.txt, allocated-list-build.txt, allocated-list probe outputs/dump.
 Recommended next model: Sol High for native vertex-array rendering ownership. No Luna downgrade recommended for this remaining integration work.
 Project estimate remains roughly 3 percent (planning estimate only); playable gameplay verified 0 percent. Goal active.
+
 
 
 ### GPU registry synchronization and matrix-array diagnosis (2026-10-15)
@@ -1036,6 +1085,7 @@ Recommended next model: Sol High for matrix-buffer ownership and endian synchron
 Overall project estimate remains roughly 3 percent (planning estimate, not measured); playable gameplay verified 0 percent. Goal active.
 
 
+
 ### Original matrix GPU ownership (2026-10-15)
 PARTIALLY VERIFIED - Original model matrix GPU ownership (2026-10-15)
 
@@ -1058,7 +1108,10 @@ Recommended next model: Sol High for indirect material/shader integration. No Lu
 Project estimate remains roughly 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent. Goal active.
 
 
+
+
 ### Indirect material rendering (2026-10-15)
+
 PARTIALLY VERIFIED - Indirect material rendering (2026-10-15)
 
 Changed: native D3D material path now implements spatial indirect texturing, with separate indirect texture/coordinate bindings, ABG displacement components, 8/5/4/3-bit formats, signed STU bias, three signed 2x3 matrices/exponents, S/T matrices, wrapping and add-previous coordinate accumulation. Coordinates use seven fractional bits and signed 24-bit wrap. Unmodified-LOD path uses explicit derivatives. Actual mip-level selection for indirect materials remains unverified. Indirect bump alpha remains explicitly rejected rather than rendered incorrectly.
@@ -1079,14 +1132,20 @@ Runtime indirect-material: advances beyond the previous unsupported-material rej
 Next: capture exact pending copy registers and implement the required texture-copy destination format/resampling with byte-accurate and D3D tests. ScreenAlphaCapture uses GX_CTF_A8 stored in an I8 texture, a known pending candidate; the current generic error alone does not prove that exact format. Do not force the copy to RGB565 or skip the copy. Further startup/gameplay blockers may follow.
 
 Matching runtime checkpoint: indirect-material-runtime
+
 DLL SHA256: 6B08BCC6921A4AC0A3F2A9FFA18553F317BCDEBB3E15FA9DC55B764B6BCDE32C
+
 Launcher: galaxy-native-e9d2f473519d4b21a8972855c2fc2b19.exe
+
 Evidence: indirect-diagnostic probe/build; indirect-gpu-before.txt, indirect-gpu-after.txt, indirect-stream.txt, indirect-projection.txt, indirect-texgen.txt, indirect-material-build.txt; indirect-material probe logs/dump.
 Recommended next model: Sol High for screen-copy/renderer integration. No Luna downgrade yet; goal stays active.
 Overall project estimate remains approximately 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent.
 How to check: open this RESULT text file and the named test logs. The game is not yet verified playable.
 
+
+
 ### A8 screen capture and particle pointer diagnosis (2026-10-15)
+
 PARTIALLY VERIFIED - A8 screen capture (2026-10-15)
 
 Changed: native_alpha8_copy.hpp writes actual GX_CTF_A8 alpha bytes in 8x4 tiles, preserving partial-tile and tile-row padding. RGBA6 source alpha is expanded from six bits; RGB-only source formats return opaque alpha. NativeD3dRgb565Copy now dispatches A8 separately while retaining the existing RGB565 implementation. RGB copy filters do not alter A8. Both paths write before the existing region-clear operation. Unsupported A8 depth/scaling modes remain rejected. Native RGB565 error includes the raw copy command, format, source rectangle, stride, destination, pixel mode and yscale for further diagnostics. Headers are compiled directly into the full runtime.
@@ -1107,14 +1166,20 @@ New blocker and evidence: first-chance exception writes to FFFFFFFF8AB37FD0. Eff
 Next milestone: adapt native JPABaseEmitter user-work storage to host pointer width with a retained generator/header override, and rebuild every dependent cached provider so emitter size/member offsets agree. Add a regression using pointers above 4 GiB, including a low-32-bit sign bit and emitter lifecycle/reset; then retry full runtime and verify the A8 path. Do not cast the truncated pointer again, clear the link to hide the error, skip deletion, or use a lifetime-unsafe side table. Original Overwrite.cpp initializes mpUserWork directly, so its native provider must match the new layout. JPAEmitterManager allocates emitter pools; all particle/effect code needs coherent layout. GravityDust user work refers to JPABaseParticle, which is a separate type and should not be widened as part of this fix.
 
 Matching checkpoint: alpha8-material-runtime
+
 DLL SHA256: 6C707C4BFCE25EB73912E324074A64C88D1E90E86D82B518E0BE9FDAC7844786
+
 Launcher: galaxy-native-b5eeccf4e3444a3b81233b2a21b6b6c6.exe
+
 Evidence: texture-copy-diagnostic-build.txt and probe logs/dump; alpha8-host-before.txt, alpha8-host-after.txt, alpha8-bytes.txt, alpha8-rgb-bytes-regression.txt, alpha8-rgb-clear-regression.txt, alpha8-material-build.txt and alpha8-material first-chance/result/boot logs.
 Recommended next model: Sol High for particle pointer width and provider ABI consistency. No Luna downgrade yet. Goal remains active.
 Overall project estimate remains approximately 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent.
 How to check: open this result file and the named test logs. The native game is not yet verified playable.
 
+
+
 ### Native particle emitter pointer width (2026-10-15)
+
 PARTIALLY VERIFIED - Native particle emitter pointer width (2026-10-15)
 
 Changed: generated native JPAEmitter.hpp overrides the original s32 mpUserWork with uintptr_t, matching the original accessor signatures and retaining complete PC pointers. Original class statements remain otherwise intact. Native emitter size is now 344 bytes; user-work storage is eight bytes. generate-jpa-emitter-header.ps1 is idempotent, and generate-jpa-runtime.ps1 plus the full diagnostic build regenerate it. A compile-time assertion requires storage to match host pointer width. Original Petari source/header files remain untouched.
@@ -1131,14 +1196,20 @@ Runtime particle-layout: passes the preceding particle-cleanup crash, then at 86
 Next milestone: identify the exact NW4R overlay and image owner causing the missing texture registration. GameSystem::draw calls scene, sequence, star pointer, end-render, wipes, error, Home Button and reset/power overlays. Failure source line 325 is around Home Button drawing. Inspect actual generated line and TexMap mImage/dimensions/format, its TPL/resource accessor and lifetime before changing registration. native lyt_texMap-boot-traced.cpp uses GXInitTexObj with mImage. Do not automatically register arbitrary pointers in GXInitTexObj or hide the failing picture. Once repaired, retry startup and capture a completed scene frame.
 
 Matching runtime checkpoint: particle-layout-runtime
+
 DLL SHA256: 507B7A34751FFFE23E07420E7248A738525131CC3AD15F3FF1F16C937256E008
+
 Launcher: galaxy-native-bcb8d7ff4a9045118df9f9badfff9af2.exe
+
 Evidence: particle-link-before.txt, particle-link-after.txt, particle-layout-build.txt, particle-layout probe result/first-chance/boot logs and dump. Dependency inventories: jpa-layout-dependent-headers.txt, jpa-layout-dependent-sources.txt and jpa-layout-cached-objects.txt.
 Recommended next model: Sol High for NW4R texture ownership and startup integration. No Luna downgrade yet; goal stays active.
 Overall project estimate remains approximately 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent.
 How to check: open this result file and particle-link-after.txt. The native game is not yet verified playable.
 
+
+
 ### SDK texture host-pointer round trip and blue-frame capture (2026-10-15)
+
 PARTIALLY VERIFIED - SDK texture host-pointer round trip (2026-10-15)
 
 Changed: GpuResources::hostAddress(address, extent) now resolves a GPU command address to its original registered CPU storage, with the same metadata mutex and bounds/lifetime validation. resolve() retains its rendering snapshot semantics. GXGetTexObjAll now uses hostAddress, so NW4R TexMap::Set stores an address that can later be passed back to GXInitTexObj. The original resource owner, GPU registration and snapshot remain unchanged. generate-texture-object.ps1 retains the adaptation. Caller must still retain the resource owner while holding the returned CPU pointer.
@@ -1160,15 +1231,21 @@ Next milestone: diagnose solid-blue EFB/XFB output. Capture/compare scene render
 
 Frame artifact: texture-host-frame720-frame720.bmp
 Matching runtime checkpoint: texture-host-runtime-720
+
 DLL SHA256: 3D836E6C70564462D16871C666A0E293D642D9DD5CA39FE0B13E60267524C0D8
+
 Launcher: galaxy-native-68a620f1e10d4a06b76f30d78f8fac04.exe
+
 The previous frame1800 binary/PDB are retained separately in texture-host-runtime-1800 (SHA256 D135209BFF2999D6162BD1157540D33E45A0840F455D7469C18C32F261CE00D5) for texture-host.dmp. Do not symbolize that dump against the frame720 DLL.
 Evidence: overlay-owner diagnostic/long logs/dumps, texture-host-before/after.txt, texture-host-registry.txt, texture-host-build.txt, texture-host-frame720-build.txt, texture-host probe logs/dump and texture-host-frame720 logs/capture.
 Recommended next model: Sol High for framebuffer/scene rendering diagnosis. No Luna downgrade yet; goal remains active.
 Overall project estimate remains approximately 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent.
 How to check: open this result file, texture-host-after.txt and the frame720 BMP. The captured frame is visibly incomplete.
 
+
+
 ### GX depth texture and actual game-scene rendering (2026-10-15)
+
 PARTIALLY VERIFIED - GX depth texture and actual game-scene rendering (2026-10-15)
 
 Changed: D3D pixel shaders now implement original GX depth textures: U8/U16/U24 channel packing, Add/Replace, bias and 24-bit wrapping. The last raw sampled TEV texture supplies depth; disabled texture stages retain that sample, and no texture coordinates supplies zero. Early-depth mode retains raster depth in the buffer. Destination alpha remains supported alongside texture depth. Original clearZTexData is registered as native CPU words, preserving its authored big-endian texels without modifying CPU storage. Both original-source full builds and the generated main-loop provider retain the adaptation.
@@ -1202,7 +1279,10 @@ Overall project estimate: approximately 3 percent (rough planning estimate, not 
 Recommended next model: Sol High for remaining native renderer/runtime diagnosis. No Luna downgrade recommended yet; goal stays active.
 How to check without programming: open the op-280-before-copy.bmp image linked above to see the rendered scene; open this result file and named logs for actual test results. The root Run native checks.cmd remains open and saves its results, but its camera/model checks do not verify this graphics milestone.
 
+
+
 ### Post-fade scene observation (2026-10-15)
+
 PARTIALLY VERIFIED - Post-fade scene observation (2026-10-15)
 
 Changed: diagnostic NativeFramebufferProbe now accepts GALAXY_FRAMEBUFFER_PROBE_READY_DELAY (1..100000 frames, default 2). This selects a frame relative to actual Game scene activation and initialization. It does not skip game logic, change timing, or remove the opening sequence. No production renderer behavior changed in this milestone.
@@ -1230,7 +1310,10 @@ How to check: open late-scene-ready60/op-511-before-copy.bmp to see the final po
 Overall project estimate remains approximately 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent.
 Recommended next model: Sol High for scene/prologue/runtime diagnosis. No Luna downgrade recommended yet. Goal remains active.
 
+
+
 ### Native controller discovery and warning removal (2026-10-15)
+
 PARTIALLY VERIFIED - Native controller discovery and warning removal (2026-10-15)
 
 Outcome: actual later-frame native-game capture no longer displays the original Connect Nunchuk warning. The warning was visible in both prologue-state120/op-815-before-copy.bmp and nunchuk-fixed120/op-815-before-copy.bmp; it is absent in extension-discovery120/op-1094-before-copy.bmp. All three were visually inspected. No error overlay or original game check was hidden or bypassed. Mario, HUD, playable control and complete opening/story progression remain unverified.
@@ -1264,7 +1347,10 @@ How to check without programming: open extension-discovery120/op-1094-before-cop
 Overall project estimate remains approximately 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent.
 Recommended next model: Sol High for remaining native player/camera/stage runtime diagnosis. No Luna downgrade recommended yet; goal stays active.
 
+
+
 ### Actual FileSelect stage and title BGM readiness (2026-10-15)
+
 PARTIALLY VERIFIED - Actual FileSelect stage and title BGM readiness (2026-10-15)
 
 Finding: the observed backdrop belongs to the active FileSelect stage, scenario 1. The earlier PeachCastleGardenGalaxy archive-load line was background scenario loading, not evidence of the active stage. No single-player level or prologue is verified running. This corrects that earlier inference.
@@ -1291,7 +1377,10 @@ How to check: open TITLE-READINESS-TRACE.txt for the compact actual state log, a
 Overall project estimate remains approximately 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent.
 Recommended next model: Sol High for native audio-stream/title readiness diagnosis. No Luna downgrade recommended yet; goal stays active.
 
+
+
 ### Canonical sound IDs and actual title-logo rendering (2026-10-15)
+
 PARTIALLY VERIFIED - Canonical sound IDs and actual title-logo rendering (2026-10-15)
 
 Outcome: actual native-game capture now renders the Super Mario Galaxy title logo and copyright over the FileSelect background. Original music preparation completes and the title enters LogoFadein. No readiness check, animation or menu state was skipped. Audible playback, completed title animation, file selection and playable gameplay remain unverified.
@@ -1322,7 +1411,10 @@ Logs: sound-id-before/after.txt, sound-id-stream-table.txt, sound-id-retail-name
 How to check without programming: open sound-id-fixed120/op-1103-before-copy.bmp to see the rendered title, and this result file for saved build/runtime outcomes. No flashing PowerShell window is needed.
 Overall project estimate remains approximately 3 percent (rough planning estimate, not measured); playable gameplay verified 0 percent. Goal remains active.
 
+
+
 ### Original title A+B transition and six-slot menu rendering (2026-10-15)
+
 PARTIALLY VERIFIED - Original title A+B transition, six-slot menu rendering and persistent tracing (2026-10-15)
 
 Outcome: the original title completes its appearance animation, accepts A+B, runs its exit animation and camera transition, and reaches FileSelector::exeFileSelect. A completed menu-frame capture visibly contains all six numbered save-slot objects. This does not verify slot selection, profile creation, entering a level, Mario movement in gameplay, or complete menu visual fidelity. The captured image still has visual artifacts/faint title remnants, so do not call the menu finished.
@@ -1356,7 +1448,11 @@ Overall project estimate remains approximately 3 percent (rough planning estimat
 Recommended next model: Sol High for original profile selection and runtime integration. No Luna downgrade recommended yet; goal remains active.
 
 
+
+
+
 ### Pointer-selection diagnostic and unresolved textured quad (2026-10-15; paused)
+
 PARTIALLY VERIFIED - Save-slot pointer diagnostics; paused at user's request (2026-10-15)
 
 Verified changes:
@@ -1391,7 +1487,11 @@ Recommended next model: Sol High for the unresolved native graphics state issue.
 User explicitly requested pause now; do not continue automatically.
 
 
+
+
+
 ### Pointer guidance material lookup fixed and original confirmation reached (2026-10-15)
+
 PARTIALLY VERIFIED - Pointer-rendering crash fixed; original slot selection reaches confirmation (2026-10-15)
 
 Outcome:
@@ -1441,57 +1541,74 @@ Exercise the original Yes/No confirmation and profile/icon creation, verify actu
 Recommended next model: Sol High for profile/save and native runtime integration; no Luna downgrade recommended yet.
 Overall project approximately 3 percent (rough planning estimate, not measured); playable single-player gameplay unverified. Goal remains active following the user's explicit resume.
 
+
 2026-10-15 profile-creation follow-through (PARTIALLY VERIFIED)
 The previous pointer material repair passed original hover and Yes-button acceptance. The first follow-through run reached FileSelector::exeCreate but exited with C0000005 before writing any save. Matching WARP checkpoint/profile-create-warp logs preserved; first native stack-corruption location was ReplaceTagProcessor::ReplaceArgs, RVA0x8B03B, loaded base0x7FFC2E390000. No matching crash dump was produced; older TEMP dumps must not be used.
 Fixed one concrete Windows portability defect in Petari/src/Game/Screen/ReplaceTagProcessor.cpp: replace both uninitialized *copy=*args operations with va_copy(copy,args), and pair va_end after argument extraction. This preserves original argument indexing without consuming the caller's list. Test-replace-tag-args.ps1 with the exact native BE tag decoder reproduces C0000005 using preserved original source and passes using corrected source (numeric argument99, signed values, widths2..6, repeated strings/indexes, original argument list preserved, unknown tag retention). Early fixture expectation mismatch was corrected to use the actual native BE accessors before the final before/after comparison.
 Additional diagnostic verification: 9 independent save-file verifier disk fixtures PASS, including requiring a real CONF created flag and rejecting empty/corrupt/invalid-schema/duplicate chunks. These fixtures never touch the game's saves. Existing full diagnostic input4profiles and save envelope regression passed in this milestone. Saved evidence PROFILE-CREATE-RESULT.txt and profile-message-args-before/after.txt, profile-save-verifier-fixtures.txt.
 Full rebuild profile-message-fixed-build.txt PASS: DLL10,220,544, launcher917,504. New original-flow WARP run profile-message-fixed is LIVE: owned PID21420, tool session78190, cap3600sec; same TEMP startup-recovery-temp; do not restart on observation timeout. Matching snapshot profile-message-fixed-runtime, DLL SHA498C7CFB6E1564816720FA4DC2FCCD2B400B716828E20EC8C8540492A145C6D9, launcher galaxy-native-39f35cc0b84441c98f90d4d36339fa21.exe. Await actual profile file/checksum/CONF flag and MiiSelect capture; actual saving/reload and gameplay remain unverified. Hardware fence timeout and title/copyright ghosting remain separate open issues. Sol High next; whole-project about3percent rough planning estimate; goal active.
+
 2026-10-15 additional retail-message check: actual WBFS System_Time000 formatting PASS, output59:59:99, with the same native BE tag decoder and original argument-list shape. Evidence profile-message-args-retail.txt. No active game/runtime rebuild or restart. Save verification remains pending on live PID21420/session78190.
+
 
 2026-10-15 completed profile-flow observation (PARTIALLY VERIFIED)
 Corrected va_copy runtime completed original Yes selection, profile creation/save sequence and reached MiiSelect, passing the old access violation. Full build and focused old-source-fails/fixed-source-passes regression plus real WBFS System_Time000 formatting PASS. Bounded WARP run profile-message-fixed completed2210.9sec, FRAME COMPLETE6100 operations, error log empty, child21420 stopped; matching DLL base0x7FFBC5AC0000/hash498C7CFB... and end-of-observation dump preserved. Inspect profile-message-fixed/op-6099-before-copy.bmp: Select an icon and Yoshi/Peach render, other icon positions remain empty and old title/planet graphics persist. Do not claim complete rendering or gameplay.
 GameData.bin48640 and banner.bin29344 were written, but actual save verifier FAILS because envelope AND config chunk metadata are host LE. Current link uses cached original SaveDataHandler.obj/BinaryDataChunkHolder.obj instead of existing tested Native BE providers. No integration fix attempted yet. Preserve these baseline saves (copies/hashes in profile-message-fixed-save-baseline); integrate native save/chunk/config providers coherently and verify actual disk+original reload next. No live game process remains from this run; probe shell78190 may finish its large-log summary later. Read PROFILE-MESSAGE-FIXED-RESULT.txt for authoritative current outcome/next steps, superseding earlier LIVE notes in PROFILE-CREATE-RESULT.txt. Sol High next; overall roughly3percent; goal active.
 
+
 2026-10-15 save-provider integration (PARTIALLY VERIFIED)
 Replaced the actual boot link's cached original save serializers with all seven existing native BE providers, using shared native-save-providers.ps1 source routing for actor compilation and boot linking. Full build PASS (DLL10,226,688/EXE917,504), exact-once link selection checks PASS, source/object hash manifest native-save-providers.json preserved. Eight focused envelope/chunk/CONF/MII/MISC/sysconfig/copy/banner suites PASS. Previous LE test saves preserved by hash in save-providers-legacy-input before fresh validation; no files deleted.
 New original-flow WARP test is LIVE: prefix save-providers-create, childPID28740, tool session65116, cap3600sec, TEMP startup-recovery-temp. Snapshot save-providers-runtime, DLL SHA7BDE5BF5B1BC80EB7F8F970E2F53E908B118C141232967E03C74F0A9616FA0FF, launcher galaxy-native-b03312cadb3b489d89a070afeeb34f51.exe. Do not rebuild/restart while live. Await real on-disk save verification and original MiiSelect capture, then an original reload recognizing the created profile. Read SAVE-PROVIDERS-RESULT.txt for authoritative continuation details. Saving/reload/gameplay remain unverified. Missing icon models/title ghosting/hardware fence issue still open. Sol High next; goal active; whole project roughly3percent.
+
 
 2026-10-15 read-only reload preparation and creation-run failure (PARTIALLY VERIFIED)
 Prepared and compiled a read-only original FileSelector reload observation (src/diagnostic_profile_reload.inc, EXPECT_PROFILE1..6, no creation/selection inputs, requires original UserFile created + item ExistWait). Isolated FileSelector compile and full separate build PASS: save-reload-temp, DLL10,227,712/EXE917,504, all7 save-provider source hashes match creator. Checkpoint save-reload-runtime SHA7B7E2EEE449152819408317E63A25D3274EB8FC84A67F0948B7B93B559988F25, launcher galaxy-native-ac6a01ff553a4b52aaa2d93da8268f91.exe. No actual reload run.
 Fresh save-providers-create run is TERMINAL: Model texture D3D upload failure at1377.7sec, before actual save creation, child28740 stopped, session65116 terminal. Matching creator DLL7BDE5BF5... loaded base0x7FFC4E850000, saved dump/logs. Exact failure site NativeModelTexture ctor RVA0x11A4ED -> native_model_texture.hpp:25 (CreateTexture2D or CreateShaderResourceView; existing generic error discards HRESULT/stage). Exact cause unknown; concurrency/memory explanation not proven. No fresh save exists. Next add precise D3D upload failure diagnostics, run relevant texture/GPU tests, then repeat fresh creation without simultaneous heavy compilation. No upload fix attempted yet. Do not run reload EXPECT_PROFILE until a new actual save passes its checker. Full details SAVE-RELOAD-PREP-RESULT.txt supersede earlier live notes. No native game remains active. Sol High next; goal active; overall rough3percent; gameplay unverified.
 
+
 2026-10-15 detailed texture-upload diagnostics (PARTIALLY VERIFIED)
 Added operation/HRESULT/device-reason/feature-level/texture/effective-sampler details to NativeModelTexture failures without changing successful uploads. Model texture/real rejected sampler, command mip, and full D3D model draw regressions PASS; full build PASS (DLL10,228,736/EXE917,504), all7 save providers verified and actual DLL strings checked. Probe now records bounded stop-time memory evidence. Observed severe global memory pressure from other apps; left those apps under user control, requested closure, and measured recovery to about19GiB physical free before launching retest. Prior failure cause still unknown; no behavior fix yet.
 LIVE retest texture-upload-diagnostics: childPID26472/session67003, cap3600sec, TEMP startup-recovery-temp. Matching snapshot texture-upload-diagnostics-runtime DLL SHAA8D657D66C22DE3F9406F2B331652415762EDF22CA23C36DF03D74BB1C8F7B5C, launcher galaxy-native-4eb0f83fd2074cbfa8989d7775e2bdd6.exe. Do not restart or rebuild while live. Wait actual save verification and original MiiSelect capture; on success reuse this same instrumented DLL for read-only EXPECT_PROFILE reload (observer included), avoiding a concurrent build. Read TEXTURE-UPLOAD-DIAGNOSTICS-RESULT.txt for current authoritative state/next steps. New save/reload/gameplay unverified. Sol High next, goal active, overall roughly3percent.
+
 
 2026-10-15 launcher review/exact identity guard (PARTIALLY VERIFIED)
 Defender events1116/1117 quarantined first new launcher4eb... as Trojan:Win32/Bearfoos.A!ml, explaining early exit0; classification correctness not determined. Stopped only the owned older-launcher fallback retry31852 after identifying the event. Did not restore quarantine, rename the flagged binary to run it, add exclusions or disable protection. Removed optional DLL import-slot rewriting from launcher; exact-build manifest now prevents all fallback to older artifacts. Full build PASS (DLL10,228,736/EXE914,944), inert identity tests PASS, generated source audit PASS, ordinary Defender custom scan returned without error/protection remains enabled; path-specific poststart detection count0 observed.
 CURRENT LIVE texture-upload-no-hooks test: nativePID44916/main tool session71041, cap3600sec, TEMP startup-recovery-temp. Matching snapshot texture-upload-no-hooks-runtime; launcher0afa637d228a40d986eab559ead51bc6 SHA A812F3CE8DECE23F5D4BAD0DE0DC898FAC13394BAB875B0405C383CFD17F8779; DLLA8D657D66C22DE3F9406F2B331652415762EDF22CA23C36DF03D74BB1C8F7B5C. Has passed prior40sec point/reached Title240/empty error log. Await real save verification and MiiSelect capture, then read-only reload using same instrumented DLL. No concurrent heavy builds. LAUNCHER-REVIEW-RESULT.txt is authoritative current continuation state. Actual upload cause, new save correctness/reload/gameplay unverified. Sol High next; goal active; project roughly3percent.
 
+
 2026-10-15 verified original creation/save format; readonly reload live
 Reviewed native run texture-upload-no-hooks completed2326.8sec/6100ops with empty error log and original MiiSelect capture. Final image op6099 inspected: Yoshi/Peach visible, other icon slots empty, old title/planet/copyright persist. Matching DLLA8D657... loaded base0x7FFC40680000; bounded dump preserved, original process44916 terminal. Actual GameData48640/19entries passes BE checksum/layout/roundtrip/CONF-created checks, profile1 true/others false. Hash958A3CDD7374327E2DB55C0952D3AB4A91F0670C2D0AF7CF3B492DCDEBA04F07 and bannerBB36D744... match preserved baseline.
 NEW LIVE original read-only reload native-save-reload: nativePID35500/main tool46800, cap3600sec, same reviewed exact manifest/DLL/launcher, TEMP startup-recovery-temp. EXPECT_PROFILE1/PRESS_AB1/MENU_READY1, all creation/selection flags absent. Await original created/ExistWait/isNew trace, final menu capture and unchanged save hashes. NATIVE-SAVE-CREATE-RESULT.txt current authoritative state. Do not restart/rebuild while live. Gameplay unverified, Sol High next, goal active, rough project3percent.
+
 
 2026-10-15 VERIFIED fresh-profile persistence and original reload
 Creation texture-upload-no-hooks completed2326.8sec/6100ops and original MiiSelect capture with empty error log; reload native-save-reload completed596.1sec/5878ops with empty error log. Fresh original process recognized slot1 created1/isNew0/isExist1; other five slots empty. Actual disk verifier passes BE checksum/19entry bounds/exact roundtrip/CONF flag before+after; GameData958A3CDD... and bannerBB36D744... hashes unchanged. Final reload image op5877 inspected, existing Mario model/slot visible. No native game remains active; old tool71041 missing after continuation but terminal files/process audit proved its completion; reload46800 terminal.
 Full evidence and bounded next milestone in NATIVE-SAVE-RELOAD-RESULT.txt. Saving gameplay progress and actual playability remain unverified. Next routine task: add original saved-slot1 selection + FileConfirm screen observation using existing diagnostic input patterns. Luna Medium is now appropriate for that bounded extension; return to Sol High for any new engine/rendering defect. Per user's explicit conditional request, pause goal for model switch after final report. Full project scope preserved; rough completion3percent.
 
+
 2026-11-01 audio allocation call-site integration and flag generator correction (PARTIALLY VERIFIED)
 Pool allocation regression rerun PASS; original three slots reused over100 cycles, constructor skipped after exhaustion. Optional original JAIStreamMgr request/start/exhaustion/release traces compile; full linker now refreshes the allocation caller against the noexcept header. Initial trace generator dropped lines through PowerShell concatenation precedence; parenthesized and compiled successfully. The same defect omitted the production Flag refresh call despite its manually adapted component fixture passing. Corrected Flag generation and added a generated-call guard to test-flag-arrays.ps1; original-array fixture PASS. Earlier production-refresh claim was too broad. Full build LIVE session88398, separate stream-pool-temp; no stage game launched. Read build/stream-pool-integration/RESULT.txt and CONTINUATION.json for current state. BGM pool lifecycle/full game remain unverified; rough3%,playable0%,goal active,Sol High next.
+
 Full build88398 terminal0: DLL10274304/EXE914944, unique current stream-manager/flag providers verified and EXE/DLL/PDB/source snapshots retained. Runtime DLLA7D9C160... launcherff34ca02... manifest02:34:20. NEW LIVE stage observation shell35971/ownedPID35540, separate stream-pool-temp, cap1800sec. Prelaunch actual save verifier PASS. No concurrent heavy builds or timeout-driven restart. Poll exact handle; inspect allocation/cleanup trace, terminal result, frame gate and final save verification. No complete stage/control/audio claim. Current build/stream-pool-integration/CONTINUATION.json is authoritative.
+
 
 2026-11-01 native Star Festival view captured; next opening camera fault (PARTIALLY VERIFIED)
 Stream-pool stage35971/PID35540 TERMINAL: spontaneous C0000005 after1396.2sec, gameExit-1073741819. Previous null JAISound constructor fault passed: fourth stream request0200001F fails safely with original three-slot capacity; earlier title/menu remain stopping, later transition stream02000040 is released (free1/active2), so cleanup is not universally broken. SCENE READY1644/1646. Capture39063 operations; actual inspected op38096 before/after-copy images show Mario and Star Festival plaza/path/flowers/flags/NPCs/starry sky. A visible native stage image now exists, but no FRAME COMPLETE marker/control/audio/full-frame fidelity is verified. New final read violation KeyCamAnmDataAccessor::getPos CameraAnim.cpp62 -> CameraAnim::calc157 -> event camera/scene movement. Matching dump376058bytes copied with exact runtime/PDB/source snapshots; DLLbase0x7FFE4F420000/hashA7D9C160... Actual saves pass unchanged before/after. See build/stream-pool-integration/RESULT.txt and terminal CONTINUATION.json. Next original opening CANM decoder/offset/lifetime fixture; do not skip cutscene. Separate source audit confirms a DSP group-command/subframe execution gap; no audio protocol fix attempted. No live native process remains. Rough3%,verified playable0%,goal active,Sol High next.
 
+
 2026-11-01 opening camera endian/ownership integration (PARTIALLY VERIFIED)
 Original raw camera binding/accessor reproduces C0000005 on actual DemoLetter CKAN:96-byte offset misread1610612736. Integrated existing bounded CameraAnimationData/OwnedCameraAnimation into generated CameraAnimRuntime with compatible object member layout and destructor; camera parameter handles unchanged. Normal actor generation/full link routes updated. Existing decoder/sampler tests PASS. New old-fails/current-passes retail fixture PASS on3 cameras/489 full+489 half-frame samples, endpoints, input release/invalid-load retention and layout asserts; this is sampler/owner validation, not full original CameraAnim load/target/calc integration. Existing October11 mounted-archive verifier passes both opening archives through4 mount types (not freshly built). Full diagnostic build LIVE98407/separatecamera-animation-temp; no game launched. Read build/camera-animation-runtime/RESULT.txt and CONTINUATION.json; poll exact build handle. Rough3%,playable0%,goal active,Sol High next.
+
 Full camera build98407 terminal0: DLL10278400/EXE914944; actual response uniquely selects CameraAnimRuntime.cpp with load diagnostics. Exact EXE/DLL/PDB/source snapshot and manifest verified (DLL8903BEBE..., launcher2aecf25f...). NEW LIVE original saved-slot stage shell1349/ownedPID36480, cap1800sec/separatecamera-animation-temp; actual prelaunch save verifier PASS. No camera/cutscene/gameplay outcome yet. Read camera-animation-runtime/CONTINUATION.json; poll exact session, no concurrent heavy builds or timeout-driven restart. Old stream-pool35971/PID35540 terminal. Goal active, rough3%,playable0%,Sol High next.
+
 
 2026-11-01 camera runtime interrupted by Defender; post-observation verification hardened (PARTIALLY VERIFIED)
 Camera stage1349/PID36480 TERMINAL after75.5sec/exit0 at title60. Defender1116/1117 quarantined exact launcher2aecf25f... as Bearfoos.A!ml at03:15:07.95; no opening camera/full stage result. Current launcher missing; actual save checks passed unchanged. Do not classify exit0 as pass. Camera build/component tests remain PASS. Source review finds self-process diagnostics/adjacent DLL startup; does not establish false-positive classification. No restore/rename/old-launcher fallback/protection change/upload. Flagged hash6C880133... held in native/ARTIFACT-REVIEW.json; do not publish copies. Probe now revalidates recorded runtime after observation and fails if artifacts missing/changed or requested frame incomplete. Inert identity suite and actual current-missing rejection PASS; PowerShell parse PASS. Full-game retesting awaits legitimate security review; independent component work remains possible, goal active, rough3%,playable0%,Sol High. camera-animation-runtime/CONTINUATION.json is authoritative; neither1349/36480 nor older35971/35540 is live.
 
+
 2026-11-01 actual DSP group protocol corrected (component VERIFIED; port PARTIALLY VERIFIED)
 New original-map/generator/booted-transport fixture reproduces4 rejected packets for actual groups0..3; old fixtures incorrectly usedarbitrary0x55/stubbedmap. Added bounded typed packet decoder preserving frame count/mixer/addresses/group masks; legacy fallback uses decoder, accepts actual groups and rejects0x55/out-of-range/malformed data transactionally. All262144 valid masks covered. New original64-channel map+group transport fixture and five related decoder/booted integration/recording/send/deferred suites PASS (6 suites). No PCM/subframe execution, channel-completion mail, BGM skip, pool increase or forced stream death added. Current runtime was not rebuilt and predates this source; Defender hold remains. Read build/dsp-audio-group-protocol/RESULT.txt and CONTINUATION.json. Next actual stateful DSP execution/real channel progression and then callbacks; parser acceptance is not working audio. No live game. Goal active,rough3%,playable0%,Sol High next.
+
 
 2026-11-01 real audio sample renderer and stateful frame executor (components VERIFIED; port PARTIALLY VERIFIED)
 Ported pinned Dolphin Zelda renderer to bounded canonical BE DSP wire memory; retained original decoding/resampling/mixing/filter/state code and strict unsupported-operation failures. Added explicit native TChannel wire conversion/read-only-tail preservation. Original sources/GPL-2.0-or-later notices/full license and SHA256 pins retained; adaptation generator validates pins and regenerates deterministically. Renderer suite compiled/rerun PASS: exact PCM5001, natural EOF/loop/pitch/pause/state/release completion after15 subframes, AFC HQ/LQ versus independent PCM references, bounds/writeback and actual retail stereo AST first block5040 source/5120 output frames. This is one block, not whole-track playback or streaming.
@@ -1564,3 +1681,442 @@ Audited actual native/Wii allocation paths before repair. Original Wii global de
 Canonical native heap generation now translates that destructor to original JKRHeap::free dispatch locally. Added generate-native-audio-heap.ps1, called by the existing animation/sound generator and full boot-link wrapper; raw Petari and pool layout/capacities/free-list/allocation semantics unchanged. Dedicated generation avoids rewriting unrelated source providers in the test. Four real pool destructors pass with two batches/five slots, exhaustion, nontrivial free-list order and100 reuse operations per cycle. Original solid individual-free warnings reflect its bump-heap semantics; complete containing-heap destruction restores parent free-size/integrity, and normal main returns0. Initial fixture closure needed unrelated DAC/ARAM providers removed and exact complete generic-pool methods isolated; no behavioral substitutes.
 Existing three-slot null-construction/exhaustion/reuse regression passes, and live retail pause hierarchy/resume/paused-stop passes three cycles again with all original capacities. Current regression snapshots/receipts refreshed; historical checksums retained separately. Heap generation deterministic, four changed PS scripts parse and28 component input hashes match. Fresh full DLL-only build94348 terminal0:10,330,112bytes SHA256E844A0BF91E32CB7098304FB5F09E77C7B7DE5FFBCF07A1F9874865D5FA2347C.16 refreshed provider pairs hash-verified/exact-once selected, current raw audio heap/AI/DVD and host DSP/manager verified, no stale heap/test backend; inert x64 PE32+/public exports pass.52 source snapshots and retained DLL/PDB/link/provider/evidence/RESULT/CONTINUATION at build/audio-pool-destroy. No launcher built or DLL/game executed; held artifact/protection/saves/publication unchanged.
 Scope: this proves matching allocator dispatch while the original heap is alive and slots returned. It does not solve late global-pool destructors after heap disposal, outstanding objects, pool reset, complete audio-system shutdown/restart or all native delete call sites. Larger thread fixtures still retain process-lifetime backing; do not remove that guard based on this repair. Next actual lifetime/destruction-order audit with evidence before broader ownership changes; pending full game/camera retest still awaits legitimate launcher review. Goal active; rough whole-project3% planning estimate, playable0%; Sol High next, no switch recommended.
+
+## 2026-11-04 retained checkpoint: audio-pool-lifetime
+
+STATUS: VERIFIED focused lifetime repair and full DLL-only link; overall port PARTIALLY VERIFIED.
+
+Reproduced before repair: the actual native generic pool outlived its real JKR
+root/solid heaps. Every slot was returned, then heap backing was VirtualFree'd.
+Actual late destructor exited with C0000005 reading the stale free-list.
+The earlier matching-allocator repair alone did not prevent this crash.
+
+Repair: a heap-owned JKRDisposer notifies surviving pools before heap release.
+It clears their free-list/counters and the matching JASDram pointer. Normal
+earlier pool destruction removes that notification without invalidating its
+heap. A trivial intrusive registry has no CRT teardown-order dependency.
+Pool ABI remains 24 bytes on native x64; original slot capacities unchanged.
+Cross-live-heap growth and positive allocation without JASDram fail visibly.
+
+PASS freshly compiled real-provider lifetime fixture:
+- six same-address heap generations and two longer-lived pools;
+- two allocation batches, exhaustion, early pool destruction;
+- cross-heap growth rejection preserving original capacity;
+- freed heap storage overwritten before later pool access/destruction;
+- original freeAll notification, rebinding and heap reclamation;
+- actual observer-allocation failure leaves no registration/count changes;
+- VirtualFree backing, safe exhausted allocation and normal main return 0.
+
+PASS regressions: real generic-pool destructors/containing-heap reclamation;
+three original slots, null-construction/exhaustion and 100 reuse operations;
+three live retail sound/manager pause/resume/paused-stop cycles on actual
+audio/DVD workers, preserving all original resource capacities.
+Original solid-heap individual-free and deliberate OOM warnings are expected.
+
+PASS deterministic heap generation, exact source delta (one include plus
+two lifetime hooks), five PowerShell script parses, 97 unique current regression
+input hashes/snapshots and 56 full-build source snapshots.
+
+Full DLL-only build session7509: terminal exit0, 10,331,136 bytes.
+SHA256 0BAAA0682BD18E787E22FCAA7BAFB86E83A730343BE57CE9B501C4DD2882274B
+16 refreshed providers hash-checked and linked exactly once; current raw
+heap/AI/DVD and extra DSP/manager providers checked, no stale heap objects or
+test-only no-device backend. Inert x64 PE32+ DLL/public export checks PASS.
+Exact DLL/PDB/provider/link receipts retained in runtime-dll-only/.
+No launcher built, DLL loaded, game launched, held artifact/protection/save
+change or publication performed by this development milestone.
+
+LIMITS: lifecycle calls must be serialized, workers stopped and objects returned
+before disposing their heap. This does not prove safe outstanding-object access,
+concurrent disposal, all remaining JASKernel/DSP static state, complete original
+audio-system shutdown/restart, full game audio fidelity or gameplay. Larger
+worker fixtures intentionally still retain process-lifetime pool backing.
+
+NEXT: audit/reproduce full original worker shutdown/restart and remaining static
+pointers before changing that architecture or removing process-lifetime guards.
+Full game/camera retest still requires legitimate held-launcher security review.
+Goal active. Overall project roughly3% planning estimate, playable0% verified.
+Recommended next model: Sol High; no model switch or pause recommended.
+
+
+
+## 2026-11-04 retained checkpoint: audio-dvd-thread-restart
+
+STATUS: VERIFIED DVD-worker reference repair and DLL-only link;
+overall native port PARTIALLY VERIFIED and not playable.
+
+Reproduced: after 20 actual original DVD-worker commands, explicit original
+worker destruction leaves JASDvd::sThread pointing to that destroyed worker.
+The next createThread would report "already created". The fixture caught this
+with an assertion (native exit3221226505), not a full-game crash.
+Before binary, source/providers, output and native exit receipt retained.
+
+Repair: the native DVD factory allocates a same-sized derived task worker.
+An empty reference-owner base clears the singleton AFTER the actual original
+JASTaskThread/JKRThread cleanup. Reverse base destruction guarantees this order.
+Original task queue/callback/command-free/cancellation/join code is unchanged.
+Creation and destruction remain serialized; active duplicate creation still
+returns false. The factory remains limited to one live worker.
+
+Freshly compiled test PASS:
+- 12 actual worker lifetimes over three root/solid heap generations;
+- 240 ordered worker callbacks, half copied payload and half borrowed pointer;
+- callbacks execute on the actual published worker, not the caller thread;
+- duplicate live-worker creation rejected without replacing its reference;
+- command chunks observed empty under the original pool mutex before teardown;
+- original worker/thread-list cleanup, automatic singleton clearing;
+- complete parent-heap reclamation and VirtualFree backing each generation;
+- normal main return0, no replacement singleton reset or process-lifetime heap.
+The fixture explicitly clears JASDram and rebinds other JASKernel globals via
+the original setupRootHeap on each generation. It does not prove a complete
+production audio-system shutdown API or clear every other static pointer.
+
+Live retail pause/resume/manager precedence/paused-stop regression PASS for
+three cycles on actual audio/DVD workers, with original capacities preserved.
+Its existing process-lifetime backing guard remains intentionally present.
+
+PASS original factory source fidelity (only lifetime owner/allocation type;
+old generator's extra final blank line normalized), byte-identical original
+task-worker provider, unchanged worker-size assertion, deterministic generation,
+four PowerShell script parses, 93 unique regression inputs checked/snapshotted.
+Initial source comparison rejected only that extra trailing blank line; no
+production behavior changed to satisfy the comparison.
+
+Full DLL-only build session84800 terminal0:10,331,136bytes.
+SHA256 25A5714044F8FF0DCF73D6440BD7558253B16C73B3403EFE0742C66CDCC52AD5
+16 refreshed providers hash-verified and selected exactly once; current raw
+DVD worker/heap/AI/native DVD and extra DSP/manager selection verified, stale
+DVD/heap objects and test-only output backend absent. Inert x64 PE32+ DLL/public
+exports PASS; 95 full-build source snapshots, DLL/PDB/link/provider receipts kept.
+No launcher built, DLL loaded, game run, held-artifact/protection/save change
+or new publication performed by this development task.
+
+NOT VERIFIED: active-job cancellation/drain, concurrent create/destroy,
+all JASAramStream/JASKernel/DSP static pointers, complete original audio/DVD
+system shutdown/restart, game audio fidelity or gameplay. Source audit found a
+separate one-time JASDsp::boot guard; full audio restart needs its own actual
+reproduction before any repair. Do not remove larger fixtures' backing guards.
+
+NEXT: reproduce complete original audio-worker restart with real DSP/AI, then
+repair the proven boot/static-state failure and rerun retail integration.
+Pending game/camera retest still requires legitimate held-launcher review.
+Goal active; roughly3% overall planning estimate, verified playable0%.
+Recommended next model Sol High; no switch/pause recommended.
+
+
+
+## 2026-11-04 retained checkpoint: audio-system-restart
+
+STATUS: VERIFIED core original audio-worker/DSP/AI restart and DLL-only link;
+overall native port PARTIALLY VERIFIED, not playable.
+
+Two actual failures reproduced and repaired:
+1. Generation1 completed; generation2 terminated because the original Wii
+   one-time JASDsp::boot flag skipped native renderer boot after STOP.
+   Native exit3221226505; exact before binary/source/output retained.
+   Native guard now checks whether the owned renderer is active: active boot
+   is idempotent; a stopped runtime performs the original real boot handshake.
+2. After the boot repair, generation2 booted, then read its predecessor's DAC
+   buffer from a decommitted heap. A test-only observing exception handler
+   recorded a C0000005 read at the previous printed DAC pointer, inside retired
+   backing; it returned CONTINUE_SEARCH and did not suppress the exception.
+   Native exit3221225477. Exact intermediate binary/source/output retained.
+   Native initAI now clears lastRspMadep before initializing fresh DMA storage.
+
+Final freshly compiled actual-worker test PASS:
+- three full original JKR/JAS audio-worker lifetimes on distinct fresh heaps;
+- real native DSP boot, actual AI-paced loop, natural synthetic-voice EOF;
+- 30 DAC chunks per generation and at least100 DSP subframes each;
+- one nonzero1120-value stereo chunk per generation matches an independent
+  full scalar FIR/bus/DAC reference, including start/end transients;
+- 197 steady5001 samples per generation, one voice start and one natural stop;
+- repeated JASDsp::boot while active does not reset the live runtime;
+- original STOP, renderer removal, AI shutdown and no late DAC callbacks over
+  an80ms observation each generation;64 DSP/72 parent slots free;
+- heap disposal clears parent-pool counts, restores parent free size/integrity;
+- old physical backing decommitted, with only inaccessible address reservations
+  retained to prevent stale pointers being hidden by address reuse;
+- all reservations released at end, normal main return0, no process-lifetime
+  readable pool backing or _Exit(0) shortcut;
+- no fixture DSPInit or boot-hook reset between lifetimes: actual DspBoot owns
+  the native DSP reset. Final global cleanup occurs after all three lifetimes.
+
+Fresh actual retail pause/resume/manager-pause/paused-stop regression PASS for
+three cycles, and DAC mapping/30-rotation/stereo/bounds/heap regression PASS.
+Historical checkpoint outputs preserved via optional output directories.
+The larger retail fixture's existing process-lifetime backing guard remains.
+
+PASS exact before/after source delta: only active-runtime DSP boot policy/header
+and DAC initialization pointer reset. Original handshake, allocation sizes,
+mixing, queue scheduling, capacities and DAC transfer methods retained.
+DSP/DAC generation deterministic; three changed PowerShell scripts parse;
+95 unique current regression inputs checked/snapshotted.
+Initial test compilation needed WIN32_LEAN_AND_MEAN to avoid an unrelated
+Windows DriverCallback name collision; no production header/API was changed.
+
+Full DLL-only build session7436 terminal0:10,331,136bytes.
+SHA256 02F18D4FB0C119AA66D4829802F9ECF7562B25697E1DD967CC7A886B9376221F
+16 refreshed providers hash-verified/selected once; current host DSP/AI,
+raw DVD-worker/heap/native DVD and extra manager verified. Stale providers,
+restart test exception observer and no-device test backend absent from link.
+Inert x64 PE32+/public exports PASS.86 full-build source snapshots plus retained
+DLL/PDB/provider/link receipts. No launcher built or DLL/game executed.
+
+LIMITS: low-level audio-worker restart uses an authored synthetic PCM voice,
+not full JAI retail tables/managers/DVD streaming rebuilt across lifetimes.
+Callbacks are explicitly unregistered through original APIs before heap release.
+All other public static pointers, arbitrary calls between lifetimes, concurrent
+start/stop, active-job draining, device-loss behavior, full spatial/fidelity and
+gameplay remain unverified. No held-artifact/protection/save change or publication.
+
+NEXT: exercise authentic retail JAI streams with original audio+DVD workers over
+multiple released heap lifetimes, checking owned registrations/static buffers.
+Repair only a demonstrated remaining ownership failure. Keep larger fixture
+guards until that scope passes. Game/camera retest needs legitimate launcher review.
+Goal active; roughly3% overall planning estimate, verified playable0%.
+Recommended next model Sol High; no switch or pause recommended.
+
+
+
+## 2026-11-04 retained checkpoint: retail-stream-system-restart
+
+STATUS: VERIFIED scoped authentic retail-stream restart and full DLL-only link;
+overall native port PARTIALLY VERIFIED, not playable.
+
+Actual failures reproduced before repair:
+- After three successful original retail pause/resume/stop cycles, actual heap
+  disposal left one dvdErrorCheck callback plus sLoadThread/sReadBuffer and
+  block/channel dimensions referencing the retired session.
+- Calling original initSystem twice registered two callbacks and replaced the
+  read buffer, orphaning the prior allocation. Both assertion failures had
+  native exit3221226505. Before binary/source/providers/output receipts retained.
+
+Repair: a real heap-owned JKRDisposer owns the stream callback/static references.
+Heap disposal unregisters that callback and clears the worker/read-buffer,
+dimensions/error flags and matching JASDram reference. Initialization uses a
+scoped registration guard so allocation failure removes owned registration and
+partial static state. Same-config repeated initialization reuses the existing
+buffer/registration; conflicting live configuration and an unowned matching
+callback fail visibly. Original decoding, streaming, mixing, sizes and capacity
+logic are unchanged; no stream/object ABI change.
+
+Fresh actual original JAI/audio/DVD/DSP/native-AI test PASS:
+- three retail stream-system lifetimes on distinct fresh heap backing;
+- nine individual/manager pause-resume and paused-stop(10) cycles, retaining
+  original3 stream slots/2 ARAM buffers/72 parents/64 DSP channels;
+- same original stream resumes after source freeze; stop drains12 manager frames;
+-540 paused DAC chunks/604800 stereo sample values match the independent
+  constant-sample/front-only mixer/original DAC-order reference;
+- real worker cleanup, no manual DSP stepping or playback fences;
+- repeated init retains one callback and the same read buffer; conflicting
+  dimensions rejected without replacing state;
+- actual heap disposal removes owner/callback/all owned stream references;
+- parent heap integrity/free size restored, physical backing decommitted,
+  inaccessible old address reservations prevent hidden stale-pointer reuse;
+- all reservations released and normal main return0, no success _Exit shortcut,
+  manual stream-reference reset or readable process-lifetime pool backing;
+- no fixture DSPInit between sessions; actual native boot resets DSP.
+
+Initialization failure tests PASS: real read-buffer OOM; real owner OOM after
+buffer allocation; full32-entry unrelated callback table with no allocation;
+foreign matching registration preserved on rejection. Partial callbacks/static
+state clear, and complete containing-heap destruction restores parent capacity.
+Individual solid allocations cannot be reclaimed before heap release; original
+individual-free/OOM warnings are expected. One test setup initially assumed a
+32-byte heap head; it was corrected to include the real heap alignment padding.
+
+Whole-file regression PASS through original stream/parent/DVD/DSP paths:
+natural841863-sample/channel EOF at10536 subframes,1681691 nonzero samples;
+explicit stop at39 subframes,5909 nonzero samples; original finishTask/pool/DSP
+return. This older isolated fixture uses deterministic worker fences/manual
+stepping and does not establish real-time timing or output-device fidelity.
+
+Full-build audit found the cached JASAramStream.obj still selected. The wrapper
+now regenerates and compiles the current stream provider, removes the cached
+object and verifies it among17 refreshed audio providers (previously16).
+Full DLL-only build37595 terminal0:10,334,208bytes.
+SHA256 E917E578F7B1DE80B428645DD658E526C7B11305510223B76AAD0DD00E5D51E5
+All17 provider source/object hashes and exact-once selection, current host DSP/AI,
+raw DVD/heap/native DVD and extra manager selection checked; stale stream object
+and test-only sources/backends absent. Inert x64 PE32+/public exports PASS.
+95 full-build snapshots and95 unique regression inputs checked/snapshotted;
+generator deterministic, four changed PowerShell scripts parse. Exact generated
+stream delta limited to lifetime header/init registration/commit hooks.
+DLL/PDB/provider/link receipts retained. No launcher built or DLL/game executed.
+
+LIMITS: one-entry BSFT fixture selects the user's authentic retail stream;
+full game sound tables/banks/spatial policy, arbitrary static API use after
+shutdown, concurrent init/disposal, active-job cancellation, device loss,
+whole-game audio fidelity and gameplay remain unverified. Workers/streams must
+be stopped/drained before heap disposal. Older narrow fixtures retain their own
+backing guards; this result does not justify removing them all without checks.
+No held-artifact/protection/save change or publication performed.
+
+NEXT: return to original game runtime/audio initialization and sound-table
+integration; perform the pending camera/game retest once legitimate launcher
+security review permits. ARTIFACT-REVIEW.json still marks the held launcher
+unresolved; review status requested from the user without changing protection.
+Goal active; roughly3% overall planning estimate, verified playable0%.
+Recommended next model Sol High; no switch/pause recommended.
+
+
+
+## 2026-11-04 retained checkpoint: retail-catalog-stream
+
+STATUS: VERIFIED scoped actual-catalog stream integration and DLL-only link;
+overall native port PARTIALLY VERIFIED, not playable.
+
+This milestone adds integration evidence and build provenance receipts; it does
+not change runtime audio behavior. No synthetic one-entry BSFT or synthetic
+sound ID is used in the new fixture.
+
+The test reads /AudioRes/SMR.szs directly from the supplied WBFS, decompresses
+the596320-byte BAA and observes its original bounded command interpreter.
+Its BST is38656bytes and it contains no BSFT command. This confirms why original
+AudSystem falls back to JAUStdSoundInfo as its stream-data manager.
+The archive observer does not instantiate banks, wave systems or sequences.
+
+All75 actual stream records PASS independent BE-offset/type/priority/category
+and path checks through original JAUSoundTable/JAUStdSoundInfo/native DVD entry
+lookup. Every path resolves to a real file on the supplied disc.
+The actual prologue record is sound ID02000022, priority128, volume85/255 and
+channel-control14: original getStreamInfo creates left-pan0/right-pan1 children.
+The fixture registers the real table/info objects as the original singleton
+types and passes StdSoundInfo directly to the actual original JAIStreamMgr.
+
+Fresh real original audio/DVD/JAI/parent/DSP/native-AI execution PASS:
+- authored volume and left/right child fields checked after every start;
+- original160 JAISoundChild slots:158 while playing,160 after every completion;
+- three individual/manager pause/resume/paused-stop(10) cycles;
+-180 held DAC chunks/201600 stereo values match an independent reference using
+  saved voice constant samples, actual front mixer gains and original DAC order;
+- actual complete catalog-selected prologue natural EOF in26.410seconds versus
+  nominal26.30821875 (841863 samples/channel at32000Hz),95%-110% gate;
+- maximum observed source841816,1675274 nonzero DAC samples and833271 stereo
+  differences during the natural run; no manual DSP stepping/playback fences;
+- stream/child/ARAM/parent/DSP resources restored after three stopped runs and
+  the fourth natural run; original3 streams/2 ARAM buffers/72 parents/64 DSP;
+- actual worker cleanup, singleton unregistration, complete heap reclamation
+  and normal main return0, no successful _Exit/process-lifetime backing shortcut.
+Original solid individual-free warnings reflect its bump-heap semantics.
+
+Full boot wrapper now records hashes for seven existing sound-ID/info consumers
+at their actual compilation/selection points. These include JAUStdSoundInfo.
+Full DLL-only build98506 terminal0:10,334,208bytes.
+SHA256 E917E578F7B1DE80B428645DD658E526C7B11305510223B76AAD0DD00E5D51E5
+The binary is byte-identical to the preceding checkpoint: production behavior
+was already correct for this scoped catalog path.17 audio providers and7
+sound-ID/info consumers hash-verified and selected exactly once; current raw
+sound-table/archive-parser sources checked. Inert x64 PE32+/public exports PASS;
+test catalog observer absent from game link.107 full-build source snapshots and
+97 current component/verification inputs checked/snapshotted; two changed PS
+scripts parse, StdSoundInfo generation deterministic.
+The natural-EOF extension changed test code only after the full DLL link;
+all production source/object hashes were rechecked unchanged, so no redundant
+second full build is claimed. Updated test inputs/snapshots reflect that run.
+Exact DLL/PDB/provider/link/source receipts retained in runtime-dll-only/.
+
+LIMITS: direct table/info/manager integration, not the entire AudSystem/JAU
+initializer, scene audience/spatial strategy, banks/sequence/SFX construction,
+effects configuration, physical channel orientation/listening/fidelity, arbitrary
+concurrent lifetime safety or gameplay. Natural EOF measures the actual engine
+and queued output path, not an independent audible-device fidelity recording.
+The test's catalog table borrows live owned BAA bytes and supplies their actual
+extent as the existing native JAUSection adapter does.
+No launcher built, DLL/game executed, held-artifact/protection/save change or
+publication performed. Full game/camera retest still needs legitimate security
+review of the held launcher; the previously asked review-status question remains.
+
+NEXT: original game-facing audio initialization and actual sequence/SFX/bank
+integration, or pending camera/game retest when security review permits.
+Goal active; roughly3% overall planning estimate, verified playable0%.
+Recommended next model Sol High; no model switch/pause recommended.
+
+
+
+## 2026-11-04 native JASTrack oscillator/list pointer-width repair
+
+2026-11-04 native JASTrack oscillator/list pointer-width repair
+Status: VERIFIED component fixes and DLL-only link; overall port PARTIALLY VERIFIED, not playable.
+
+Original real constructor reproduced uninitialized oscillator gain: Wii24-byte copies omitted native32-byte record scale/bias, producing -5.74703649e-16 instead of1 on A5 poison. Separate real track node conversion mapped byte584 while actual node lies at792 in the808-byte native track. Before sources/binaries/exits3221226505 retained.
+
+Native generation now uses sizeof for all3 oscillator copies and computes the intrusive node offset after the complete JASTrack declaration. Instance members, ABI size, sequence logic, audio capacities and original Petari source remain unchanged. Generated track header fingerprint and compile-time layout gates accompany the source. One intermediate append test retained old compiled behavior despite a correct preprocessed header; explicit source invalidation and a fresh compiler-cache build now pass. This is not a general compiler-cache repair claim.
+
+Fresh-cache test exits0: actual constructor/reinit/ADSR setter across4 poisoned images; volume/pitch unity, real64-tick attack/sustain/release per image; pointer roundtrip and actual two-track append/forward iteration/removal/callback cleanup. Test-only parser virtual guards fail if sequence execution is attempted; they were not entered. This fixture does not execute sequence bytecode or schedule notes.
+
+Full DLL-only build79716 terminal0: 10,334,208bytes, SHA256 ED58B2F01153A92CEF6CC3A70F4A53B93647A6CEA417C68E6146A5BD7D1AA37D.18 current audio provider source/object pairs and7 sound-ID consumers hash-verified/exact-once. Raw Wii track source removed, fresh native track object selected once, test parser guards excluded. Inert Windows x64 PE32+/public export checks pass; no DLL load or launcher build/run.114 full-build source snapshots retained.
+
+Existing authentic retail catalog regression7331 terminal0: all75 stream records, original StdSoundInfo/JAI/audio/DVD/DSP/native-AI path,3 pause/resume/paused-stop cycles,201600 independent held stereo sample values, child/resource/heap reclamation and normal return. Natural prologue EOF26.410sec versus nominal26.308219; max source841816/nonzero1675274/stereo differences833271. Solid-heap individual-free diagnostics are expected for bump-owned allocations; complete heap parent reclamation remains checked. Separate output directory preserves prior evidence.
+
+Five changed PowerShell scripts parse; generation deterministic; exact source/header transformation check passes; raw Petari track source/header unchanged. Component selected source hashes and regression inputs retained. No game images/assets/saves/HD packs published; no publication in this goal turn, no security protection or held-artifact change.
+
+Next: actual sequence/SFX initialization and bank-to-note integration using original game paths; inspect register-ID enum behavior with a reproduction before repair. AudMeTrack's separate list remains outside this fix. Full game/camera retest still requires legitimate held-launcher security review; ARTIFACT-REVIEW.json remains unadjudicated. Bytecode scheduling, full AudSystem, spatial/effects/audible fidelity, gameplay and requested later settings/co-op are unverified. Goal remains active; overall planning estimate roughly3% (not measured), verified playable0%; Sol High next, no model-switch/pause recommended.
+
+
+## 2026-11-04 original sequence-note startup integration
+
+2026-11-04 original sequence-note startup integration
+STATUS: VERIFIED focused repair, original component playback and full DLL-only link; overall port PARTIALLY VERIFIED, not playable.
+
+Previous goal turn made progress repairing native oscillator copies/list offsets. The register-ID compiler warning did not reproduce a runtime failure: original optimized register32 write/read and adjacent guard passed, as did actual parser register32 operands. Register code remains unchanged; other enum/alias behaviors have not been declared correct from this narrow check.
+
+Reproduced first actual sequence note exiting C0000005: game JASTrack::channelStart was absent from the selected native source while its weak declaration allowed linking. Connected its complete original OverwriteJAudio.cpp method and made the native declaration required. A second first-note failure was symbolized to its JASBank::noteOn call at generated/JASTrack.cpp:872 (caller RVA29C92); disassembly showed a null indirect target despite the weak bank definition being present. Native bank declaration now requires the original dispatcher, generated as a fresh provider with its header fingerprint. Original instance layouts, game method bodies, sequencing, mixing and capacities remain unchanged; raw Petari preserved.
+
+Full integration first lacked AudUtil's original policy function. Adding the whole source collided with two existing numeric helpers in cached native_audio_support_port.obj. Final generation includes only the exact original policy method from AudUtil.cpp; existing numeric helpers are preserved. Intermediate failed link outputs retained. No invented policy stub or alternate sound path was added.
+
+Fresh-cache component40524 terminal0: actual parser/controller/track register32 and BE16 operands,2-tick wait, loop/add,BE24 call/return and register-indirect commands PASS. No parser/note subclass or fake note callback. The authored note sequence uses original default oscillator programF0, then explicit note-off/wait/finish. Original global track-list callback drives the actual audio worker/DSP/native AI/DAC path:205 subframes,84 with an active voice,30 DAC chunks,14400 nonzero sample values. Track becomes STOPPED, list empties, all72 parent/64 DSP slots return. Actual worker/runtime/thread-list shutdown and parent heap free-size/integrity restoration pass; backing released and normal main returns0. Test-only access-violation observer reports but never suppresses faults. This does not establish oscillator waveform/pitch fidelity or listening results.
+
+Prior actual track construction/reinit/ADSR/list regression passes again on4 poison images and64-tick envelopes in its own output directory. Five changed PowerShell scripts parse. Track/bank generation deterministic; exact original game/bank/policy methods and minimal header declaration differences checked. 116 unique component/build/regression input hashes verified and snapshotted.
+
+Full DLL-only build77325 terminal0: 10,334,720bytes, SHA256F6AC7F11DB9659F7B689598C73003711B4B71AA0A18B88619B9343E70E05776E. All19 refreshed audio source/object pairs and7 sound-ID consumers hash-verified/exact-once selected; raw weak bank/track providers absent, original parser/reader raw sources selected once, test fixture/observer excluded. Strong defined note functions independently verified in retained JASTrack.obj and JASBank.obj COFF symbols. Inert x64 PE32+/public exports pass;129 full-build snapshots. Exact DLL/PDB/provider objects/link receipts retained under runtime-dll-only. No launcher built, DLL loaded or game run; held-artifact/protection/saves/publication unchanged.
+
+Scope: this proves authored sequence-control and original engine oscillator-note scheduling/output/release, not retail BMS/sample-bank wave loading, real sound-effect selection, JAISeq/JAISe/AudSystem initialization, full spatial/effects/physical audible fidelity or gameplay. Next connect actual catalog sequence/SFX and sampled-bank/wave note paths; reproduce negative/resource-exhaustion behavior before repair. In particular the original debug fallback after note-allocation failure with no bank is outside this test. Do not remove existing guardrails or claim full game audio from positive PCM alone.
+
+Full game/camera retest still requires legitimate security review of the separate held launcher; ARTIFACT-REVIEW.json remains unadjudicated. Goal active; roughly3% whole-project planning estimate (not measured), verified playable0%; Sol High next, no model-switch/pause recommended.
+
+
+## 2026-11-04 actual retail sampled-bank sequence-note integration
+
+2026-11-04 actual retail sampled-bank sequence-note integration
+STATUS: VERIFIED scoped integration and DLL-only link; overall port PARTIALLY VERIFIED, not playable.
+
+Previous goal turn repaired original sequence-note startup using the engine oscillator voice. This milestone joins previously separate original retail bank/wave constructors, waveform archive loading and authored sequence-note playback. No runtime behavior repair was needed.
+
+Reads /AudioRes/SMR.szs directly from the supplied WBFS and decodes596320-byte BAA. Original bounded archive-command interpreter observes48 waveform systems/48 bank records. Actual loader policy associates readBNK's waveform-system argument with the matching wave bank; selected bank0 uses waveform system0. Actual BNK/WS parsers construct its instrument/wave banks. Original JASWaveArc/JASDvd/JKRAramStream/JKRDvdAramRipper path loads /AudioRes/Waves/B00mahit_0.aw; all1,092,128 bytes independently read from DVD equal the loaded ARAM image.
+
+Selected actual bank0/program0/key60/velocity100 uses wave16,format0 AFC/ADPCM,7397 samples,loop255,address0x31800. Authored original bytecode selects bank/program, plays the sample, waits20 ticks, sends note-off, waits20 and finishes. No custom interpreter/track/note/voice callback or manual DSP stepping. The original global track-list callback, actual game channelStart/Bank::noteOn, parent/DSP channels and complete original audio worker/native AI/DAC execute the note.
+
+Fresh-cache test69545 terminal0:205 subframes,84 active sample-identity/metadata checks,83 actual DSP source/count/loop/AFC checks,30 DAC chunks and23832 nonzero sample values. Checks require CH_WAVE, actual bank ownership, loaded wave address and authored sample format/count/loop data; no oscillator substitution. Track stops/list empties and all72 parent/64 DSP slots return. Original waveform erase, actual audio/DVD/ARAM-worker/thread-list shutdown, parent free-size/integrity restoration, released physical backing and normal main return PASS. Bump-owned solid-heap individual-free diagnostics remain expected; complete parent reclamation is asserted.
+
+Initial stronger fixture incorrectly treated DSP field0x64 as a permanent16-sample block size; the original renderer actually consumes it as the live remaining decoded AFC buffer count (observed5). Corrected the reference to its documented0..16 bound while retaining exact9-byte AFC format and source/count/loop checks. No production workaround or captured-output PCM oracle. Earlier fixture setup needed missing JASMutex include/public base destructor access and original VI/JSUOutputStream link dependencies; these did not alter production behavior.
+
+Full boot build now records16 actual sampled-bank/wave/transfer source paths, exact-once response selection and before/after compilation hashes. These are sources compiled directly by the full response, not fabricated individual object receipts. Full DLL-only build93542 terminal0: 10,334,720bytes, SHA256F6AC7F11DB9659F7B689598C73003711B4B71AA0A18B88619B9343E70E05776E, byte-identical to the prior runtime checkpoint.19 fresh audio provider pairs+7 sound-ID consumer hashes and all16 sampled source receipts pass; actual parser/reader/current bank providers selected, test observer excluded. Inert Windows x64 PE32+/public export checks PASS;163 full-build source snapshots/151 unique selected inputs retained. Two changed PowerShell scripts parse. Exact DLL/PDB/link/provider/source/binary/evidence receipts retained here.
+
+This verifies one real sampled instrument through an authored note sequence. It does not yet verify an actual BMS/BSC sound-effect request through JAISe/JAISeq/StdSoundInfo, all48 banks, alternate wave groups/formats, independent exact PCM/waveform/pitch fidelity, spatial/effects policy, endpoint listening or gameplay. Next actual catalog/BSC selection and JAI sound request -> sampled sequence path, keeping real resource ownership/cleanup. Negative missing-bank/resource-exhaustion debug fallback remains outside this positive-path milestone. No new launcher, DLL/game load, publication, protection/held-artifact or save changes. Separate held-launcher legitimate review still gates camera/game retest.
+
+Goal active; roughly3% overall planning estimate (not measured), verified playable0%. Sol High remains appropriate for actual sound-effect/sequence-manager integration; no model switch/pause recommended.
+
+
+## 2026-11-04 actual coin catalog/sequence sound-effect integration
+
+2026-11-04 actual catalog SE_SY_COIN request and retail sequence integration
+STATUS: VERIFIED scoped core sound-effect integration and DLL-only link; overall port PARTIALLY VERIFIED, not playable.
+
+Previous goal turn verified a real sampled bank with authored bytecode. This milestone requests actual sound ID00000000/SE_SY_COIN through original JAISeMgr, JAUStdSoundInfo and JAUSeqDataMgr_SeqCollection. No authored/replaced sequence, custom parser/note callback, manual DSP stepping or fabricated sound selection.
+
+Reads the user's WBFS /AudioRes/SMR.szs, decodes596320-byte BAA and uses the original bounded archive-command interpreter. Actual BST38656/BSTN/BSC163136 data supply name/descriptor50003784, priority128, authored volume125/255 and sequence offset0x411. These are independently checked against BE records and actual sound properties. Live original BSC storage/region outlives every borrowed sequence. Actual retail sequence opens its own children and selects programs10/11 from bank64.
+
+Initial fixture only registered bank0/waveSystem0, producing a null-bank crash in channelStart's debug fallback when the coin selected bank64. Investigation initially considered a missing mapping; the full BNK-header inventory resolves it: archive command's wave-system index is distinct from the BNK header's bank number. Actual bank64 is associated with waveform system2 (B64kawa_0.aw). Fixture now follows that real mapping; no guessed alias, manufactured voice bank, change to bank numbering, suppressed notes or production repair. Retained original DOL disassembly corroborates direct original lookup, loader dispatch and header-ID registration. Its existing reference DOL was inspected inertly, not launched or freshly re-extracted. The earlier failing-test receipt/logs describe this incomplete fixture and are superseded by component-result.json.
+
+Original bank/wave parsers and DVD/ARAM workers load the actual4,771,584-byte /AudioRes/Waves/B64kawa_0.aw archive; independent DVD bytes equal the complete ARAM transfer. Every observed voice must be CH_WAVE, own the actual loaded bank/wave system, use bank64/program10 or11 and reference bytes within that loaded archive. Actual DSP addresses, sample counts and loop flags must match those voices. No oscillator substitute or synthetic BSFT was used.
+
+Fresh-cache test98312 terminal0: three consecutive real coin requests finish naturally.1349 subframes/193 DAC chunks/192556 nonzero sample values,906 voice identity/source checks and882 actual DSP source/sample-metadata checks. After EACH cycle, handle detaches, manager is empty, sequence region is unused, global track list empties and all original120 SE/200 child-track/1 extra-manager/160 child-parameter/72 parent-channel/64 DSP capacities restore. Same real manager/pool objects are reused. Actual audio/DVD/ARAM workers stop, thread list empties, waveform erases, parent heap free-size/integrity restores, physical backing releases and normal main returns0. The raw log's trackStatus99 means no attached track, not an engine status. Solid-heap individual-free diagnostics are expected bump-heap behavior; complete parent reclamation is asserted.
+
+No runtime behavior changed. Full boot wrapper now additionally records8 original SE/request/sequence sources with exact-once response selection and identical before/after compilation hashes, alongside16 sampled-bank/transfer source receipts. These direct-source compilation receipts are not separate object-build claims. Full DLL-only build99507 terminal0: 10,334,720bytes/SHA256F6AC7F11DB9659F7B689598C73003711B4B71AA0A18B88619B9343E70E05776E, byte-identical to prior runtime.19 refreshed audio source/object pairs+7 sound-ID consumers+16 sampled sources+8 SE sources hash-verified; test observer excluded. Inert x64 PE32+/public export checks PASS. 181 full-build source snapshots/172 unique selected inputs checked and snapshotted; two PS scripts parse. Existing unrelated base caches remain part of this incremental full link; no clean-checkout full rebuild claim.
+
+Local diagnostic disassembly used an isolated Capstone developer package under this build directory; it and the private DOL/ELF copies are not runtime dependencies or publication inputs. No launcher built, DLL/game load, protection/held-artifact/save change or publication occurred. Separate held-launcher security review remains unadjudicated and still gates camera/game retest.
+
+Scope: this proves core actual coin catalog/sequence/JAISe/sample/audio integration, not a coin pickup during gameplay. Null audience/strategy match the tested core UI-style request; full AudSystem/JAUSoundMgr routing, game strategy/audience/spatial/effects, every sound/sequence, exact waveform/pitch/PCM reference, endpoint listening, concurrent/negative pool behavior and campaign remain unverified. Next game-facing audio-manager/system initialization and real request routing; pending full rendering/camera retest after legitimate launcher review. No model upgrade is needed for this completed integration; Sol High remains appropriate for the next multi-manager lifecycle task.
+
+Goal active; roughly3% whole-project planning estimate (not measured), verified playable0%; no pause/model switch recommended.

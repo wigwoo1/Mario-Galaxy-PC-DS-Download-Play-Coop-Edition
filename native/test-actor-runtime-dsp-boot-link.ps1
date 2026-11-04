@@ -43,6 +43,9 @@ foreach($provider in $soundIdRefreshUnits){
 & (Join-Path $native 'generate-flag-vertex-arrays.ps1')
 & (Join-Path $native 'generate-camera-animation-runtime.ps1')
 & (Join-Path $native 'generate-native-audio-heap.ps1')
+& (Join-Path $native 'generate-native-audio-dvd-thread.ps1')
+& (Join-Path $native 'generate-native-jas-aram-stream.ps1')
+& (Join-Path $native 'generate-native-track.ps1')
 & (Join-Path $native 'generate-audio-frame.ps1')
 & (Join-Path $native 'generate-audio-dsp-host.ps1')
 & (Join-Path $native 'generate-native-audio-thread.ps1')
@@ -69,6 +72,9 @@ $objects=@(
  @{Source=(Join-Path $native 'src\generated\ZeldaAudioRenderer.cpp');Name='ZeldaAudioRenderer.obj'},
  @{Source=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASChannel.cpp');Name='JASChannel.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\generated\AudioAiCtrlHost.cpp');Name='JASAiCtrl.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\generated\JASAramStream.cpp');Name='JASAramStream.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\generated\JASTrack.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASTrack.cpp');Name='JASTrack.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\generated\JASBank.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASBank.cpp');Name='JASBank.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\native_jkr_aram_port.cpp');Name='native_jkr_aram_port.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\remix_sequence_data.cpp');Name='remix_sequence_data.obj'},
  @{Source=(Join-Path $native 'src\generated\DspUcodeImage.cpp');Name='DspUcodeImage.obj'},
@@ -1760,6 +1766,7 @@ if($npcFunctionMatches.Count-ne 1){throw 'Expected one original NPCFunction prov
 $response=$response.Replace($npcFunctionMatches[0].Value,'"'+$npcFunctionObject+'"')
 $response='-DGALAXY_NATIVE_JAI_SOUND_ID=1 -DGALAXY_NATIVE_JPA_USERWORK_64=1 '+$response
 # These cached units inline JAISoundID accessors. Keep every numeric-ID consumer coherent.
+$soundIdProviderReceipts=@()
 foreach($provider in $soundIdRefreshUnits){
  $soundIdObject=Join-Path $tmp ($provider.Unit+'-native-id.obj')
  & $zig c++ @gameSceneCommon '-include' (Join-Path $native 'include\Native\HeapPlacement.hpp') '-Wno-c++11-narrowing' $provider.Source '-o' $soundIdObject
@@ -1767,7 +1774,9 @@ foreach($provider in $soundIdRefreshUnits){
  $idMatches=[regex]::Matches($response,'"[^"\r\n]*\\'+$provider.Unit+'\.obj"')
  if($idMatches.Count-ne 1){throw "Expected one cached native sound-ID consumer: $($provider.Unit)"}
  $response=$response.Replace($idMatches[0].Value,'"'+$soundIdObject+'"')
+ $soundIdProviderReceipts+=[pscustomobject]@{Unit=$provider.Unit;Source=$provider.Source;SourceSHA256=(Get-FileHash -LiteralPath $provider.Source -Algorithm SHA256).Hash;Object=$soundIdObject;ObjectSHA256=(Get-FileHash -LiteralPath $soundIdObject -Algorithm SHA256).Hash}
 }
+$soundIdProviderReceipts | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $tmp 'native-sound-id-providers.json')
 # Refresh platform input objects instead of retaining the actor audit's old cache.
 $inputRefreshCommon=@('-DGALAXY_NATIVE_JAI_SOUND_ID=1','-std=c++17','-O2','-target','x86_64-windows-gnu',"-I$native\include-runtime","-I$native\include",'-include','revolution/types.h','-include',"$native\include-runtime\revolution\os.h",'-include',"$native\include-runtime\revolution\gx\GXVert.h","-I$root\Petari\libs\RVL_SDK\include")
 foreach($inputUnit in @('native_kpad_input','native_keyboard_kpad','native_wpad_port')){
@@ -2301,9 +2310,12 @@ if(!$response.Contains($oldOutput)){throw 'The selected response file does not t
 $dll=Join-Path $tmp 'galaxy-native.dll'
 $response=$response.Replace($oldOutput,'"'+$dll+'"')
 foreach($item in $refreshedAudioObjects){
- $raw='"'+$item.OriginalSource+'"'
- if([regex]::Matches($response,[regex]::Escape($raw)).Count-gt 1){throw 'Duplicate original DSP source provider'}
- $response=$response.Replace($raw,'')
+ $rawPaths=@($item.OriginalSource);if($item.InputSource){$rawPaths+=$item.InputSource}
+ foreach($rawPath in $rawPaths){
+  $raw='"'+$rawPath+'"'
+  if([regex]::Matches($response,[regex]::Escape($raw)).Count-gt 1){throw 'Duplicate original DSP source provider'}
+  $response=$response.Replace($raw,'')
+ }
  $pattern='"[^"\r\n]*\\'+[regex]::Escape($item.Name)+'"'
  if([regex]::Matches($response,$pattern).Count-gt 1){throw 'Duplicate cached DSP object provider'}
  $response=[regex]::Replace($response,$pattern,'')
@@ -2326,12 +2338,41 @@ $saveProviderManifest=@(foreach($provider in $nativeSaveProviders){
 $saveProviderManifest | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath (Join-Path $tmp 'native-save-providers.json')
 Write-Output "PASS all7 native save providers selected exactly once; cached serializers removed from boot link."
 
+# These sources are compiled directly by the full link response. Record their
+# actual pre/post compilation hashes; they are not separate object receipts.
+$sampledBankSources=@('generated\GameInstrumentParamKernel.cpp','generated\BankEffectorKernel.cpp','generated\BankInstrumentKernel.cpp','generated\DrumSetKernel.cpp','generated\BankDispatchKernel.cpp','generated\BasicBankKernel.cpp','generated\BasicInstrumentKernel.cpp','generated\WaveSystemParserKernel.cpp','generated\JASSimpleWaveBankKernel.cpp','generated\JASBasicWaveBankKernel.cpp','generated\JASWaveArcLoaderKernel.cpp','generated\AramStreamKernel.cpp','generated\DvdAramRipperEntryKernel.cpp','generated\DvdAramRipperTransferKernel.cpp','generated\AramCompletionKernel.cpp','bank_chunk_port.cpp')
+$sampledBankReceipts=@(foreach($relative in $sampledBankSources){
+ $source=Join-Path (Join-Path $native 'src') $relative
+ if([regex]::Matches($response,[regex]::Escape('"'+$source+'"')).Count-ne 1){throw "Sampled-bank source selection failed: $relative"}
+ [pscustomobject]@{Source=$source;BeforeSHA256=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash;Mode='source compiled directly in full response'}
+})
+# Original SE request/sequence sources remain direct full-response inputs.
+$seRequestSources=@('JAISe.cpp','JAISeMgr.cpp','JAISound.cpp','JAISoundParams.cpp','JAISeqDataMgr.cpp','JASSeqCtrl.cpp','JASRegisterParam.cpp','JASTrackPort.cpp')
+$seRequestReceipts=@(foreach($unit in $seRequestSources){
+ $source=Join-Path $root ('Petari\src\JSystem\JAudio2\'+$unit)
+ if([regex]::Matches($response,[regex]::Escape('"'+$source+'"')).Count-ne 1){throw "SE request source selection failed: $unit"}
+ [pscustomobject]@{Source=$source;BeforeSHA256=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash;Mode='source compiled directly in full response'}
+})
 $oldErrorActionPreference=$ErrorActionPreference
 $ErrorActionPreference='Continue'
 & $zig c++ "@$probeResponse" *> $log
 $ErrorActionPreference=$oldErrorActionPreference
 if($LASTEXITCODE){Get-Content $log -Tail 60;exit $LASTEXITCODE}
 if(!(Test-Path -LiteralPath $dll) -or (Get-Item -LiteralPath $dll).Length -lt 1){throw 'The linker returned success without producing its DLL.'}
+foreach($receipt in $sampledBankReceipts){
+ $after=(Get-FileHash -LiteralPath $receipt.Source -Algorithm SHA256).Hash
+ if($after-ne $receipt.BeforeSHA256){throw "Sampled-bank source changed during compilation: $($receipt.Source)"}
+ $receipt|Add-Member -NotePropertyName AfterSHA256 -NotePropertyValue $after
+}
+$sampledBankReceipts|ConvertTo-Json -Depth 3|Set-Content -LiteralPath (Join-Path $tmp 'native-sampled-bank-providers.json')
+foreach($receipt in $seRequestReceipts){
+ $after=(Get-FileHash -LiteralPath $receipt.Source -Algorithm SHA256).Hash
+ if($after-ne $receipt.BeforeSHA256){throw "SE request source changed during compilation: $($receipt.Source)"}
+ $receipt|Add-Member -NotePropertyName AfterSHA256 -NotePropertyValue $after
+}
+$seRequestReceipts|ConvertTo-Json -Depth 3|Set-Content -LiteralPath (Join-Path $tmp 'native-se-request-providers.json')
+
+
 if($DllOnly){
  [pscustomobject]@{Library=$dll;LibrarySHA256=(Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash;BuiltAt=(Get-Date -Format o);DllOnly=$true;LauncherBuilt=$false;GameRun=$false} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $tmp 'dll-build.json')
  Write-Output ("PASS actor-runtime DLL-only full link: {0:N0} bytes; no launcher built or game run" -f (Get-Item -LiteralPath $dll).Length)

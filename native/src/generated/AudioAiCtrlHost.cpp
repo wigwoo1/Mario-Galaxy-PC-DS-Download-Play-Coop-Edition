@@ -48,6 +48,9 @@ f32 JASDriver::sDacRate = 32028.5f;
 u32 JASDriver::sSubFrames = 0x00000007;
 
 void JASDriver::initAI(void (*param_0)(void)) {
+    // A previous worker's DAC buffer may belong to a released native heap.
+    // Restart begins with the newly initialized DMA buffer, never that span.
+    lastRspMadep = nullptr;
     setOutputRate(OUTPUT_RATE_0);
     u32 dacSize = getDacSize();
     const u32 size = dacSize * 2;

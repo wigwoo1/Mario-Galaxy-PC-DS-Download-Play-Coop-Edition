@@ -1,4 +1,5 @@
 #include <Native/HeapPlacement.hpp>
+#include <Native/AudioPoolHeapLifetime.hpp>
 #include <cstdint>
 #include "JSystem/JAudio2/JASHeapCtrl.hpp"
 #include "JSystem/JAudio2/JASMutex.hpp"
@@ -211,11 +212,13 @@ JASGenericMemPool::~JASGenericMemPool() {
         JKRHeap::free(pChunk, nullptr);
         pChunk = pNextChunk;
     }
+    Native::releaseAudioPoolHeap(this);
 }
 
 JKRSolidHeap* JASDram;
 
 void JASGenericMemPool::newMemPool(u32 size, int n) {
+    if (n > 0) Native::retainAudioPoolHeap(this, JASDram);
     void* pChunk;
     for (int i = 0; i < n; i++) {
         pChunk = new (JASDram, 0) u8[size];

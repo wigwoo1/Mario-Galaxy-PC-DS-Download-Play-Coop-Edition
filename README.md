@@ -4,13 +4,13 @@ Experimental Windows x64 native port based on [SMGCommunity/Petari](https://gith
 
 ## Current state
 
-The November 4 source includes verified stream-manager/DVD fixes, 64-bit DAC buffer mapping, and tests using the complete original audio/DVD workers. Later development verified the queued output's playback timing, sound/manager pause and resume, and a matching-allocator audio-pool destructor repair. A development game run previously captured a partial Star Festival view before a camera-animation crash. Complete stage rendering, player-controlled gameplay, audible game fidelity and campaign completion remain unverified.
+The November 4 source now includes scoped verification of audio-pool/worker/heap lifetimes and restart, actual retail sound-catalog streams, native track/sequence-note repairs, sampled instruments and three natural requests of the original coin sound. The latest completed DLL-only link is hash-verified; no matching new launcher package is available. The shared-manager coin-plus-stream test is included as work in progress: it compiles, but its final runtime assertion fails because the stream remains preparing.
 
-**Not playable.** The retail audio fixture now completes in 26.410 seconds for 26.308 seconds of nominal audio, replacing the earlier incorrect 46.744-second result. These are scoped component results. A full DLL-only build includes the output and pool repairs; no matching new launcher/DLL package is published. The separate held launcher remains excluded pending security review. Whole-system shutdown/restart and pool destruction after heap disposal remain unverified.
+**Not playable.** The last full-game run captured a partial Star Festival view before a camera-animation crash. Complete stage rendering, reliable player control, campaign completion and full audio/visual fidelity remain unverified. The separate held launcher remains excluded pending legitimate security review.
 
-Development is active; this publication job did not resume it or change its goal status. Rough overall progress remains about 3%, a planning estimate rather than a measured counter; verified playable completion remains 0%.
+Development was active and remains active; publication did not resume it, change goal status or run development tests. Rough overall progress remains about 3%, a planning estimate rather than a measured counter; verified playable completion remains 0%.
 
-See [current status](docs/STATUS.md), [latest November 4 verification](docs/verification/2026-11-04-audio-timing-pause-pool.md), [daily publication check](docs/DAILY-STATUS.md) and [native progress](native/PROGRESS.md). Dated earlier notes are historical; the latest verification note supersedes their pending queue/timing status.
+See [current status](docs/STATUS.md), [latest verification and limits](docs/verification/2026-11-04-audio-lifetimes-and-retail-coin.md), [daily publication check](docs/DAILY-STATUS.md) and [native progress](native/PROGRESS.md). Earlier dated evidence remains historical.
 
 ## Download existing diagnostic builds
 

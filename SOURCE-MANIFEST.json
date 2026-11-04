@@ -16,8 +16,8 @@
     },
     {
       "path": "BUILDING.md",
-      "sha256": "0922df44856c512a795de4b3ea5c6ea2b322d868c06e7bad860b069443126f90",
-      "gitBlobSha": "68d7fd940c8164fda3399c2a6267950fb05aa25d"
+      "sha256": "c052ebabab2ffbd779ae092651853d7d60c2c048eb889cae80ea6eb86c2b0035",
+      "gitBlobSha": "eb16e99981813109fd4e529b562f67da73e75e30"
     },
     {
       "path": "Petari/.clang-format",
@@ -23116,8 +23116,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "9d1801a79cf9f31a223e66dff382b647aa9ba31c0d9522e20204e1bea69160c4",
-      "gitBlobSha": "3209e46ed41cada14b36e2d1c30ad59b76afa5c3"
+      "sha256": "d0fd60ea2f2230b238bf302e89742618a2634b3edcb8e9e7703628736420f5e6",
+      "gitBlobSha": "b7da07384bb8ed36412062499dcaff3da0149ac8"
     },
     {
       "path": "Run CSV checks.cmd",
@@ -23146,8 +23146,8 @@
     },
     {
       "path": "builds/manifest.json",
-      "sha256": "15dbc778ed283cff90918d38494a262ac353dd590416342d12331d9920c48b7d",
-      "gitBlobSha": "82fb73fa1ad92af7276ba83aec5f3e8de1536b46"
+      "sha256": "cb778b1f442fb7b1ec92c9c26b7a415f058204851b025750196842391fadbd01",
+      "gitBlobSha": "f7267f312f143bef5d865c6b7bf23c7afa93c60e"
     },
     {
       "path": "builds/windows-x64-diagnostics.zip",
@@ -23156,13 +23156,13 @@
     },
     {
       "path": "docs/DAILY-STATUS.md",
-      "sha256": "fd4aad12232ae9f3991cc5018c6cbea5f73ac7240b7aa46c6e9e9fc1c1fbdd80",
-      "gitBlobSha": "ffe4c33c0ddee8f48d50980b6e4773e54d6562c7"
+      "sha256": "dae66d340d2011b6c78bbe1606121c2267704c82e225fe951ee51138104d8bfe",
+      "gitBlobSha": "14c2c55a8cbdebcf426604fc85e48dc8dd1fb1d3"
     },
     {
       "path": "docs/STATUS.md",
-      "sha256": "1eec1eb232e1c75480c93d2c7e040362f8f6e2174282c97e00284af79487d5da",
-      "gitBlobSha": "431d67bd53abecf014e7d69a9decbbda34a9e1f4"
+      "sha256": "32e5291d6403d9628618e14a8648f99fa8d5c328f035ed1a276a85ba9e3497e8",
+      "gitBlobSha": "34ff2d233ddfd64a0b09ea7bd2dc2142e37a5430"
     },
     {
       "path": "docs/verification/2026-10-16-bloom-factory.md",
@@ -23185,6 +23185,11 @@
       "gitBlobSha": "ed762daa45e19532a66e9290aac69c641ad48159"
     },
     {
+      "path": "docs/verification/2026-11-04-audio-lifetimes-and-retail-coin.md",
+      "sha256": "ac6543ba83725fb7979e71e89ddf356037dfbcf60ddd780effa12f9603d43a13",
+      "gitBlobSha": "1b96dce5c73837aa176471b9a43a209818b75003"
+    },
+    {
       "path": "docs/verification/2026-11-04-audio-thread-and-timing.md",
       "sha256": "b3549eb03c2ef5741bd7135812a528bb47243475c6bfa78fe248683259875346",
       "gitBlobSha": "c40d48a8a2d124db0298cc129df796a41a96c5b0"
@@ -23193,6 +23198,11 @@
       "path": "docs/verification/2026-11-04-audio-timing-pause-pool.md",
       "sha256": "ad75856b37ffaed0e0f601e77253aa2208acface09bdebaaed22f736d222321a",
       "gitBlobSha": "dfa233b069c9708f27c6b23b8df75fa440cd949d"
+    },
+    {
+      "path": "docs/verification/2026-11-04-runtime-publication-checks.json",
+      "sha256": "95c8f380ce458e8be87a5a3852e263560e501c4c3b4a614bc86eb17da5b7ed7d",
+      "gitBlobSha": "213d56e7511d829d78e0effa70359696f3b5effb"
     },
     {
       "path": "docs/verification/probe-self-test-2026-10-18.txt",
@@ -23211,8 +23221,8 @@
     },
     {
       "path": "native/AUDIO-DSP-ROADMAP.md",
-      "sha256": "0e0d1638e3a4db66953df4393364529fc5bef208850c1d8690b29b0ec51d76bc",
-      "gitBlobSha": "31830051cb5730148d1ca0846a9b7d03e5cd1e03"
+      "sha256": "fffd3b276b3c746481080b4c4de9fc4a311939025799b49519633c5172049370",
+      "gitBlobSha": "4d2562bb4943a92436205d05d69fa01152e1b39d"
     },
     {
       "path": "native/CMakeLists.txt",
@@ -23236,8 +23246,8 @@
     },
     {
       "path": "native/PROGRESS.md",
-      "sha256": "36346736052b222694b23a80f605418e4e979b715c535949ea4c56ea90230210",
-      "gitBlobSha": "398feb391841c6b3f29b62d77d10777e138db23e"
+      "sha256": "60772bb53c2687a57fffafef10742fbd3e45790b07c92b6ebb2aa69cf9052e4d",
+      "gitBlobSha": "8fc5d8e1d65c279cfa16614b8e7ea95c1f61e74f"
     },
     {
       "path": "native/README.md",
@@ -23386,8 +23396,8 @@
     },
     {
       "path": "native/generate-animation-sound-object.ps1",
-      "sha256": "30900a78cc5f6ca087bfc90171e8f97e00e6d16d5f8377fd84f25afb89348cc7",
-      "gitBlobSha": "322a5755cca44577ac250991ff88cc069959c264"
+      "sha256": "0dc289c9d4688a9217733961158cd9fd10ea4892d9909c52c2e27503353863fc",
+      "gitBlobSha": "2994136a6dec9e248430489327730cfc0606b46c"
     },
     {
       "path": "native/generate-aram-stream.ps1",
@@ -23436,8 +23446,8 @@
     },
     {
       "path": "native/generate-audio-dsp-host.ps1",
-      "sha256": "c84152a799a713424c50c863d4915b1d5e153ed2e9d65798788301335effa9dd",
-      "gitBlobSha": "f4a3d0efccfa30c102dd1d09a7542c3b67335386"
+      "sha256": "ca2ecc31fb63c8ac43362c64e69bec395069927481e32698db41a7cc0db20b07",
+      "gitBlobSha": "4c56b71e1d58af6c24e65ec1323e4b0bda3b39b8"
     },
     {
       "path": "native/generate-audio-dsp-state.ps1",
@@ -23970,14 +23980,19 @@
       "gitBlobSha": "220af1d40b263b624a662a758b1780b8415c3118"
     },
     {
+      "path": "native/generate-native-audio-dvd-thread.ps1",
+      "sha256": "f26dcf808b61c5b07a5c125d301a8a03d232f5d468bae8c71dd128fb5607b41b",
+      "gitBlobSha": "6650943a5832a92fdeec363a6e31de5abfedd7f4"
+    },
+    {
       "path": "native/generate-native-audio-effector.ps1",
       "sha256": "744c38b622ff9e033ea6284b2a5ec61b10544a4b9c0c37979420adce23f07734",
       "gitBlobSha": "18fd2a17ce2c62383744c6553a2b4f14b4bf941f"
     },
     {
       "path": "native/generate-native-audio-heap.ps1",
-      "sha256": "80bf07c1b774fead9ae9642d82c2f028cce72f8b9dd08b7dd139afe7a98e874f",
-      "gitBlobSha": "4f70222eeb024c874bebd14803354c6c0afd3769"
+      "sha256": "cdee148c9b0766aea8f68e4979653b8734c29987533b0799ad03f9f167e606cf",
+      "gitBlobSha": "64248478f454013b946c459132106a21030d484c"
     },
     {
       "path": "native/generate-native-audio-initializer.ps1",
@@ -24226,8 +24241,8 @@
     },
     {
       "path": "native/generate-native-jas-aram-stream.ps1",
-      "sha256": "e55266dcf6977ce4550400d20ac1c2f5002005349f6a2f86f3885aba0f53f248",
-      "gitBlobSha": "57d214156695132a859f541a286d9df703f4381c"
+      "sha256": "f006d6cae9f53db77e2f3c5723dcf238c867b2be08da19850781123487e476eb",
+      "gitBlobSha": "8bbe844ab199898d7765235be2320f4784b3d6f0"
     },
     {
       "path": "native/generate-native-karikari-director.ps1",
@@ -24513,6 +24528,11 @@
       "path": "native/generate-native-time-string.ps1",
       "sha256": "ca169ba9dabbbcbb3c83a3265ba3b4b878b360001c755b1bebd4581f27cd60a2",
       "gitBlobSha": "9c9f02a3774524d447467a4dcc636137cb7979e2"
+    },
+    {
+      "path": "native/generate-native-track.ps1",
+      "sha256": "4d2b53f70befea03841824031c3d1d4b6b66ed8ed9764b3b678c122ebba5ee9a",
+      "gitBlobSha": "e3dfd355f21262425ebe7df8dfb0d984700cfe02"
     },
     {
       "path": "native/generate-native-tripod-boss-accesser.ps1",
@@ -25375,6 +25395,11 @@
       "gitBlobSha": "c8fab890369c1921f40a71f210d2e2ffbd09d4ee"
     },
     {
+      "path": "native/include/JSystem/JAudio2/JASBank.hpp",
+      "sha256": "e412d41ce97bb745ea41cb61855cc9e330abeaf807af0c133a986d5f20e5ff0c",
+      "gitBlobSha": "c2719df82baf05e35f2b3ed3ba07fe13c3b3f075"
+    },
+    {
       "path": "native/include/JSystem/JAudio2/JASBasicInst.hpp",
       "sha256": "8f837d668a6d86d420173c4d0ffe780b387358742f4a2962aad82ead6c2cda60",
       "gitBlobSha": "f44a37ec52d2441fb62d3c1431d08b8ea5dead5e"
@@ -25408,6 +25433,11 @@
       "path": "native/include/JSystem/JAudio2/JASSeqReader.hpp",
       "sha256": "1cd78b22c6006fe3879bcd497c3db200299458f95733555d2f775539ce3cec3c",
       "gitBlobSha": "9fc10e47e8ec990d2e7ae24db71d57be32d0e517"
+    },
+    {
+      "path": "native/include/JSystem/JAudio2/JASTrack.hpp",
+      "sha256": "a04268c1dbb6acb7e17be8e2c81ece79877e724097f7b8a8fb38bdcd4c9099aa",
+      "gitBlobSha": "e640650373407f27b6a4253f15b04159733999f2"
     },
     {
       "path": "native/include/JSystem/JAudio2/JASWSParser.hpp",
@@ -25508,6 +25538,11 @@
       "path": "native/include/Native/AudioAiDiagnostics.hpp",
       "sha256": "83c21ace59ca77f50e467744dacb60fc2abd5abd3e7d07f01ec06f059f70b9a1",
       "gitBlobSha": "fcbbcbb07d6181ed50ff4cac8c9939cd39f70021"
+    },
+    {
+      "path": "native/include/Native/AudioPoolHeapLifetime.hpp",
+      "sha256": "f3404f6754ed696dc4c5a06d4434128a58200aaf6cc6e30a9eea6be38a520a6c",
+      "gitBlobSha": "a994f1b7cb6dc34b9bae4342c8c4d2759dad717a"
     },
     {
       "path": "native/include/Native/AudioPoolSize.hpp",
@@ -25820,6 +25855,11 @@
       "gitBlobSha": "32d814b59ac0d19249df2a8d0553269cfab729da"
     },
     {
+      "path": "native/include/Native/JasStreamSystemLifetime.hpp",
+      "sha256": "9511aeb97145c4e013d9aeaef080ca9d69f978f29955ffadbc020922196d23ad",
+      "gitBlobSha": "df1e7b527b44b1bbf11cd220a37d32d916b107ec"
+    },
+    {
       "path": "native/include/Native/JpaArchive.hpp",
       "sha256": "470d9c632b953be0acee9b6f1edb3b71ba808162bf9d24c37b0d9b23c10102a7",
       "gitBlobSha": "56626e5ad9fc2925b5a3a5ad6d25c8711f0594a0"
@@ -26116,8 +26156,8 @@
     },
     {
       "path": "native/probe-actor-link.ps1",
-      "sha256": "e522611c399ba46e9084252096bcc16571154304247cd508f5b1bc2f94f76ac5",
-      "gitBlobSha": "b660c7a050f546f47197830eac0cf38718b2eaa9"
+      "sha256": "485dc7169f1cb7b93b9d6eaffb35a6748e654d4891e743df5c6712d60db2933c",
+      "gitBlobSha": "2f246e84635b4fd52e05d9021e54ea6546b4cdbf"
     },
     {
       "path": "native/probe-actor-runtime.ps1",
@@ -26440,6 +26480,11 @@
       "gitBlobSha": "e596ad3eaa960456493339d02f9dedc43d5bd254"
     },
     {
+      "path": "native/src/audio_dvd_thread_restart_tests.cpp",
+      "sha256": "96171d69e0be99daaeb23b4efb6cf00fec63727d482ee52b3566518d72d2aa38",
+      "gitBlobSha": "1fc71b5af3558875458fc1665449a07336c6084f"
+    },
+    {
       "path": "native/src/audio_geometry_tests.cpp",
       "sha256": "58cc8b7f33f8cb26d5fbe9cf2c6c29e8945822b60ba8012e3e84eb7506afc382",
       "gitBlobSha": "09ed73d598d41f26f7fb18aa5f9af4b0194497ff"
@@ -26453,6 +26498,11 @@
       "path": "native/src/audio_pool_destroy_tests.cpp",
       "sha256": "b784e01983348acbabd2b81bfd974eece2f3d197c286cd358ec59cc04d0ae13e",
       "gitBlobSha": "f293c3e45bc7a495a6205e9892a3a9e2b3cc609c"
+    },
+    {
+      "path": "native/src/audio_pool_lifetime_tests.cpp",
+      "sha256": "c76d9996e9f225ad36d2312958848d472a3dc89377ebf1195ec588f8dc8e8e68",
+      "gitBlobSha": "995618033803729650af8bbe5b97ed892c734ab1"
     },
     {
       "path": "native/src/audio_pool_new_tests.cpp",
@@ -26488,6 +26538,11 @@
       "path": "native/src/audio_support_tests.cpp",
       "sha256": "18f6def5119be7ac77d3f020124def7b656549e70644b9751e66e21b875a3a66",
       "gitBlobSha": "905929951e52ece572e734f41bb6e0889a816f15"
+    },
+    {
+      "path": "native/src/audio_system_restart_tests.cpp",
+      "sha256": "71ce0ce397a9885985d92b264089573aec8e168e8a8b7b9b9996de1dd238e0ee",
+      "gitBlobSha": "1f7fb540d2cb9788dd0f63d24dd201d1b960eb14"
     },
     {
       "path": "native/src/audio_thread_lifecycle_tests.cpp",
@@ -27436,8 +27491,8 @@
     },
     {
       "path": "native/src/generated/AudioAiCtrlHost.cpp",
-      "sha256": "59bd1718e0b49e9999e63106d3c91575ef3a401177c0449e4d48d9c76a1fb3ed",
-      "gitBlobSha": "11a2fa2838b968fa704c52f59416640dff7638ae"
+      "sha256": "772ae381030914bcceff3ae7f437164e58ca6817a44ea3883fbf53eb99db6db7",
+      "gitBlobSha": "926ee29ec13dfa41f412863fc6985837d8e72ba4"
     },
     {
       "path": "native/src/generated/AudioArcInterpreterKernel.cpp",
@@ -27476,8 +27531,8 @@
     },
     {
       "path": "native/src/generated/AudioDSPInterfaceHost.cpp",
-      "sha256": "5f75af2e26dc5e4772b7da06f3b398426609255d44731db959ce8af221f894ce",
-      "gitBlobSha": "a71f4c87512d36c54e8197144d433f4c1b410af8"
+      "sha256": "e98ac1859c3cf17c8ce6e186d40b276893a6a0c6ee3d62a93265b3d7d7f81219",
+      "gitBlobSha": "4a49474b1bd674bd8322a6681c2a75c00d053606"
     },
     {
       "path": "native/src/generated/AudioDSPSendKernel.cpp",
@@ -27501,8 +27556,8 @@
     },
     {
       "path": "native/src/generated/AudioDvdThreadKernel.cpp",
-      "sha256": "dff4345ce39a1e7b2e689f8f3365425da90394f3deb33637f3d48884e1405326",
-      "gitBlobSha": "1269b0da47fd9210a0f04e7fa90c818ec8cae885"
+      "sha256": "eb2a3350ad3d7aa4897aac96cc45b71a11104743ac7cecdca419eea8a954945f",
+      "gitBlobSha": "76e528567e2853d505f87c6c09a0312918592202"
     },
     {
       "path": "native/src/generated/AudioFrameKernel.cpp",
@@ -27511,8 +27566,8 @@
     },
     {
       "path": "native/src/generated/AudioHeapKernel.cpp",
-      "sha256": "f3fc5225cf9cc0c5dbaf1cf2b1c5c981260a95efadee2b413c02dd2e5e15e460",
-      "gitBlobSha": "3fb25ebff6977fd3790100de96741e33c8602cc3"
+      "sha256": "ec64289889acca5a1cbb885853f2d6e0ec4e1a416f72cff56b95d5b88925f8f7",
+      "gitBlobSha": "35d9a6bad527fdafb2a710f872396e994fc6ee0b"
     },
     {
       "path": "native/src/generated/AudioProbeKernel.cpp",
@@ -28581,8 +28636,13 @@
     },
     {
       "path": "native/src/generated/JASAramStream.cpp",
-      "sha256": "0b442e7dede073d237be7e9a46104637a8067ddbeed1e8263b8b0b52319067a5",
-      "gitBlobSha": "23fe53160d6002425223904d49e64c24dee64fcf"
+      "sha256": "91b147e54f8d66188328b2ffa073be552b5e5980d8a0ed6b72f4e79f2cb4798c",
+      "gitBlobSha": "f11b106940843cf3d761e92ea6df9092060ce44e"
+    },
+    {
+      "path": "native/src/generated/JASBank.cpp",
+      "sha256": "874d64120e32d6b7788e82dbdff294e1437e56c427b195107fce987203069d03",
+      "gitBlobSha": "5bdfb31a0fed1f52a78e386989b0bf1d477ae1a7"
     },
     {
       "path": "native/src/generated/JASBasicWaveBankKernel.cpp",
@@ -28613,6 +28673,11 @@
       "path": "native/src/generated/JASTaskThread.cpp",
       "sha256": "6574fd6c56943c73c361babdaf4762372c460e61276025fd6d5bb4c3594f0c9a",
       "gitBlobSha": "b15b49588ef550d7642c58e3373472e45f76b6a5"
+    },
+    {
+      "path": "native/src/generated/JASTrack.cpp",
+      "sha256": "ed584016a159c7db7cd8ba207f99bfb5bbd5f877e9d16e3a928e630f4280250c",
+      "gitBlobSha": "46474e202c86751defca7734d78340fb1b2d488a"
     },
     {
       "path": "native/src/generated/JASWaveArcLoaderKernel.cpp",
@@ -32460,6 +32525,16 @@
       "gitBlobSha": "5b30efff608751af126d08a94acf4397a66b3f2a"
     },
     {
+      "path": "native/src/retail_catalog_stream_tests.cpp",
+      "sha256": "17bca75ac9f3aea89a8463ca9f0a7fe5340c2956c8544619d3698eccdde32d16",
+      "gitBlobSha": "d828ca59c76319ff029d47c56a0012e00fd3e6dd"
+    },
+    {
+      "path": "native/src/retail_coin_se_tests.cpp",
+      "sha256": "f321ce5724396c4c0e2f014e6b0050d241c4b0d9240418244296363049821e9a",
+      "gitBlobSha": "5fd503e90ae9236da6370f5a3bb88f5f8b0758f0"
+    },
+    {
       "path": "native/src/retail_demo_sheet_audit.cpp",
       "sha256": "f66c45177b58c9a2ef21fb068dca3ab78186a7aecea755156a1129c19cec43fa",
       "gitBlobSha": "2e91bfdfe20e6f5ce8d6f607f0068b2899c20e5c"
@@ -32470,9 +32545,19 @@
       "gitBlobSha": "4d48387fd470b8284e3d799ddf9493dbc3b5ffa6"
     },
     {
+      "path": "native/src/retail_sampled_note_tests.cpp",
+      "sha256": "237489ef06c84758c85e35f7aacbcdecb29c80806aca3d59d10f4da71f264260",
+      "gitBlobSha": "8a341bc9952ee990b28e5890f590360c00e8064b"
+    },
+    {
       "path": "native/src/retail_sound_name_tests.cpp",
       "sha256": "588fa2d83b9241ed6117d3d223eea0fc703c8f98a3800c4b691719cd355c3691",
       "gitBlobSha": "eebb9b697c2f9773a3c3367296d0b29ed546824a"
+    },
+    {
+      "path": "native/src/retail_sound_router_tests.cpp",
+      "sha256": "60d679fd74977b80e64d45d9864393a02186e1c2de1776fe9df218e28752fd91",
+      "gitBlobSha": "61051027455ee7bf7395caa57c8c6149d68fbf7e"
     },
     {
       "path": "native/src/retail_sound_table_tests.cpp",
@@ -32483,6 +32568,11 @@
       "path": "native/src/retail_stream_header_tests.cpp",
       "sha256": "4fcc75b8b0001a16b871092f38e3b26aa98c8e03d1ab6525049762c5143b769e",
       "gitBlobSha": "0d0ddffb02444b37910dadb3e5036a230da1e482"
+    },
+    {
+      "path": "native/src/retail_stream_system_restart_tests.cpp",
+      "sha256": "834623118effabd27fd6cb4b6409c224829dca95d3e8b71b13b534f67f186b45",
+      "gitBlobSha": "6c4eb2456d4710d4ff8ac3399a13eeec9e4706c7"
     },
     {
       "path": "native/src/retail_stream_tail_audit.cpp",
@@ -32733,6 +32823,11 @@
       "path": "native/src/sequence_reader_tests.cpp",
       "sha256": "71c5853881fec2f28279e6c9d40abb0884e5b7f014151f0f144107b29c25aff9",
       "gitBlobSha": "2a13b0d00affe9f0450037449d75f2ce2a941a24"
+    },
+    {
+      "path": "native/src/sequence_register_runtime_tests.cpp",
+      "sha256": "5703a825e1507fde4218d12f2ff81d5485b776b62d7cf73c16c961e69150bfae",
+      "gitBlobSha": "077618248a5b7e6e106fa6dbfcbc0b045fc7e275"
     },
     {
       "path": "native/src/sequence_report_tests.cpp",
@@ -33050,6 +33145,11 @@
       "gitBlobSha": "f162922d799d97c41833b283d91c5a8e5c958604"
     },
     {
+      "path": "native/src/track_oscillator_defaults_tests.cpp",
+      "sha256": "c7de1c640574bfacf90242035c7f8662517dff1170f02628537dde881e7f7bd7",
+      "gitBlobSha": "2f0b173c0f5503ca78a8f8d1183090dcabbb6c66"
+    },
+    {
       "path": "native/src/trig_table_tests.cpp",
       "sha256": "df25e14036bd8cfed46ad26333459cbfe7ee6c25b6090cc4ba8787d5c76b954e",
       "gitBlobSha": "c1823917160504e1a558b398d066d157ea177030"
@@ -33191,8 +33291,8 @@
     },
     {
       "path": "native/test-actor-runtime-dsp-boot-link.ps1",
-      "sha256": "ffd7b8982ad828fe5736b040fd962bd7a096d95b5566bf19a74e4bdd20d67194",
-      "gitBlobSha": "f5e4e1942c2adbbf2445fcb3962e12a4707b3c6d"
+      "sha256": "4cc1f94a19daada6c4ee14a597cf7b3e3d364286648a09f9c1604a0b15485cd4",
+      "gitBlobSha": "2b50e6665915d436137f9193a06056013e975727"
     },
     {
       "path": "native/test-alpha8-copy.ps1",
@@ -33256,8 +33356,8 @@
     },
     {
       "path": "native/test-audio-dac-dma.ps1",
-      "sha256": "e65bf349abe3fb0352175501204f0b7947cd2caec187ecedbec33c4e1b942053",
-      "gitBlobSha": "7bb602262a3a7278b7ad93be6d6481465e8e0fc4"
+      "sha256": "14f62de4d12fac0e7ab15dc11bd5c738c2e8ce1e40b386ed90a52bc4dec9628e",
+      "gitBlobSha": "ab3970e52e9a1bebced8492cba8490cbf816bc3a"
     },
     {
       "path": "native/test-audio-dac-mix.ps1",
@@ -33295,19 +33395,29 @@
       "gitBlobSha": "ee4100ec206d6559d2e3e4cd13526c55f150fe32"
     },
     {
+      "path": "native/test-audio-dvd-thread-restart.ps1",
+      "sha256": "42dfba5a1fc1055c99b4e64019cf21fab57cd81ecc010963e125c4f7a23a07e1",
+      "gitBlobSha": "a7ff8c92c542b394a6737a2e16d429224b5de43b"
+    },
+    {
       "path": "native/test-audio-lfo.ps1",
       "sha256": "7d9c7102d5eef58ea8870a362277e56125899a9d513b6cb47669c85fa26e7333",
       "gitBlobSha": "135ae8f410a284988914a7e713cde03dc48645c0"
     },
     {
       "path": "native/test-audio-pool-destroy.ps1",
-      "sha256": "7985e5faecab67a6c5517dd7852a17b4b96f102559d7124a5bc84f57535f064d",
-      "gitBlobSha": "8bd4a7569944166ea1b7dbac6a638d463bad0c24"
+      "sha256": "4d62b7c68cf8987f05ee133e103f67914cddaafa08e744089b0aac5f87eb6a31",
+      "gitBlobSha": "aaaf49fd98e18106ce767dd1e37f922d12ca1254"
+    },
+    {
+      "path": "native/test-audio-pool-lifetime.ps1",
+      "sha256": "0a37c01b7685e7c4d517fb87d5dbc82d79dca564f0f2d53ea14b451e8a35b89f",
+      "gitBlobSha": "2187aca2f5731e68571fdd9f5351070db2fb685b"
     },
     {
       "path": "native/test-audio-pool-new.ps1",
-      "sha256": "36d0deef1f5353904750208a219cb08c682e2815157eef1e234a5d4af09e2d4f",
-      "gitBlobSha": "7b9d20a7eccaf552d5bc3f1fbdc305a16b21f4e3"
+      "sha256": "7ce701ace6d8d8264043ba573fbf44676dbcc9d3bf794612f0a219e0c05598e8",
+      "gitBlobSha": "de5d08bd803b98bfe5182a24979debf9e21528a3"
     },
     {
       "path": "native/test-audio-probe.ps1",
@@ -33325,6 +33435,11 @@
       "gitBlobSha": "7c5846b6bf49542f07e61810fcf435fe463ba65b"
     },
     {
+      "path": "native/test-audio-system-restart.ps1",
+      "sha256": "093d0320e49852276ee358c0d1d010e7b992ca9ad313f0b1c8723f98d605805a",
+      "gitBlobSha": "3a35a5c140d257109da3627fdb64be29d509538b"
+    },
+    {
       "path": "native/test-audio-thread-lifecycle.ps1",
       "sha256": "d3891d02c10a9911892b314a5897af2f1025c23c012e4381f1f720b140c10536",
       "gitBlobSha": "1a5037e41b371af6f6884399470f6a69ea52c25f"
@@ -33336,8 +33451,8 @@
     },
     {
       "path": "native/test-audio-thread-stream-pause.ps1",
-      "sha256": "ec18b39a30941d4f759a6254891d31d93629d1d4fae54f3ba0e88868bb6c752f",
-      "gitBlobSha": "ab1aaa850d9f53ce97f8979a8b4d0d322270620b"
+      "sha256": "0b6140c928ba1d63278ad3b3d96af69dda1c40f994656720d1d53acd3e4d4cd9",
+      "gitBlobSha": "64199c954b499f0c2d615bfc4dbaf656bf45c820"
     },
     {
       "path": "native/test-audio-wave-metadata.ps1",
@@ -33891,8 +34006,8 @@
     },
     {
       "path": "native/test-jas-stream-lifecycle.ps1",
-      "sha256": "0299ef86f8565db6e9917aa64aa4131cbcb1dd42f815854775b7bb07edeb4e5d",
-      "gitBlobSha": "db82cd137f05781222740587906ff7bf528a535e"
+      "sha256": "e89aa9689eb1580defc49de9913b6c520110e948ac2c13fc2a51c33414320f9d",
+      "gitBlobSha": "258e132641f9f6234005a98f72f44eb0c02fc107"
     },
     {
       "path": "native/test-jmath-inline.ps1",
@@ -34420,14 +34535,34 @@
       "gitBlobSha": "792de6af6b4e5f54375eb158a67febadd7408b8c"
     },
     {
+      "path": "native/test-retail-catalog-stream.ps1",
+      "sha256": "129060e2374f35b60cb39ab19edffbdc75b6b954a655a84022e27483fb505b7f",
+      "gitBlobSha": "69faebc2e2146036f8f6f4ffe29788d52c68f4f5"
+    },
+    {
+      "path": "native/test-retail-coin-se.ps1",
+      "sha256": "0e25e783af1730b4edd36091782596772a06a1067112b36f65de6360334932f4",
+      "gitBlobSha": "1711dab6f326ab6a35adf57539c534f440fb923d"
+    },
+    {
       "path": "native/test-retail-demo-time.ps1",
       "sha256": "3034b9e80044d04b2bc2fe6004c1bdaf0c3bbe4dea354966b55ee60af30b3b56",
       "gitBlobSha": "cf77bb63121a9fdf53c8266212baf5720ba10b44"
     },
     {
+      "path": "native/test-retail-sampled-note.ps1",
+      "sha256": "8b1ed6e2002dec460bf74afb5803134e3705e630df9f45217b85a9bea48816e1",
+      "gitBlobSha": "cf96f972138cd8d22d7494874bbc5f5830856a85"
+    },
+    {
       "path": "native/test-retail-sound-name.ps1",
       "sha256": "162b05a0f7e89878d1734511376a2a3b06107a753c808c6a2e2b7e789bc2b861",
       "gitBlobSha": "d5e6acaad56d3833c71fd20daeb589625768e406"
+    },
+    {
+      "path": "native/test-retail-sound-router.ps1",
+      "sha256": "9ee1c7ce1f65ba60a49429ae52b18f08fbca739c80d17f5d303df9ecedf58331",
+      "gitBlobSha": "21368b365b3281abb8370c22f9d347ac35a8072b"
     },
     {
       "path": "native/test-retail-sound-table.ps1",
@@ -34438,6 +34573,11 @@
       "path": "native/test-retail-stream-header.ps1",
       "sha256": "89df3dab82e3ad477b10628d3a3abd04297914e29386a19919d0fdcda3447a0a",
       "gitBlobSha": "49f55afe5978106c8affb3c1a4fbef196716ddf4"
+    },
+    {
+      "path": "native/test-retail-stream-system-restart.ps1",
+      "sha256": "1796ac92f296a6163ed95b54958bc91eff214243839bd50bdef7808f40184698",
+      "gitBlobSha": "ebfc5304b425829730f0b30e41e89b605e700a3c"
     },
     {
       "path": "native/test-retail-wave-construction.ps1",
@@ -34548,6 +34688,11 @@
       "path": "native/test-sequence-reader.ps1",
       "sha256": "56d881f8cd14cf7550088468f862f50ff779dbe93dde922cca887a2afd62d1be",
       "gitBlobSha": "aa61791a140292f1a3c113699b751258d9dd2c98"
+    },
+    {
+      "path": "native/test-sequence-register-runtime.ps1",
+      "sha256": "b098ca1961bd8f4dc757428d11c1de76ec75647c41fe537968b2335e8eb5b27f",
+      "gitBlobSha": "631f9ecbf56dfb3f336284a0e52036f083b1f8ea"
     },
     {
       "path": "native/test-shape-texgen-inputs.ps1",
@@ -34733,6 +34878,11 @@
       "path": "native/test-time-string.ps1",
       "sha256": "55c5dd26db26c691d0525bea733650f7ea48173a59ae24bd39c0d85c60892a96",
       "gitBlobSha": "96993e4b1d6fbe40f9d5a23028df08dceb98c8cf"
+    },
+    {
+      "path": "native/test-track-oscillator-defaults.ps1",
+      "sha256": "cfcbad762cadc0bcdfc7304d84810f9860e925415cfdcd3a008b55287c288478",
+      "gitBlobSha": "9116100d6d9a7f42cdafe92b8a9309b72feef711"
     },
     {
       "path": "native/test-unit-heap-live.ps1",

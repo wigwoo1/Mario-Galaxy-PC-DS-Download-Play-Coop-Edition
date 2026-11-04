@@ -17,6 +17,13 @@ $s=$s.Replace('u8[(block_size + 0x20) * channel_max]', 'u8[readBytes]')
 $s=[regex]::Replace($s,'while \(r28 > loop_end_block\) \{\s*r28 -= loop_end_block;\s*r28 \+= loop_start_block;\s*\}', 'if (!Native::jasStreamLoopLookAhead(uint64_t(mBlock) + _108 - 1, loop_start_block, loop_end_block, r28)) return false;')
 $s=$s.Replace('u32 sp08 = _148 + _10C * sBlockSize;', 'u32 channelAddresses[6];'+[Environment]::NewLine+'    for (unsigned ch = 0; ch < mChannelNum; ++ch) if (!Native::jasStreamTransferAddress(_148, _10C, sBlockSize, _160, mChannelNum, ch, bhead->_4, channelAddresses[ch])) return false;')
 $s=$s.Replace('sp08 + sBlockSize * _160 * i', 'channelAddresses[i]')
+$lifetimeRegistration='    if (JASDriver::registerSubFrameCallback(dvdErrorCheck, nullptr)) {'
+if([regex]::Matches($s,[regex]::Escape($lifetimeRegistration)).Count-ne 1){throw 'Stream-system callback lifetime anchor changed'}
+$s=$s.Replace($lifetimeRegistration,'    if (Native::reuseJasStreamSystem(JASDram, block_size, channel_max)) return;'+[Environment]::NewLine+'    Native::JasStreamSystemInit nativeLifetime(JASDram);'+[Environment]::NewLine+'    if (nativeLifetime.registerCallback()) {')
+$lifetimeCommit='        UNK_BOOL_B = false;'
+if([regex]::Matches($s,[regex]::Escape($lifetimeCommit)).Count-ne 1){throw 'Stream-system lifetime commit anchor changed'}
+$s=$s.Replace($lifetimeCommit,$lifetimeCommit+[Environment]::NewLine+'        nativeLifetime.commit();')
+$s='#include <Native/JasStreamSystemLifetime.hpp>'+[Environment]::NewLine+$s
 Set-Content "$n\src\generated\JASAramStream.cpp" $s
 
 

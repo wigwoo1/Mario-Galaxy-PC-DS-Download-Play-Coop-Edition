@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <Native/DspAudioRuntime.hpp>
 #include <Native/DspAddressSpace.hpp>
 #include "JSystem/JAudio2/JASDSPInterface.hpp"
 #include "JSystem/JAudio2/JASCalc.hpp"
@@ -24,11 +25,11 @@ u16 ATTRIBUTE_ALIGN(32) JASDsp::SEND_TABLE[] = {
 u32 JASWaveInfo::one = 1;
 
 void JASDsp::boot(void (*param_0)(void*)) {
-    static bool sDspInit = true;
-    if (sDspInit) {
+
+    if (!nativeDspAudioRuntimeActive()) {
         DspBoot(param_0);
         DsetVARAM(JKRHeap::getAltAramStartAdr());
-        sDspInit = false;
+
     }
 }
 

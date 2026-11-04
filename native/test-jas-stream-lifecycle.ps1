@@ -1,10 +1,11 @@
+param([string]$OutputDirectory)
 $ErrorActionPreference='Stop'
 $n=$PSScriptRoot;$p=Split-Path $n -Parent
 & (Join-Path $n 'generate-native-jas-aram-stream.ps1')
 & (Join-Path $n 'generate-audio-frame.ps1')
 & (Join-Path $n 'generate-audio-dsp-host.ps1')
 & (Join-Path $n 'generate-zelda-audio-renderer.ps1')
-$out=Join-Path $n 'build\jas-stream-lifecycle';New-Item -ItemType Directory -Force -Path $out | Out-Null
+$out=if($OutputDirectory){$OutputDirectory}else{Join-Path $n 'build\jas-stream-lifecycle'};New-Item -ItemType Directory -Force -Path $out | Out-Null
 # Reuse the already verified exact original callback body; regenerate if absent.
 $callback=Join-Path $n 'build\dsp-audio-dispatch\OriginalAudioCallback.cpp'
 if(!(Test-Path -LiteralPath $callback)){& (Join-Path $n 'test-dsp-audio-dispatch.ps1');if($LASTEXITCODE){exit $LASTEXITCODE}}

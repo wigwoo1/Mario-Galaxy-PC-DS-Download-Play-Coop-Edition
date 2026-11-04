@@ -1,3 +1,4 @@
+param([string]$OutputDirectory)
 $ErrorActionPreference='Stop'
 $n=$PSScriptRoot;$p=Split-Path $n -Parent
 & (Join-Path $n 'generate-native-jas-aram-stream.ps1')
@@ -8,7 +9,7 @@ $n=$PSScriptRoot;$p=Split-Path $n -Parent
 & (Join-Path $n 'generate-audio-dsp-host.ps1')
 & (Join-Path $n 'generate-native-audio-thread.ps1')
 & (Join-Path $n 'generate-zelda-audio-renderer.ps1')
-$out=Join-Path $n 'build\audio-thread-stream-pause';New-Item -ItemType Directory -Force -Path $out | Out-Null
+$out=if($OutputDirectory){$OutputDirectory}else{Join-Path $n 'build\audio-thread-stream-pause'};New-Item -ItemType Directory -Force -Path $out | Out-Null
 $providers=@(
  'native\src\aram_manager_kernel.cpp',
  'native\src\aram_read_port.cpp',

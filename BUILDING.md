@@ -28,3 +28,9 @@ The boot wrapper has a -DllOnly option that stops before launcher creation. The 
 The unchanged ZIP's recorded failure remains the October 27 Mario drawing-buffer fault. Current source later reached a partial stage view and a camera-animation fault, whose full-game repair retest is pending. See docs/STATUS.md and builds/manifest.json for the separate source/build scopes.
 
 Supply game data locally for disc-backed checks. Never commit images, extracted archives/models/textures, saves, dumps or texture packs. Existing upstream source constants remain under their notices; this snapshot is not an extracted retail filesystem.
+
+## Later November 4 source checkpoint
+
+The latest source includes native/test-audio-pool-lifetime.ps1, test-audio-dvd-thread-restart.ps1, test-audio-system-restart.ps1, test-retail-stream-system-restart.ps1, test-retail-catalog-stream.ps1, test-track-oscillator-defaults.ps1, test-sequence-register-runtime.ps1, test-retail-sampled-note.ps1 and test-retail-coin-se.ps1. Existing completed development evidence and limits are summarized in docs/verification/2026-11-04-audio-lifetimes-and-retail-coin.md, superseding earlier pending lifetime/restart statements above. Retail tests need the user's own locally available game data; none is provided here.
+
+native/test-retail-sound-router.ps1 is work in progress. Its latest existing compile succeeds but its runtime completion assertion fails while the stream remains preparing. Do not treat it as a passing regression or a playable game. Publication parsed scripts and rehashed existing evidence; it did not compile or run these tests. Latest completed DLL-only SHA-256: F6AC7F11DB9659F7B689598C73003711B4B71AA0A18B88619B9343E70E05776E. Incremental base caches and separately held launcher review still limit clean-checkout/full-game verification. No newer runtime package is published.

@@ -1,0 +1,17 @@
+{
+  "ExistingCheckpoint": "retail-coin-se",
+  "CurrentInputHashChecks": 345,
+  "RetainedEvidenceFilesVerified": 408,
+  "DllSHA256": "F6AC7F11DB9659F7B689598C73003711B4B71AA0A18B88619B9343E70E05776E",
+  "DllBytes": 10334720,
+  "DevelopmentTestsRunByPublisher": false,
+  "RouterTestComplete": false,
+  "RouterLastRun": "Three coin cycles pass, but stream remains preparing; final assertion fails; no completion receipt",
+  "PowerShellScriptsParsed": 23,
+  "PowerShellParseFailures": 0,
+  "BaseCommit": "72177eb6138e0e55374855e1f3f56548483cd4c8",
+  "SelectedLocalSourcesCompared": 6986,
+  "SourceUpdates": 46,
+  "PackagedBuildsChanged": false,
+  "Playable": false
+}
