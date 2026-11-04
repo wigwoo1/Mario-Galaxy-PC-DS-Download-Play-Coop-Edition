@@ -1,3 +1,4 @@
+param([switch]$NoDevice)
 $ErrorActionPreference='Stop'
 $n=$PSScriptRoot
 $p=Split-Path $n -Parent
@@ -7,6 +8,12 @@ New-Item -ItemType Directory -Force $env:TEMP | Out-Null
 $env:ZIG_GLOBAL_CACHE_DIR=Join-Path $n 'build\native-audio-ai-cache'
 $exe=Join-Path $n 'build\native-audio-ai-tests.exe'
 $log=Join-Path $n 'build\native-audio-ai-tests.log'
+$backendArgs=@('-lwinmm')
+if($NoDevice){
+  $exe=Join-Path $n 'build\native-audio-ai-no-device-tests.exe'
+  $log=Join-Path $n 'build\native-audio-ai-no-device-tests.log'
+  $backendArgs=@('-D_WINMM_',(Join-Path $n 'src\native_audio_ai_no_device_test_backend.cpp'))
+}
 $previousCompilerErrorActionPreference=$ErrorActionPreference
 $ErrorActionPreference='Continue'
 & (Join-Path $p 'tools\zig-x86_64-windows-0.16.0\zig.exe') c++ -std=c++17 -O2 -UNDEBUG -target x86_64-windows-gnu `
@@ -14,7 +21,7 @@ $ErrorActionPreference='Continue'
   (Join-Path $n 'src\native_audio_ai_tests.cpp') `
   (Join-Path $n 'src\native_audio_ai.cpp') `
   (Join-Path $n 'src\dsp_address_space.cpp') `
-  -lwinmm -o $exe *> $log
+  @backendArgs -o $exe *> $log
 $ErrorActionPreference=$previousCompilerErrorActionPreference
 if($LASTEXITCODE -ne 0){Get-Content $log -Tail 24;exit $LASTEXITCODE}
 Push-Location $n

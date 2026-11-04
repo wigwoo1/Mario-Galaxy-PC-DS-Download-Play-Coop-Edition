@@ -42,6 +42,7 @@ foreach($provider in $soundIdRefreshUnits){
 & (Join-Path $native 'generate-player-display-lists.ps1')
 & (Join-Path $native 'generate-flag-vertex-arrays.ps1')
 & (Join-Path $native 'generate-camera-animation-runtime.ps1')
+& (Join-Path $native 'generate-native-audio-heap.ps1')
 & (Join-Path $native 'generate-audio-frame.ps1')
 & (Join-Path $native 'generate-audio-dsp-host.ps1')
 & (Join-Path $native 'generate-native-audio-thread.ps1')

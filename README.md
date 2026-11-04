@@ -1,22 +1,22 @@
-# Mario Galaxy PC — native port development
+# Mario Galaxy PC â€” native port development
 
 Experimental Windows x64 native port based on [SMGCommunity/Petari](https://github.com/SMGCommunity/Petari). **This is not a playable game.** The repository name describes planned co-op and browser Download Play, which are not implemented.
 
 ## Current state
 
-The November 4 source includes verified stream-manager/DVD fixes, 64-bit DAC buffer mapping, a complete original audio-thread test and retail-stream integration tests. A development game run previously captured a partial Star Festival view before a camera-animation crash. Complete stage rendering, player-controlled gameplay, audible game output and campaign completion remain unverified.
+The November 4 source includes verified stream-manager/DVD fixes, 64-bit DAC buffer mapping, and tests using the complete original audio/DVD workers. Later development verified the queued output's playback timing, sound/manager pause and resume, and a matching-allocator audio-pool destructor repair. A development game run previously captured a partial Star Festival view before a camera-animation crash. Complete stage rendering, player-controlled gameplay, audible game fidelity and campaign completion remain unverified.
 
-**Development is paused. Current audio-output queue source is pending verification:** a retail stream completed and released its resources, but took 46.744 seconds for approximately 26.4 seconds of audio. A subsequent queue edit passed only the basic native AI test; playback timing, whole-thread regression and a full DLL build of that edit remain unverified. Do not treat the retail test's lifecycle PASS as correct playback speed.
+**Not playable.** The retail audio fixture now completes in 26.410 seconds for 26.308 seconds of nominal audio, replacing the earlier incorrect 46.744-second result. These are scoped component results. A full DLL-only build includes the output and pool repairs; no matching new launcher/DLL package is published. The separate held launcher remains excluded pending security review. Whole-system shutdown/restart and pool destruction after heap disposal remain unverified.
 
-Newer verified DLL-only checkpoints exist, but no matching new launcher/DLL package is published. The held launcher remains excluded pending security review. Rough overall progress remains about 3%, a planning estimate rather than a measured counter.
+Development is active; this publication job did not resume it or change its goal status. Rough overall progress remains about 3%, a planning estimate rather than a measured counter; verified playable completion remains 0%.
 
-See [current status](docs/STATUS.md), [November 4 verification and pending work](docs/verification/2026-11-04-audio-thread-and-timing.md), [daily publication check](docs/DAILY-STATUS.md) and [native progress](native/PROGRESS.md). Progress/roadmap entries describe dated checkpoints; the pending queue edit is newer than their last passing test entry.
+See [current status](docs/STATUS.md), [latest November 4 verification](docs/verification/2026-11-04-audio-timing-pause-pool.md), [daily publication check](docs/DAILY-STATUS.md) and [native progress](native/PROGRESS.md). Dated earlier notes are historical; the latest verification note supersedes their pending queue/timing status.
 
 ## Download existing diagnostic builds
 
 [Download Windows x64 diagnostics](https://github.com/wigwoo1/Mario-Galaxy-PC-DS-Download-Play-Coop-Edition/raw/refs/heads/main/builds/windows-x64-diagnostics.zip). Extract the ZIP, then double-click **Run diagnostic self-tests.cmd**. It reports PASS or FAIL and keeps the window open. This test does not require a game image and does not launch gameplay.
 
-The unchanged ZIP contains the exact October 27 boot diagnostic launcher/DLL pair and its original manifest, plus the standalone probe. The packaged runtime is a historical hidden research diagnostic with the recorded Mario drawing-buffer failure. It predates the November 1–4 repairs and is not a playable game or a fresh rebuild by this publisher. Newer DLL-only development artifacts and the held launcher are not packaged. [Build hashes and limitations](builds/manifest.json).
+The unchanged ZIP contains the exact October 27 boot diagnostic launcher/DLL pair and its original manifest, plus the standalone probe. The packaged runtime is a historical hidden research diagnostic with the recorded Mario drawing-buffer failure. It predates the November 1â€“4 repairs and is not a playable game or a fresh rebuild by this publisher. Newer DLL-only development artifacts and the held launcher are not packaged. [Build hashes and limitations](builds/manifest.json).
 
 No game image, extracted asset directory, texture pack, user save, crash dump or compiler cache is included. Disc-backed tools require your own locally supplied game data.
 

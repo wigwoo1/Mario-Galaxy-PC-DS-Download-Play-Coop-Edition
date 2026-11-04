@@ -74,7 +74,10 @@ struct Controller {
         if(phase==1&&!manager.isActive()) {
             drained();assert(played&&maxPosition>840000&&nonzero>10000&&stereoDifference>100);
             naturalSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-naturalStart).count();
-            assert(naturalSeconds>=20&&naturalSeconds<55);
+            // 841863 samples/channel at32000Hz, with small loading/endpoint
+            // startup allowance. The prior46.744s playback must fail this gate.
+            const double nominalSeconds=841863.0/32000.0;
+            assert(naturalSeconds>=nominalSeconds*.95&&naturalSeconds<nominalSeconds*1.10);
             std::printf("PASS authentic841863-sample/channel retail stream natural EOF on original live thread: seconds=%.3f frames=%u maxPosition=%u nonzero=%u stereoDifference=%u; all pools/ARAM reclaimed\n",naturalSeconds,frames,maxPosition,nonzero,stereoDifference);
             start();phase=2;
         } else if(phase==2&&handle.isSoundAttached()) {

@@ -16,8 +16,8 @@
     },
     {
       "path": "BUILDING.md",
-      "sha256": "a193f9ffd91da44e3dae3e434e01b20d18efb502ebbedd397336df2c86c1bc4f",
-      "gitBlobSha": "3c5cb0002005d8bcad883b10d3b3dcef09eded74"
+      "sha256": "0922df44856c512a795de4b3ea5c6ea2b322d868c06e7bad860b069443126f90",
+      "gitBlobSha": "68d7fd940c8164fda3399c2a6267950fb05aa25d"
     },
     {
       "path": "Petari/.clang-format",
@@ -23116,8 +23116,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "067ae5421b469f4651b377a93e3585e926efd861883b122964441d8f843b6c6e",
-      "gitBlobSha": "3d1617304dd1e0379191b59c29599577e2f0d46f"
+      "sha256": "9d1801a79cf9f31a223e66dff382b647aa9ba31c0d9522e20204e1bea69160c4",
+      "gitBlobSha": "3209e46ed41cada14b36e2d1c30ad59b76afa5c3"
     },
     {
       "path": "Run CSV checks.cmd",
@@ -23146,8 +23146,8 @@
     },
     {
       "path": "builds/manifest.json",
-      "sha256": "e3157f874dd7bc50d812fb98ad0c30a4a44263103ffbcbb90b2f3d371a14368b",
-      "gitBlobSha": "4a8b49071fea03dbad440d03e5fe53fe3c702d07"
+      "sha256": "15dbc778ed283cff90918d38494a262ac353dd590416342d12331d9920c48b7d",
+      "gitBlobSha": "82fb73fa1ad92af7276ba83aec5f3e8de1536b46"
     },
     {
       "path": "builds/windows-x64-diagnostics.zip",
@@ -23156,13 +23156,13 @@
     },
     {
       "path": "docs/DAILY-STATUS.md",
-      "sha256": "ca7500b5b765f54fba0a288dcc82a4d31f3a266a005ba8841d412e26f246eaed",
-      "gitBlobSha": "4c6a9b944bf5055689dfbb010f2b4c81864ec3d4"
+      "sha256": "fd4aad12232ae9f3991cc5018c6cbea5f73ac7240b7aa46c6e9e9fc1c1fbdd80",
+      "gitBlobSha": "ffe4c33c0ddee8f48d50980b6e4773e54d6562c7"
     },
     {
       "path": "docs/STATUS.md",
-      "sha256": "31c2e7b1d68c0c90fac277243eeabfda5cbe92e56b808878f6c29395717da512",
-      "gitBlobSha": "fc25b2c92e777f0cec90c17c69ff89db6a921dd8"
+      "sha256": "1eec1eb232e1c75480c93d2c7e040362f8f6e2174282c97e00284af79487d5da",
+      "gitBlobSha": "431d67bd53abecf014e7d69a9decbbda34a9e1f4"
     },
     {
       "path": "docs/verification/2026-10-16-bloom-factory.md",
@@ -23186,8 +23186,13 @@
     },
     {
       "path": "docs/verification/2026-11-04-audio-thread-and-timing.md",
-      "sha256": "8e962979a9a0d2dbb29593554987f1d0588f139ff9c23d7ed62a3c55953bf11b",
-      "gitBlobSha": "f7ce4046f3b787d7cb5cfda677fd2b34887cc332"
+      "sha256": "b3549eb03c2ef5741bd7135812a528bb47243475c6bfa78fe248683259875346",
+      "gitBlobSha": "c40d48a8a2d124db0298cc129df796a41a96c5b0"
+    },
+    {
+      "path": "docs/verification/2026-11-04-audio-timing-pause-pool.md",
+      "sha256": "ad75856b37ffaed0e0f601e77253aa2208acface09bdebaaed22f736d222321a",
+      "gitBlobSha": "dfa233b069c9708f27c6b23b8df75fa440cd949d"
     },
     {
       "path": "docs/verification/probe-self-test-2026-10-18.txt",
@@ -23206,8 +23211,8 @@
     },
     {
       "path": "native/AUDIO-DSP-ROADMAP.md",
-      "sha256": "b164a3cc7ecea51bfa3f22b9365ab0489af71e28df7761b9d3998f7e7fbc425b",
-      "gitBlobSha": "9349662dc0cebcf01a177fa188bae40f96589ca4"
+      "sha256": "0e0d1638e3a4db66953df4393364529fc5bef208850c1d8690b29b0ec51d76bc",
+      "gitBlobSha": "31830051cb5730148d1ca0846a9b7d03e5cd1e03"
     },
     {
       "path": "native/CMakeLists.txt",
@@ -23231,8 +23236,8 @@
     },
     {
       "path": "native/PROGRESS.md",
-      "sha256": "a204d37e88c87272de8f89de03e86e5f0d9a98670340b9ce4aa0a38c8d37c5eb",
-      "gitBlobSha": "5515d2e4b86315141fd9e3248e43e47a24eaaa6e"
+      "sha256": "36346736052b222694b23a80f605418e4e979b715c535949ea4c56ea90230210",
+      "gitBlobSha": "398feb391841c6b3f29b62d77d10777e138db23e"
     },
     {
       "path": "native/README.md",
@@ -23381,8 +23386,8 @@
     },
     {
       "path": "native/generate-animation-sound-object.ps1",
-      "sha256": "fe7f663c329c9ce497682d8c40b8efb4f6402aab9f73067fd2396214ea7733e9",
-      "gitBlobSha": "c723297997152ff988557f4344a7d592ec217512"
+      "sha256": "30900a78cc5f6ca087bfc90171e8f97e00e6d16d5f8377fd84f25afb89348cc7",
+      "gitBlobSha": "322a5755cca44577ac250991ff88cc069959c264"
     },
     {
       "path": "native/generate-aram-stream.ps1",
@@ -23968,6 +23973,11 @@
       "path": "native/generate-native-audio-effector.ps1",
       "sha256": "744c38b622ff9e033ea6284b2a5ec61b10544a4b9c0c37979420adce23f07734",
       "gitBlobSha": "18fd2a17ce2c62383744c6553a2b4f14b4bf941f"
+    },
+    {
+      "path": "native/generate-native-audio-heap.ps1",
+      "sha256": "80bf07c1b774fead9ae9642d82c2f028cce72f8b9dd08b7dd139afe7a98e874f",
+      "gitBlobSha": "4f70222eeb024c874bebd14803354c6c0afd3769"
     },
     {
       "path": "native/generate-native-audio-initializer.ps1",
@@ -25495,6 +25505,11 @@
       "gitBlobSha": "bff07ead97e566ef6eb3cfdcf4bcad83bd7d0058"
     },
     {
+      "path": "native/include/Native/AudioAiDiagnostics.hpp",
+      "sha256": "83c21ace59ca77f50e467744dacb60fc2abd5abd3e7d07f01ec06f059f70b9a1",
+      "gitBlobSha": "fcbbcbb07d6181ed50ff4cac8c9939cd39f70021"
+    },
+    {
       "path": "native/include/Native/AudioPoolSize.hpp",
       "sha256": "79098080c8a6aedcb6e17ce9ce19264c7d98f1c35375c440e4784a70bb2050a7",
       "gitBlobSha": "b0ad65b0fa2ebc53ca2b2cdfab30fa7438f9b60b"
@@ -26435,6 +26450,11 @@
       "gitBlobSha": "b998f2eee97e8a554ddd92af934bf899d8295683"
     },
     {
+      "path": "native/src/audio_pool_destroy_tests.cpp",
+      "sha256": "b784e01983348acbabd2b81bfd974eece2f3d197c286cd358ec59cc04d0ae13e",
+      "gitBlobSha": "f293c3e45bc7a495a6205e9892a3a9e2b3cc609c"
+    },
+    {
       "path": "native/src/audio_pool_new_tests.cpp",
       "sha256": "c9c002b22f70df297829d255bc2bf00c812b7e627abebcf172116547a3b498f9",
       "gitBlobSha": "7cedeeb7076b76bebf82d87c97b9f8966de79693"
@@ -26476,8 +26496,13 @@
     },
     {
       "path": "native/src/audio_thread_retail_stream_tests.cpp",
-      "sha256": "12172dfd3fed76f93e7154eba50b1df5763434acc9527865e15abc57be2ba53f",
-      "gitBlobSha": "0d927ea865f39b334cc1384de0a3315289c3ffb9"
+      "sha256": "47b7df05487b9e10e8ae4f354b00835ccc1f74b557defd350efc49b7a3beba61",
+      "gitBlobSha": "5ac8513e56bc454d55c4e0c0114c4fcea4624b8d"
+    },
+    {
+      "path": "native/src/audio_thread_stream_pause_tests.cpp",
+      "sha256": "aaa6661eb391752e5702e8110de7917056bb0f42abbbd9aeff90ddd3df94cde4",
+      "gitBlobSha": "6ec0330e57781dab3c879b189cf76b70ab98b69a"
     },
     {
       "path": "native/src/audio_wave_metadata_tests.cpp",
@@ -27486,8 +27511,8 @@
     },
     {
       "path": "native/src/generated/AudioHeapKernel.cpp",
-      "sha256": "63a8f10de17133ef4d91e4c7fb095284a8e02ab8f84caeac9917047544a162b5",
-      "gitBlobSha": "9ad3c4bcdfc79dadbf70a462f98c22f2e2daab22"
+      "sha256": "f3fc5225cf9cc0c5dbaf1cf2b1c5c981260a95efadee2b413c02dd2e5e15e460",
+      "gitBlobSha": "3fb25ebff6977fd3790100de96741e33c8602cc3"
     },
     {
       "path": "native/src/generated/AudioProbeKernel.cpp",
@@ -31346,13 +31371,18 @@
     },
     {
       "path": "native/src/native_audio_ai.cpp",
-      "sha256": "4515a4fbacd0eedfd3e67752441bce052b61b5f529ac67e8ea16d045694cfe25",
-      "gitBlobSha": "f29e0a81ed7df3f31859f5e84083f25b523b5d89"
+      "sha256": "67067359d45920ed4714ec3d406635db15b6db2cbb8332ad4bfe8eb964004263",
+      "gitBlobSha": "1d1bb3cbf6b323abe9c33d93c63a02d0bbe2092e"
+    },
+    {
+      "path": "native/src/native_audio_ai_no_device_test_backend.cpp",
+      "sha256": "5f2d1c2970e2ed147c593f27d74da1e27923c7280e4c6ef32ac39de2f030698d",
+      "gitBlobSha": "def74048fa8b696c8292d9848cb96a16098f5370"
     },
     {
       "path": "native/src/native_audio_ai_tests.cpp",
-      "sha256": "5614e056ad814d8c655fe3ebc45acc899b01618772a43656870ff3c6eb002df2",
-      "gitBlobSha": "82cf6073f30202cadf43d52df7e9b7b056174ce4"
+      "sha256": "dc93db22b6f1d604139fbef199b2d50663beffeddbff2637404f8aa7be05a3a5",
+      "gitBlobSha": "5d710d1180cdcfa9210c8300569b79d002147ffb"
     },
     {
       "path": "native/src/native_audio_support_port.cpp",
@@ -33161,8 +33191,8 @@
     },
     {
       "path": "native/test-actor-runtime-dsp-boot-link.ps1",
-      "sha256": "2983430ffb044683b32935454fafa85f267a57c6c3d3d3f13c8ae27d3b218c67",
-      "gitBlobSha": "a17c69a66db24ee14e89c23509036582d2da0dc0"
+      "sha256": "ffd7b8982ad828fe5736b040fd962bd7a096d95b5566bf19a74e4bdd20d67194",
+      "gitBlobSha": "f5e4e1942c2adbbf2445fcb3962e12a4707b3c6d"
     },
     {
       "path": "native/test-alpha8-copy.ps1",
@@ -33270,6 +33300,11 @@
       "gitBlobSha": "135ae8f410a284988914a7e713cde03dc48645c0"
     },
     {
+      "path": "native/test-audio-pool-destroy.ps1",
+      "sha256": "7985e5faecab67a6c5517dd7852a17b4b96f102559d7124a5bc84f57535f064d",
+      "gitBlobSha": "8bd4a7569944166ea1b7dbac6a638d463bad0c24"
+    },
+    {
       "path": "native/test-audio-pool-new.ps1",
       "sha256": "36d0deef1f5353904750208a219cb08c682e2815157eef1e234a5d4af09e2d4f",
       "gitBlobSha": "7b9d20a7eccaf552d5bc3f1fbdc305a16b21f4e3"
@@ -33298,6 +33333,11 @@
       "path": "native/test-audio-thread-retail-stream.ps1",
       "sha256": "71afed6cb95de697ef0685946ea9570b61883ea0d8d618835bcc9ef75d49f022",
       "gitBlobSha": "a2dee02e24d082d95a84978203e5db323693d546"
+    },
+    {
+      "path": "native/test-audio-thread-stream-pause.ps1",
+      "sha256": "ec18b39a30941d4f759a6254891d31d93629d1d4fae54f3ba0e88868bb6c752f",
+      "gitBlobSha": "ab1aaa850d9f53ce97f8979a8b4d0d322270620b"
     },
     {
       "path": "native/test-audio-wave-metadata.ps1",
@@ -33991,8 +34031,8 @@
     },
     {
       "path": "native/test-native-audio-ai.ps1",
-      "sha256": "e8c07d60a928712b7a1b5a2147313956bd34e45e5fc7d4d0a791223eac197a86",
-      "gitBlobSha": "713d6f6bcbd160bd5f6944d69ce7b7d3d7a3f58a"
+      "sha256": "8903f7c0522d745b46c6a622ded463c2ad6639f8ab4c5ff27b3515204bd201a7",
+      "gitBlobSha": "b33c6a1144cda55a1950ed544a96746a359f6215"
     },
     {
       "path": "native/test-native-chord-table.ps1",

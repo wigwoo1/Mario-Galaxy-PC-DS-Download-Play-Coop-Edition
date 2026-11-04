@@ -208,7 +208,7 @@ JASGenericMemPool::~JASGenericMemPool() {
     void* pChunk = _0;
     while (pChunk != nullptr) {
         void* pNextChunk = *(void**)pChunk;
-        delete[] static_cast<u8*>(pChunk);
+        JKRHeap::free(pChunk, nullptr);
         pChunk = pNextChunk;
     }
 }

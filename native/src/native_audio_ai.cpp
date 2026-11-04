@@ -3,6 +3,7 @@
 #include <mmsystem.h>
 
 #include <Native/DspAddressSpace.hpp>
+#include <Native/AudioAiDiagnostics.hpp>
 #include <revolution/ai.h>
 
 #include <algorithm>
@@ -33,6 +34,11 @@ struct AiDmaState {
     bool initialized = false;
     bool running = false;
     bool stopping = false;
+    Native::AiOutputBackend backend = Native::AiOutputBackend::Stopped;
+    std::uint32_t queuedBlocks = 0;
+    std::uint32_t maximumQueuedBlocks = 0;
+    std::uint64_t completedFrames = 0;
+    std::uint64_t deviceCompletedFrames = 0;
 };
 
 AiDmaState& state() {
@@ -87,6 +93,7 @@ void audioWorker() {
     {
         std::lock_guard<std::mutex> lock(s.mutex);
         s.wave = wave;
+        s.backend = wave ? Native::AiOutputBackend::WaveOut : Native::AiOutputBackend::SilentClock;
         s.completionEvent = event;
         if (!s.running) {
             s.wave = nullptr;
@@ -111,11 +118,18 @@ void audioWorker() {
         }
         return pcm;
     };
-    auto complete = [&] {
+    auto complete = [&](std::size_t bytes, bool device) {
         AIDCallback callback = nullptr;
         {
             std::lock_guard<std::mutex> lock(s.mutex);
-            if (s.running) callback = s.callback;
+            if (s.running) {
+                s.completedFrames += bytes / 4;
+                if (device) {
+                    s.deviceCompletedFrames += bytes / 4;
+                    --s.queuedBlocks;
+                }
+                callback = s.callback;
+            }
         }
         if (callback) callback();
     };
@@ -136,6 +150,11 @@ void audioWorker() {
         MMRESULT result = waveOutPrepareHeader(wave, &chunk.header, sizeof(WAVEHDR));
         if (result == MMSYSERR_NOERROR) result = waveOutWrite(wave, &chunk.header, sizeof(WAVEHDR));
         if (result != MMSYSERR_NOERROR) reportWaveError("waveOut queue", result);
+        else {
+            std::lock_guard<std::mutex> lock(s.mutex);
+            ++s.queuedBlocks;
+            s.maximumQueuedBlocks = std::max(s.maximumQueuedBlocks, s.queuedBlocks);
+        }
         return result == MMSYSERR_NOERROR;
     };
     auto closeWave = [&] {
@@ -150,6 +169,8 @@ void audioWorker() {
         wave = nullptr;
         std::lock_guard<std::mutex> lock(s.mutex);
         s.wave = nullptr;
+        s.queuedBlocks = 0;
+        s.backend = s.running ? Native::AiOutputBackend::SilentClock : Native::AiOutputBackend::Stopped;
     };
     if (wave) {
         bool queued = true;
@@ -168,7 +189,7 @@ void audioWorker() {
             }
             const auto result = waveOutUnprepareHeader(wave, &chunk.header, sizeof(WAVEHDR));
             if (result != MMSYSERR_NOERROR) { reportWaveError("waveOut unprepare", result); break; }
-            complete();
+            complete(chunk.pcm.size(), true);
             queued = submit(chunk, true);
             oldest = (oldest + 1) % chunks.size();
         }
@@ -186,11 +207,12 @@ void audioWorker() {
             s.changed.wait_until(lock, deadline, [&] { return !s.running; });
             if (!s.running) break;
         }
-        complete();
+        complete(pcm.size(), false);
     }
     {
         std::lock_guard<std::mutex> lock(s.mutex);
         s.wave = nullptr;
+        s.backend = Native::AiOutputBackend::Stopped;
         s.completionEvent = nullptr;
         s.pendingPcm.clear();
     }
@@ -198,6 +220,13 @@ void audioWorker() {
 }
 
 } // namespace
+
+Native::AiOutputSnapshot Native::nativeAiOutputSnapshot() noexcept {
+    auto& s = state();
+    std::lock_guard<std::mutex> lock(s.mutex);
+    return {s.backend, s.sampleRate, s.queuedBlocks, s.maximumQueuedBlocks,
+            s.completedFrames, s.deviceCompletedFrames};
+}
 
 extern "C" void AIInit(u8*) {
     AIStopDMA();
@@ -267,7 +296,11 @@ extern "C" u32 AIGetDMALength(void) {
 extern "C" void AIStartDMA(void) {
     AiDmaState& s = state();
     std::lock_guard<std::mutex> lock(s.mutex);
-    if (!s.initialized || s.running || s.stopping) return;
+    // A callback can request STOP but cannot join itself. Its control thread
+    // must reap that worker with AIStopDMA before starting another one.
+    if (!s.initialized || s.running || s.stopping || s.worker.joinable()) return;
+    s.queuedBlocks = s.maximumQueuedBlocks = 0;
+    s.completedFrames = s.deviceCompletedFrames = 0;
     s.running = true;
     s.worker = std::thread(audioWorker);
 }

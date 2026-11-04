@@ -1,5 +1,7 @@
 # November 4 audio/runtime verification scope
 
+> Historical earlier-day checkpoint. Its pending queue/timing and paused status are superseded by the [later November 4 verification](2026-11-04-audio-timing-pause-pool.md). Retained below as the original record.
+
 This note summarizes inspected local receipts and logs. Raw logs, binaries outside the existing diagnostic ZIP and retail assets are excluded. The publication job did not rerun development tests or resume paused development.
 
 ## Completed checkpoints

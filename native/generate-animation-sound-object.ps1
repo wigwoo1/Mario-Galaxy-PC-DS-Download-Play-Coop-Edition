@@ -44,9 +44,7 @@ foreach($unit in @('JASSimpleWaveBank','JASBasicWaveBank','JASWaveArcLoader')){
  }
  Set-Content "$n\src\generated\$($unit)Kernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+$source.Replace('== FALSE','== 0'))
 }
-$source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASHeapCtrl.cpp" -Raw
-$source=$source.Replace('(u8*)OSRoundUp32B(pBase)','reinterpret_cast<u8*>((reinterpret_cast<std::uintptr_t>(pBase)+31)&~std::uintptr_t(31))').Replace('(u32(mBase) - u32(pBase))','static_cast<u32>(mBase-static_cast<u8*>(pBase))').Replace('u32(it->mBase) - u32(pCurrent)','static_cast<u32>(it->mBase-pCurrent)').Replace('delete[] pChunk;','delete[] static_cast<u8*>(pChunk);')
-Set-Content "$n\src\generated\AudioHeapKernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+'#include <cstdint>'+[Environment]::NewLine+$source)
+& (Join-Path $n 'generate-native-audio-heap.ps1')
 $source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASTaskThread.cpp" -Raw
 $source=$source.Replace('u32 size = msgSize + 8;','if(!callback || (msgSize && !msg) || msgSize > 1024 - offsetof(JASThreadCallStack, msg)) return nullptr;'+[Environment]::NewLine+'    u32 size = u32(offsetof(JASThreadCallStack, msg)) + msgSize;').Replace('getCommandHeap()->alloc(12)','getCommandHeap()->alloc(u32(offsetof(JASThreadCallStack, msg) + sizeof(void*)))')
 Set-Content "$n\src\generated\AudioTaskThreadKernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+'#include <cstddef>'+[Environment]::NewLine+$source)
