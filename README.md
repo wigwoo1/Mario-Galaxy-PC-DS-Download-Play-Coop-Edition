@@ -4,17 +4,19 @@ Experimental Windows x64 native port based on [SMGCommunity/Petari](https://gith
 
 ## Current state
 
-The November 1 source includes player display-list, flag-array and camera-animation work, a native DSP audio renderer, and tested original sound-channel and stream-manager lifecycles. A development run captured a partial Star Festival stage view before a camera-animation crash. No complete stage frame, player-controlled gameplay, audible game output or campaign playthrough is verified. The camera repair has component tests; its full-game retest remains pending.
+The November 4 source includes verified stream-manager/DVD fixes, 64-bit DAC buffer mapping, a complete original audio-thread test and retail-stream integration tests. A development game run previously captured a partial Star Festival view before a camera-animation crash. Complete stage rendering, player-controlled gameplay, audible game output and campaign completion remain unverified.
 
-Development is paused by the user. The latest stream-manager/DVD fixes pass component tests, but their full DLL build was interrupted on pause and remains unverified. A newer development launcher requires security review and is excluded from publication. Rough overall progress remains about 3%, a planning estimate rather than a measured counter.
+**Development is paused. Current audio-output queue source is pending verification:** a retail stream completed and released its resources, but took 46.744 seconds for approximately 26.4 seconds of audio. A subsequent queue edit passed only the basic native AI test; playback timing, whole-thread regression and a full DLL build of that edit remain unverified. Do not treat the retail test's lifecycle PASS as correct playback speed.
 
-See [current status](docs/STATUS.md), [November 1 verification](docs/verification/2026-11-01-runtime-audio.md), [daily publication check](docs/DAILY-STATUS.md) and [native progress](native/PROGRESS.md). Native progress and roadmap documents also contain historical checkpoints.
+Newer verified DLL-only checkpoints exist, but no matching new launcher/DLL package is published. The held launcher remains excluded pending security review. Rough overall progress remains about 3%, a planning estimate rather than a measured counter.
+
+See [current status](docs/STATUS.md), [November 4 verification and pending work](docs/verification/2026-11-04-audio-thread-and-timing.md), [daily publication check](docs/DAILY-STATUS.md) and [native progress](native/PROGRESS.md). Progress/roadmap entries describe dated checkpoints; the pending queue edit is newer than their last passing test entry.
 
 ## Download existing diagnostic builds
 
 [Download Windows x64 diagnostics](https://github.com/wigwoo1/Mario-Galaxy-PC-DS-Download-Play-Coop-Edition/raw/refs/heads/main/builds/windows-x64-diagnostics.zip). Extract the ZIP, then double-click **Run diagnostic self-tests.cmd**. It reports PASS or FAIL and keeps the window open. This test does not require a game image and does not launch gameplay.
 
-The unchanged ZIP contains the exact October 27 boot diagnostic launcher/DLL pair and its original manifest, plus the standalone probe. The packaged runtime is a historical hidden research diagnostic with the recorded Mario drawing-buffer failure. It predates the November 1 repairs and is not a playable game or a fresh rebuild by this publisher. Newer DLL-only development artifacts and the held launcher are not packaged. [Build hashes and limitations](builds/manifest.json).
+The unchanged ZIP contains the exact October 27 boot diagnostic launcher/DLL pair and its original manifest, plus the standalone probe. The packaged runtime is a historical hidden research diagnostic with the recorded Mario drawing-buffer failure. It predates the November 1–4 repairs and is not a playable game or a fresh rebuild by this publisher. Newer DLL-only development artifacts and the held launcher are not packaged. [Build hashes and limitations](builds/manifest.json).
 
 No game image, extracted asset directory, texture pack, user save, crash dump or compiler cache is included. Disc-backed tools require your own locally supplied game data.
 

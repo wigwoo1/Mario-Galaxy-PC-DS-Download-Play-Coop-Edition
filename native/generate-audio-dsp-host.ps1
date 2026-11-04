@@ -20,7 +20,27 @@ $new=@'
     JASDsp::syncFrame(getSubFrames(), dspBegin, dspEnd);
 '@
 $source=ReplaceOnce $source $old $new 'JAS DMA frame pointer mapping'
-$source='#include <Native/DspAddressSpace.hpp>'+[Environment]::NewLine+$source
+$old='    AIInitDMA((uintptr_t)sDmaDacBuffer[2], size);'
+$new=@'
+    const auto dmaAddress = Native::nativeDspAddressSpace().map(sDmaDacBuffer[2], size);
+    if (!dmaAddress) throw std::runtime_error("Cannot map initial JAudio DMA buffer");
+    AIInitDMA(dmaAddress, size);
+'@
+$source=ReplaceOnce $source $old $new 'JAudio initial AI DMA buffer mapping'
+$old='        AIInitDMA((uintptr_t)r30, getDacSize() * 2);'
+$new=@'
+        const u32 dmaBytes = getDacSize() * sizeof(s16);
+        const auto dmaAddress = Native::nativeDspAddressSpace().map(r30, dmaBytes);
+        if (!dmaAddress) throw std::runtime_error("Cannot map rotated JAudio DMA buffer");
+        AIInitDMA(dmaAddress, dmaBytes);
+'@
+$source=ReplaceOnce $source $old $new 'JAudio rotated AI DMA buffer mapping'
+# This complete provider does not use the Wii assertion UI header. Avoid its
+# platform-specific va-list declaration and preserve the original BOOL values.
+$source=ReplaceOnce $source '#include "JSystem/JUtility/JUTAssert.hpp"' '' 'Unused Wii assertion UI include'
+$source=ReplaceOnce $source 'isOutputRate = FALSE;' 'isOutputRate = 0;' '32k AI sample-rate mode'
+$source=ReplaceOnce $source 'isOutputRate = TRUE;' 'isOutputRate = 1;' '48k AI sample-rate mode'
+$source='#include <stdexcept>'+[Environment]::NewLine+'#include <Native/DspAddressSpace.hpp>'+[Environment]::NewLine+$source
 Set-Content "$n\src\generated\AudioAiCtrlHost.cpp" $source
 
 $source=Get-Content "$p\Petari\src\JSystem\JAudio2\JASDSPInterface.cpp" -Raw

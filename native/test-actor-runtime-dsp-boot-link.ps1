@@ -67,6 +67,7 @@ $objects=@(
  @{Source=(Join-Path $native 'src\dsp_audio_frame_executor.cpp');Name='dsp_audio_frame_executor.obj'},
  @{Source=(Join-Path $native 'src\generated\ZeldaAudioRenderer.cpp');Name='ZeldaAudioRenderer.obj'},
  @{Source=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASChannel.cpp');Name='JASChannel.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\generated\AudioAiCtrlHost.cpp');Name='JASAiCtrl.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\native_jkr_aram_port.cpp');Name='native_jkr_aram_port.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\remix_sequence_data.cpp');Name='remix_sequence_data.obj'},
  @{Source=(Join-Path $native 'src\generated\DspUcodeImage.cpp');Name='DspUcodeImage.obj'},

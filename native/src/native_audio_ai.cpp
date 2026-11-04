@@ -6,6 +6,7 @@
 #include <revolution/ai.h>
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
@@ -23,8 +24,7 @@ struct AiDmaState {
     std::condition_variable changed;
     std::thread worker;
     AIDCallback callback = nullptr;
-    const std::uint8_t* pendingData = nullptr;
-    std::uint32_t pendingBytes = 0;
+    std::vector<std::uint8_t> pendingPcm;
     std::uint32_t currentAddress = 0;
     std::uint32_t currentBytes = 0;
     std::uint32_t sampleRate = kDefaultSampleRate;
@@ -94,80 +94,107 @@ void audioWorker() {
         }
     }
 
-    std::vector<std::uint8_t> silence;
-    WAVEHDR header{};
-    for (;;) {
-        const std::uint8_t* data = nullptr;
-        std::uint32_t bytes = 0;
+    auto running = [&] {
+        std::lock_guard<std::mutex> lock(s.mutex);
+        return s.running;
+    };
+    auto nextPcm = [&](bool wait) {
+        std::unique_lock<std::mutex> lock(s.mutex);
+        if (wait) s.changed.wait_for(lock, std::chrono::milliseconds(5),
+                                    [&] { return !s.running || !s.pendingPcm.empty(); });
+        auto pcm = std::move(s.pendingPcm);
+        s.pendingPcm.clear();
+        if (pcm.empty()) {
+            const auto bytes = s.currentBytes >= 4 && s.currentBytes <= kMaximumDmaBytes &&
+                               s.currentBytes % 4 == 0 ? s.currentBytes : 2240;
+            pcm.assign(bytes, 0);
+        }
+        return pcm;
+    };
+    auto complete = [&] {
         AIDCallback callback = nullptr;
-        std::uint32_t activeRate = kDefaultSampleRate;
+        {
+            std::lock_guard<std::mutex> lock(s.mutex);
+            if (s.running) callback = s.callback;
+        }
+        if (callback) callback();
+    };
+    struct Chunk {
+        WAVEHDR header{};
+        std::vector<std::uint8_t> pcm;
+    };
+    // Keep data queued ahead of the driver. Waiting for one buffer and only
+    // then writing its successor repeatedly incurred endpoint startup gaps.
+    // Copies own their PCM until WHDR_DONE; the game may rotate its DMA arrays.
+    std::array<Chunk, 3> chunks;
+    auto submit = [&](Chunk& chunk, bool wait) {
+        chunk.pcm = nextPcm(wait);
+        if (!running()) return false;
+        chunk.header = {};
+        chunk.header.lpData = reinterpret_cast<LPSTR>(chunk.pcm.data());
+        chunk.header.dwBufferLength = static_cast<DWORD>(chunk.pcm.size());
+        MMRESULT result = waveOutPrepareHeader(wave, &chunk.header, sizeof(WAVEHDR));
+        if (result == MMSYSERR_NOERROR) result = waveOutWrite(wave, &chunk.header, sizeof(WAVEHDR));
+        if (result != MMSYSERR_NOERROR) reportWaveError("waveOut queue", result);
+        return result == MMSYSERR_NOERROR;
+    };
+    auto closeWave = [&] {
+        if (!wave) return;
+        // Only this worker operates/closes the device; STOP wakes its event.
+        waveOutReset(wave);
+        for (auto& chunk : chunks) {
+            if (chunk.header.dwFlags & WHDR_PREPARED)
+                waveOutUnprepareHeader(wave, &chunk.header, sizeof(WAVEHDR));
+        }
+        waveOutClose(wave);
+        wave = nullptr;
+        std::lock_guard<std::mutex> lock(s.mutex);
+        s.wave = nullptr;
+    };
+    if (wave) {
+        bool queued = true;
+        for (auto& chunk : chunks) if (!submit(chunk, false)) { queued = false; break; }
+        unsigned oldest = 0;
+        while (queued && running()) {
+            auto& chunk = chunks[oldest];
+            if (!(chunk.header.dwFlags & WHDR_DONE)) {
+                const DWORD timeout = chunkDurationMs(static_cast<u32>(chunk.pcm.size()), sampleRate) + 1000;
+                if (WaitForSingleObject(event, timeout) == WAIT_TIMEOUT) {
+                    reportWaveError("waveOut completion wait", MMSYSERR_ERROR);
+                    break;
+                }
+                // Open/close/state-change events are not DMA completion.
+                continue;
+            }
+            const auto result = waveOutUnprepareHeader(wave, &chunk.header, sizeof(WAVEHDR));
+            if (result != MMSYSERR_NOERROR) { reportWaveError("waveOut unprepare", result); break; }
+            complete();
+            queued = submit(chunk, true);
+            oldest = (oldest + 1) % chunks.size();
+        }
+        closeWave();
+    }
+    // If no endpoint is available, retain the original DMA clock without
+    // adding a rounded sleep and mixer wait to every block's duration.
+    auto deadline = std::chrono::steady_clock::now();
+    while (running()) {
+        const auto pcm = nextPcm(true);
+        const auto nanos = std::uint64_t(pcm.size() / 4) * 1000000000ull / sampleRate;
+        deadline += std::chrono::nanoseconds(nanos);
         {
             std::unique_lock<std::mutex> lock(s.mutex);
-            s.changed.wait_for(lock, std::chrono::milliseconds(5),
-                               [&] { return !s.running || s.pendingData != nullptr; });
+            s.changed.wait_until(lock, deadline, [&] { return !s.running; });
             if (!s.running) break;
-            data = s.pendingData;
-            bytes = s.pendingBytes;
-            s.pendingData = nullptr;
-            s.pendingBytes = 0;
-            callback = s.callback;
-            activeRate = s.sampleRate;
         }
-
-        // A completion callback clocks the original audio thread. It may need
-        // a few milliseconds to mix and submit its next triple-buffered chunk.
-        // If it has not arrived, feed silence at the same cadence instead of
-        // spinning or replaying a buffer that the mixer can reuse.
-        if (bytes == 0 || bytes > kMaximumDmaBytes) bytes = 2240;
-        silence.assign(bytes, 0);
-        header = {};
-        header.lpData = reinterpret_cast<LPSTR>(const_cast<std::uint8_t*>(data ? data : silence.data()));
-        header.dwBufferLength = bytes;
-
-        if (wave != nullptr && event != nullptr) {
-            ResetEvent(event);
-            MMRESULT result = waveOutPrepareHeader(wave, &header, sizeof(header));
-            if (result == MMSYSERR_NOERROR) {
-                result = waveOutWrite(wave, &header, sizeof(header));
-            }
-            if (result == MMSYSERR_NOERROR) {
-                const DWORD timeout = chunkDurationMs(bytes, activeRate) + 1000;
-                const DWORD waitResult = WaitForSingleObject(event, timeout);
-                if (waitResult == WAIT_TIMEOUT) {
-                    waveOutReset(wave);
-                    reportWaveError("waveOut completion wait", MMSYSERR_ERROR);
-                }
-                waveOutUnprepareHeader(wave, &header, sizeof(header));
-            } else {
-                if ((header.dwFlags & WHDR_PREPARED) != 0) {
-                    waveOutUnprepareHeader(wave, &header, sizeof(header));
-                }
-                reportWaveError("waveOutWrite", result);
-                waveOutReset(wave);
-                waveOutClose(wave);
-                wave = nullptr;
-                std::lock_guard<std::mutex> lock(s.mutex);
-                s.wave = nullptr;
-            }
-        } else {
-            std::this_thread::sleep_for(std::chrono::milliseconds(chunkDurationMs(bytes, activeRate)));
-        }
-
-        if (callback != nullptr) callback();
+        complete();
     }
-
-    if (wave != nullptr) {
-        waveOutReset(wave);
-        waveOutClose(wave);
-    }
-    if (event != nullptr) CloseHandle(event);
     {
         std::lock_guard<std::mutex> lock(s.mutex);
         s.wave = nullptr;
         s.completionEvent = nullptr;
-        s.pendingData = nullptr;
-        s.pendingBytes = 0;
+        s.pendingPcm.clear();
     }
+    if (event) CloseHandle(event);
 }
 
 } // namespace
@@ -178,8 +205,7 @@ extern "C" void AIInit(u8*) {
     std::lock_guard<std::mutex> lock(s.mutex);
     s.initialized = true;
     s.sampleRate = kDefaultSampleRate;
-    s.pendingData = nullptr;
-    s.pendingBytes = 0;
+    s.pendingPcm.clear();
     s.currentAddress = 0;
     s.currentBytes = 0;
 }
@@ -194,8 +220,8 @@ extern "C" void AIInitDMA(u32 address, u32 length) {
         std::lock_guard<std::mutex> lock(s.mutex);
         s.currentAddress = address;
         s.currentBytes = length;
-        s.pendingData = data;
-        s.pendingBytes = data ? length : 0;
+        if (data) s.pendingPcm.assign(data, data + length);
+        else s.pendingPcm.clear();
     }
     if (data == nullptr) {
         OutputDebugStringA("Galaxy native audio: rejected invalid Wii AI DMA guest range.\n");
@@ -249,13 +275,10 @@ extern "C" void AIStartDMA(void) {
 extern "C" void AIStopDMA(void) {
     AiDmaState& s = state();
     std::thread worker;
-    HWAVEOUT wave = nullptr;
-    HANDLE event = nullptr;
     {
         std::lock_guard<std::mutex> lock(s.mutex);
         s.running = false;
-        wave = s.wave;
-        event = s.completionEvent;
+        if (s.completionEvent) SetEvent(s.completionEvent);
         if (s.worker.joinable()) {
             if (s.worker.get_id() == std::this_thread::get_id()) return;
             s.stopping = true;
@@ -263,8 +286,6 @@ extern "C" void AIStopDMA(void) {
         }
     }
     s.changed.notify_all();
-    if (wave != nullptr) waveOutReset(wave);
-    if (event != nullptr) SetEvent(event);
     if (worker.joinable()) worker.join();
     {
         std::lock_guard<std::mutex> lock(s.mutex);

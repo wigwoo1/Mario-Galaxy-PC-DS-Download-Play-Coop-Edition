@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <Native/DspAddressSpace.hpp>
 #include "JSystem/JAudio2/JASAiCtrl.hpp"
 #include "JSystem/JAudio2/JASAudioThread.hpp"
@@ -12,7 +13,7 @@
 #include "JSystem/JAudio2/JASProbe.hpp"
 #include "JSystem/JAudio2/JASReport.hpp"
 #include "JSystem/JKernel/JKRSolidHeap.hpp"
-#include "JSystem/JUtility/JUTAssert.hpp"
+
 
 // #include <ai.h>
 // #include <os.h>
@@ -66,12 +67,14 @@ void JASDriver::initAI(void (*param_0)(void)) {
     sDspStatus = 0;
     JASChannel::initBankDisposeMsgQueue();
     AIInit(nullptr);
-    AIInitDMA((uintptr_t)sDmaDacBuffer[2], size);
+    const auto dmaAddress = Native::nativeDspAddressSpace().map(sDmaDacBuffer[2], size);
+    if (!dmaAddress) throw std::runtime_error("Cannot map initial JAudio DMA buffer");
+    AIInitDMA(dmaAddress, size);
     BOOL isOutputRate;
     if (sOutputRate == 0) {
-        isOutputRate = FALSE;
+        isOutputRate = 0;
     } else {
-        isOutputRate = TRUE;
+        isOutputRate = 1;
     }
     AISetDSPSampleRate((u8)isOutputRate);
     AIRegisterDMACallback(param_0);
@@ -111,7 +114,10 @@ void JASDriver::updateDac() {
     s16* r30 = lastRspMadep;
     lastRspMadep = nullptr;
     if (r30) {
-        AIInitDMA((uintptr_t)r30, getDacSize() * 2);
+        const u32 dmaBytes = getDacSize() * sizeof(s16);
+        const auto dmaAddress = Native::nativeDspAddressSpace().map(r30, dmaBytes);
+        if (!dmaAddress) throw std::runtime_error("Cannot map rotated JAudio DMA buffer");
+        AIInitDMA(dmaAddress, dmaBytes);
     }
     s32 frameSamples = getFrameSamples();
     readDspBuffer(sDmaDacBuffer[dacp], frameSamples);
