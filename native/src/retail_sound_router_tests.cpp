@@ -131,8 +131,9 @@ void noteWorker(const char* wbfs){
  std::vector<u8> expected;assert(nativeReadDvdEntry(arc->mEntryNum,expected));
  std::vector<u8> streamBytes;const int streamEntry=DVDConvertPathToEntrynum("/AudioRes/Stream/SMG_ev_prolo04_strm.ast");assert(streamEntry>=0&&nativeReadDvdEntry(streamEntry,streamBytes));JASAramStream::Header streamHeader{};assert(Native::decodeJasStreamHeader(streamBytes.data(),streamBytes.size(),streamHeader)&&streamHeader.loop_end==841863&&streamHeader.channels==2&&!streamHeader.loop);
  std::vector<u8> aramBytes(expected.size()+0x400000,0xcd);auto aram=std::make_shared<NativeAramMemory>(aramBytes.data(),aramBytes.size());assert(nativeBindAramTransport(aram));
+ {
  JASHeap waveRoot;waveRoot.initRootHeap(reinterpret_cast<void*>(uintptr_t(0x4000)),u32((expected.size()+31)&~size_t(31)));
- JASHeap streamRoot;const u32 streamBase=u32((0x5000+expected.size()+31)&~size_t(31));streamRoot.initRootHeap(reinterpret_cast<void*>(uintptr_t(streamBase)),0x300000);JAUStreamStaticAramMgr streamMemory;streamMemory.alloc(36,&streamRoot);streamAram=&streamMemory;assert(streamMemory.mSize==2);
+ JASHeap streamRoot;const u32 streamBase=u32((0x5000+expected.size()+31)&~size_t(31));streamRoot.initRootHeap(reinterpret_cast<void*>(uintptr_t(streamBase)),0x300000);JAUStreamStaticAramMgr streamMemory;streamAram=&streamMemory;
  auto* streamWorker=JKRAramStream::create(16);assert(streamWorker);assert(JASDvd::createThread(16,64,0x4000));auto* dvdWorker=JASDvd::getThreadPointer();assert(dvdWorker);
  assert(arc->load(&waveRoot));
  auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(10);
@@ -146,6 +147,12 @@ void noteWorker(const char* wbfs){
  JAISeqData seq(nullptr,0);assert(collection.getSeqData(JAISoundID(0),&seq)==2&&seq.data==catalog.bsc&&seq.offset==seqOffset&&seqOffset==0x411);
  assert(!std::strcmp(names.getName(JAISoundID(0)),"SE_SY_COIN"));std::printf("Actual catalog ID00000000 %s; BSC bytes=%u offset=%x priority=%u\n",names.getName(JAISoundID(0)),catalog.bscBytes,seq.offset,info.getPriority(JAISoundID(0)));
  JAIStream::newMemPool(3);JAISeq::newMemPool(3);JASAramStream::initSystem(streamHeader.block_size,2);
+ // Allocation uses the initialized static block size, not an implicit zero.
+ assert(JASAramStream::getBlockSize()==streamHeader.block_size&&streamHeader.block_size>0);
+ streamMemory.alloc(36,&streamRoot);assert(streamMemory.mSize==2);
+ for(const auto& heap:streamMemory.mHeaps){const auto base=uintptr_t(heap.mBase);assert(heap.mSize==36*streamHeader.block_size&&heap.mSize>0&&base>=streamBase&&base+heap.mSize<=aramBytes.size());}
+ std::printf("PASS stream system initialized before ARAM allocation: block=%u buffers=%u bytesEach=%u; disjoint from loaded coin wave archive\n",streamHeader.block_size,streamMemory.mSize,streamMemory.mHeaps[0].mSize);
+
  JAISe::newMemPool(120);JASTrack::newMemPool(200);JASTrack::TChannelMgr::newMemPool(1);JAISoundChild::newMemPool(160);
  DSPInit();Native::nativeDspAddressSpace().clear();JASDsp::setDSPMixerLevel(.25f);
  {
@@ -186,7 +193,9 @@ void noteWorker(const char* wbfs){
  static_cast<JKRThread*>(streamWorker)->~JKRThread();JKRHeap::free(streamWorker,nullptr);
  assert(!JASAudioThread::getThreadPointer()&&!JASDvd::getThreadPointer()&&JKRThread::sThreadList.getNumLinks()==0);
  static_cast<JASSimpleWaveBank*>(waveBank)->~JASSimpleWaveBank();JKRHeap::free(waveBank,bankHeap);
- JKRHeap::destroy(bankHeap);Native::nativeDspAddressSpace().clear();nativeReleaseAramTransport();JKRHeap::destroy(dram);
+ JKRHeap::destroy(bankHeap);
+ } // Stream ARAM child heaps unlink while their stack root remains alive.
+ streamAram=nullptr;Native::nativeDspAddressSpace().clear();nativeReleaseAramTransport();JKRHeap::destroy(dram);
  assert(!JASDram&&root.check()&&root.getTotalFreeSize()==freeBefore);
  }
  assert(VirtualFree(memory,0,MEM_RELEASE));nativeReleaseDvd();

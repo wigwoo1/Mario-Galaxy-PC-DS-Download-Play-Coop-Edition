@@ -4,13 +4,13 @@ Experimental Windows x64 native port based on [SMGCommunity/Petari](https://gith
 
 ## Current state
 
-The November 4 source now includes scoped verification of audio-pool/worker/heap lifetimes and restart, actual retail sound-catalog streams, native track/sequence-note repairs, sampled instruments and three natural requests of the original coin sound. The latest completed DLL-only link is hash-verified; no matching new launcher package is available. The shared-manager coin-plus-stream test is included as work in progress: it compiles, but its final runtime assertion fails because the stream remains preparing.
+The November 4 source now includes scoped passing checks for audio lifetimes, real coin/prologue routing, original BGM_MISS loading, section allocation and complete sound-catalog initialization. The latest completed DLL-only link is hash-verified; no matching new launcher package is available. Newer AudSystem construction/ownership source is unfinished: construction checks succeed, but shutdown still crashes. The completed DLL does not validate all current edits.
 
 **Not playable.** The last full-game run captured a partial Star Festival view before a camera-animation crash. Complete stage rendering, reliable player control, campaign completion and full audio/visual fidelity remain unverified. The separate held launcher remains excluded pending legitimate security review.
 
 Development was active and remains active; publication did not resume it, change goal status or run development tests. Rough overall progress remains about 3%, a planning estimate rather than a measured counter; verified playable completion remains 0%.
 
-See [current status](docs/STATUS.md), [latest verification and limits](docs/verification/2026-11-04-audio-lifetimes-and-retail-coin.md), [daily publication check](docs/DAILY-STATUS.md) and [native progress](native/PROGRESS.md). Earlier dated evidence remains historical.
+See [current status](docs/STATUS.md), [latest verification and limits](docs/verification/2026-11-04-router-music-catalog.md), [daily publication check](docs/DAILY-STATUS.md) and [native progress](native/PROGRESS.md). Earlier dated evidence remains historical.
 
 ## Download existing diagnostic builds
 

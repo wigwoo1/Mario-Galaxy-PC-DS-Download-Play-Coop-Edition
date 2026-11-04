@@ -148,7 +148,7 @@ JAUSoundTable* JAUSection::newSoundTable(void const* bst, u32 param_1, bool para
             bstDst = newCopy(bst, param_1, 4);
         }
 
-        JAUSoundTable* soundTable = new JAUSoundTable(param_2);
+        JAUSoundTable* soundTable = new (getHeap_(), alignof(JAUSoundTable)) JAUSoundTable(param_2);
         soundTable->init(bstDst); soundTable->nativeResourceSize = param_1;
         sectionHeap_->sectionHeapData_.soundTable = soundTable;
         data_.mBstDst = bstDst;
@@ -166,7 +166,7 @@ JAUSoundNameTable* JAUSection::newSoundNameTable(void const* bstn, u32 param_1, 
             bstnDst = newCopy(bstn, param_1, 4);
         }
 
-        JAUSoundNameTable* soundNameTable = new JAUSoundNameTable(param_2);
+        JAUSoundNameTable* soundNameTable = new (getHeap_(), alignof(JAUSoundNameTable)) JAUSoundNameTable(param_2);
         soundNameTable->init(bstnDst);
         sectionHeap_->sectionHeapData_.soundNameTable = soundNameTable;
         data_.mBstnDst = bstnDst;
@@ -208,7 +208,7 @@ JAISeqDataMgr* JAUSection::newSeSeqCollection(void const* bsc, u32 param_1) {
 
     {
         TPushCurrentHeap push(getHeap_());
-        JAUSeqDataMgr_SeqCollection* seSeqDataMgr = new JAUSeqDataMgr_SeqCollection();
+        JAUSeqDataMgr_SeqCollection* seSeqDataMgr = new (getHeap_(), alignof(JAUSeqDataMgr_SeqCollection)) JAUSeqDataMgr_SeqCollection();
         seSeqDataMgr->init(bsc);
         sectionHeap_->sectionHeapData_.seSeqDataMgr_ = seSeqDataMgr;
         data_.field_0x80 = seSeqDataMgr;
@@ -220,13 +220,13 @@ JAISeqDataMgr* JAUSection::newSeSeqCollection(void const* bsc, u32 param_1) {
 u8* JAUSection::newStaticSeqDataBlock_(JAISoundID param_0, u32 size) {
     {
         TPushCurrentHeap push(getHeap_());
-        JAUSeqDataBlock* seqDataBlock = new JAUSeqDataBlock();
+        JAUSeqDataBlock* seqDataBlock = new (getHeap_(), alignof(JAUSeqDataBlock)) JAUSeqDataBlock();
 
         if (!seqDataBlock) {
             return nullptr;
         }
 
-        JSULink< JAUSeqDataBlock >* link = new JSULink< JAUSeqDataBlock >(seqDataBlock);
+        JSULink< JAUSeqDataBlock >* link = new (getHeap_(), alignof(JSULink< JAUSeqDataBlock >)) JSULink< JAUSeqDataBlock >(seqDataBlock);
 
         if (!link) {
             return nullptr;
@@ -497,7 +497,7 @@ u32 JAUSectionHeap::releaseIdleDynamicSeqDataBlock() {
 static JAUSectionHeap* JAUNewSectionHeap(JKRSolidHeap* heap, bool param_1) NO_INLINE {
     TPushCurrentHeap push(heap);
     s32 r29 = heap->getFreeSize();
-    JAUSectionHeap* sectionHeap = new JAUSectionHeap(heap, param_1, r29);
+    JAUSectionHeap* sectionHeap = new (heap, alignof(JAUSectionHeap)) JAUSectionHeap(heap, param_1, r29);
     return sectionHeap;
 }
 
@@ -546,13 +546,13 @@ bool JAUSectionHeap::setSeqDataUser(JAISeqDataUser* param_0) {
 bool JAUSectionHeap::newDynamicSeqBlock(u32 size) {
     {
         TPushCurrentHeap push(getHeap_());
-        JAUSeqDataBlock* seqDataBlock = new JAUSeqDataBlock();
+        JAUSeqDataBlock* seqDataBlock = new (getHeap_(), alignof(JAUSeqDataBlock)) JAUSeqDataBlock();
 
         if (!seqDataBlock) {
             return false;
         }
 
-        JSULink< JAUSeqDataBlock >* link = new JSULink< JAUSeqDataBlock >(seqDataBlock);
+        JSULink< JAUSeqDataBlock >* link = new (getHeap_(), alignof(JSULink< JAUSeqDataBlock >)) JSULink< JAUSeqDataBlock >(seqDataBlock);
 
         if (!link) {
             return false;

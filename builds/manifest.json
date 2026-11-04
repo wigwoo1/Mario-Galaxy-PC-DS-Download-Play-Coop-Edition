@@ -7,7 +7,7 @@
   "probeSelfTest": "unchanged binary; last PASS during 2026-10-18 publication preparation",
   "knownFailure": "Packaged October27 runtime: unregistered private display-list buffer during normal Mario draw; no complete stage frame. Current source is newer; see docs/STATUS.md.",
   "freshFullRebuildClaimed": false,
-  "sourceAheadOfRuntime": "Later November 4 source verifies scoped audio lifetimes/restart, actual catalog/sequence/sample/coin component integration and incremental DLL-only link F6AC7F11DB9659F7B689598C73003711B4B71AA0A18B88619B9343E70E05776E. Shared-manager routing test remains incomplete: stream preparation does not finish and runtime assertion fails. Existing diagnostic ZIP unchanged; no matching new verified launcher package. Not playable.",
+  "sourceAheadOfRuntime": "November 4 source passes scoped real coin/prologue routing, BGM_MISS loading, section allocation and complete catalog initialization checks. Latest completed incremental DLL-only checkpoint A41101EF706A0FB9F48025A038D6CA94E0573132CFF47C2599E2E974BDFF932E. Newer AudSystem constructor/ownership source remains work in progress: shutdown crashes and is not validated by that DLL. Existing diagnostic ZIP unchanged; no matching new verified launcher package. Not playable.",
   "archive": {
     "path": "builds/windows-x64-diagnostics.zip",
     "bytes": 5681143,

@@ -16,8 +16,8 @@
     },
     {
       "path": "BUILDING.md",
-      "sha256": "c052ebabab2ffbd779ae092651853d7d60c2c048eb889cae80ea6eb86c2b0035",
-      "gitBlobSha": "eb16e99981813109fd4e529b562f67da73e75e30"
+      "sha256": "73f1dfecb04597c781dd3f46077e00425cdcabf5346a5b96a32567b1077b5809",
+      "gitBlobSha": "b2ce6ba1507db0407addba7c8460bcc613360a60"
     },
     {
       "path": "Petari/.clang-format",
@@ -23116,8 +23116,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "d0fd60ea2f2230b238bf302e89742618a2634b3edcb8e9e7703628736420f5e6",
-      "gitBlobSha": "b7da07384bb8ed36412062499dcaff3da0149ac8"
+      "sha256": "679cf8dc3939be0b3fd26825722a0433afd840a122dfe2305e63109251e789a3",
+      "gitBlobSha": "afee1ae20af44b4e1eb1a13a696cad3a187eadaa"
     },
     {
       "path": "Run CSV checks.cmd",
@@ -23146,8 +23146,8 @@
     },
     {
       "path": "builds/manifest.json",
-      "sha256": "cb778b1f442fb7b1ec92c9c26b7a415f058204851b025750196842391fadbd01",
-      "gitBlobSha": "f7267f312f143bef5d865c6b7bf23c7afa93c60e"
+      "sha256": "46cb46cf9448e624758f90217dc543f97b04035197aae7c4638bf5c6b74bcc12",
+      "gitBlobSha": "993e71f99bde5b6fb532794937a82c8686d288f5"
     },
     {
       "path": "builds/windows-x64-diagnostics.zip",
@@ -23156,13 +23156,13 @@
     },
     {
       "path": "docs/DAILY-STATUS.md",
-      "sha256": "dae66d340d2011b6c78bbe1606121c2267704c82e225fe951ee51138104d8bfe",
-      "gitBlobSha": "14c2c55a8cbdebcf426604fc85e48dc8dd1fb1d3"
+      "sha256": "a087eadae3548abec605453a610103dd5f0a35e32dbb39d3944cfd99ed962ef3",
+      "gitBlobSha": "5efae21005cdd61d16786011e8b32eb777bcbbd8"
     },
     {
       "path": "docs/STATUS.md",
-      "sha256": "32e5291d6403d9628618e14a8648f99fa8d5c328f035ed1a276a85ba9e3497e8",
-      "gitBlobSha": "34ff2d233ddfd64a0b09ea7bd2dc2142e37a5430"
+      "sha256": "a37d68b24176eab322ef9dce3baa996a6fdab675398c4bfeb3ac9306ecd60f34",
+      "gitBlobSha": "fbf051a28b5ee5069c35393b298e31e2c74c749f"
     },
     {
       "path": "docs/verification/2026-10-16-bloom-factory.md",
@@ -23200,6 +23200,11 @@
       "gitBlobSha": "dfa233b069c9708f27c6b23b8df75fa440cd949d"
     },
     {
+      "path": "docs/verification/2026-11-04-router-music-catalog.md",
+      "sha256": "a6e65eff6924d036c082ec7e00f87dc95a6e54a77b88cf8dfdd850ad002ae30f",
+      "gitBlobSha": "20bf9e8419930bac479bb5344a4235fd31cb9a89"
+    },
+    {
       "path": "docs/verification/2026-11-04-runtime-publication-checks.json",
       "sha256": "95c8f380ce458e8be87a5a3852e263560e501c4c3b4a614bc86eb17da5b7ed7d",
       "gitBlobSha": "213d56e7511d829d78e0effa70359696f3b5effb"
@@ -23221,8 +23226,8 @@
     },
     {
       "path": "native/AUDIO-DSP-ROADMAP.md",
-      "sha256": "fffd3b276b3c746481080b4c4de9fc4a311939025799b49519633c5172049370",
-      "gitBlobSha": "4d2562bb4943a92436205d05d69fa01152e1b39d"
+      "sha256": "d440354a3811ca729570f8c494b252af3cac2379b76094ab9d3093b307e35736",
+      "gitBlobSha": "60bc953e6aa2524d43bf75f313c48ebe673aa415"
     },
     {
       "path": "native/CMakeLists.txt",
@@ -23246,8 +23251,8 @@
     },
     {
       "path": "native/PROGRESS.md",
-      "sha256": "60772bb53c2687a57fffafef10742fbd3e45790b07c92b6ebb2aa69cf9052e4d",
-      "gitBlobSha": "8fc5d8e1d65c279cfa16614b8e7ea95c1f61e74f"
+      "sha256": "e9253c7929af74fa264328af13a28d0e4aa7861d610cacf78b0877f0d1ffac40",
+      "gitBlobSha": "4981fe2280f2ec1c3a6ce1134bcda137686edcf9"
     },
     {
       "path": "native/README.md",
@@ -23471,13 +23476,13 @@
     },
     {
       "path": "native/generate-audio-section-heap.ps1",
-      "sha256": "9c5e7d7a7126885a251595d53e602e997426e5577b1864280ad5fe7a346a9dff",
-      "gitBlobSha": "f99fcc99c07cb2a1dbbecb400403b3ffc5fd49d4"
+      "sha256": "ee27d634faf2fd992141640cee531e0a90ecf8cbc4b0c5185865d2fb9b89a87f",
+      "gitBlobSha": "587834f53ca4b9617c8b060245229760081714ca"
     },
     {
       "path": "native/generate-audio-system.ps1",
-      "sha256": "7a9d27359a68675634b52435b033a8a1d04e5fbb15f94790cb49ffc79b08b168",
-      "gitBlobSha": "28b99ab5e6654a92c844ac4d4adc17dc57b18748"
+      "sha256": "9c313c9984cf1973b6efab5abfe963667bf678e3f64d6815533c5ed47b56eb25",
+      "gitBlobSha": "7afe52987b292e899bf2850b760bbf2fcc3c0260"
     },
     {
       "path": "native/generate-audparams-host-compat.ps1",
@@ -26156,8 +26161,8 @@
     },
     {
       "path": "native/probe-actor-link.ps1",
-      "sha256": "485dc7169f1cb7b93b9d6eaffb35a6748e654d4891e743df5c6712d60db2933c",
-      "gitBlobSha": "2f246e84635b4fd52e05d9021e54ea6546b4cdbf"
+      "sha256": "607b1406af98c1d485e1641b24626a8cbf3e05a87c831b83860a072ab37ab07f",
+      "gitBlobSha": "a1bb348a1c6b483d09b91c96f38b43fbfdca95c4"
     },
     {
       "path": "native/probe-actor-runtime.ps1",
@@ -26410,6 +26415,11 @@
       "gitBlobSha": "9902d05b95b505d0bed19708718cf8194c5f5757"
     },
     {
+      "path": "native/src/aud_system_construction_tests.cpp",
+      "sha256": "ad9e9b9f634bda3d79cef41bb00d6b9f9ac937dc97e5027d7b0cffbd2f1ad438",
+      "gitBlobSha": "15748b20d3c14bf4660725ff8c54b759e4f6bae0"
+    },
+    {
       "path": "native/src/audio_bank_table_tests.cpp",
       "sha256": "c7c1331ed56355e1605cc20768544909ab8cf1841297af729f2058227c94e53b",
       "gitBlobSha": "021617a88181e44833bba8693cd084bb19608538"
@@ -26423,6 +26433,11 @@
       "path": "native/src/audio_callback_tests.cpp",
       "sha256": "cef98a09a3bcb8c5f00b904cb9397e81da5dee198550bbb9d3170e5742d254e2",
       "gitBlobSha": "36b02d6b04771c94fda8216fec1facbd6f7132a0"
+    },
+    {
+      "path": "native/src/audio_catalog_initialization_tests.cpp",
+      "sha256": "8d30a373b452c80bc5c0ace37e4b5233f712d3cc2b370c1d7a53b54cf83d6d0f",
+      "gitBlobSha": "fc91e5a8f0e185d1c22add4c565ec07a4431f0c8"
     },
     {
       "path": "native/src/audio_chunk_layout_tests.cpp",
@@ -26528,6 +26543,11 @@
       "path": "native/src/audio_report_tests.cpp",
       "sha256": "c2f2338e2de7294b3f69de2cba273e76cbd2bfdc7e26d80cad552dadaf7c0098",
       "gitBlobSha": "0ba640a27c8552458e55fb7787b66d1462e41318"
+    },
+    {
+      "path": "native/src/audio_section_allocation_tests.cpp",
+      "sha256": "2345282176c8ee9c439893fd3253b14ef103cb0fff89a2bc533fa9bc8b31f18a",
+      "gitBlobSha": "b7b4d47b1c819330c3b6c37b1f38db55a8bfdf6e"
     },
     {
       "path": "native/src/audio_sequence_tests.cpp",
@@ -27581,13 +27601,13 @@
     },
     {
       "path": "native/src/generated/AudioSectionHeapKernel.cpp",
-      "sha256": "5a0b5d61411c6a9dcdf73aeb1469863332fb6e4e064304d5fa25ebdc4dd4a54f",
-      "gitBlobSha": "2e576917fed81dedb799dea96325c685557ccda5"
+      "sha256": "34b3d35746d804d4e212769b7a80da1431206a001159b6af213400d3e90c5927",
+      "gitBlobSha": "c01e6a2577a2c9a55634d6a9ed2c99e65bf7147b"
     },
     {
       "path": "native/src/generated/AudioSystemKernel.cpp",
-      "sha256": "69104d5394401ea23808dd327e46ef472c8bbc458c03b39081658a0b325a7384",
-      "gitBlobSha": "149feaf3eb22e56f215acfaa12e20188b33593b5"
+      "sha256": "eb62c116fdd38c202ecdb1cc5e98a03984177e2d624bd017bd84b09e154e1894",
+      "gitBlobSha": "b60ffb50e78096749caf7838f8fa092bb57336ad"
     },
     {
       "path": "native/src/generated/AudioTaskThreadKernel.cpp",
@@ -32545,6 +32565,11 @@
       "gitBlobSha": "4d48387fd470b8284e3d799ddf9493dbc3b5ffa6"
     },
     {
+      "path": "native/src/retail_music_sequence_tests.cpp",
+      "sha256": "a85dffe629feb45faa29c07a0f2379a10084fd124e537696af42b743de3fc6ff",
+      "gitBlobSha": "60f781e7582714921016fbf3040c4e04fc96c6f7"
+    },
+    {
       "path": "native/src/retail_sampled_note_tests.cpp",
       "sha256": "237489ef06c84758c85e35f7aacbcdecb29c80806aca3d59d10f4da71f264260",
       "gitBlobSha": "8a341bc9952ee990b28e5890f590360c00e8064b"
@@ -32556,8 +32581,8 @@
     },
     {
       "path": "native/src/retail_sound_router_tests.cpp",
-      "sha256": "60d679fd74977b80e64d45d9864393a02186e1c2de1776fe9df218e28752fd91",
-      "gitBlobSha": "61051027455ee7bf7395caa57c8c6149d68fbf7e"
+      "sha256": "eb0f147607e8d06407172babab5978ec3bc671b36ae36b509cc9bce32f967f29",
+      "gitBlobSha": "a7f2d1f42d64c498fab08116e0568cb2a4da36ab"
     },
     {
       "path": "native/src/retail_sound_table_tests.cpp",
@@ -33291,8 +33316,8 @@
     },
     {
       "path": "native/test-actor-runtime-dsp-boot-link.ps1",
-      "sha256": "4cc1f94a19daada6c4ee14a597cf7b3e3d364286648a09f9c1604a0b15485cd4",
-      "gitBlobSha": "2b50e6665915d436137f9193a06056013e975727"
+      "sha256": "87c5ea2d137dcb05d86daa0f1f6fc1b5615e95bba3b9ef1f0fdb2cbd097265fa",
+      "gitBlobSha": "ead744d8537366d1a4b5619a8d16b5c8c1c32444"
     },
     {
       "path": "native/test-alpha8-copy.ps1",
@@ -33340,6 +33365,11 @@
       "gitBlobSha": "f859d30a59183ba3400c729646a5a1b4ce75f803"
     },
     {
+      "path": "native/test-aud-system-construction.ps1",
+      "sha256": "f5113526dce5b02b044565c5316efb2279552f8cc71466b2911b184cb1a6b4b0",
+      "gitBlobSha": "5c99e37d5428582934d5181eedce25f79790a30a"
+    },
+    {
       "path": "native/test-audio-bank-table.ps1",
       "sha256": "0fa0dab06650c5faba7fff2afcc4e85e9763a5402fe5e84147de6b33d2026b56",
       "gitBlobSha": "3854b816b55953a883ba3196d7108b1cc25ed9af"
@@ -33348,6 +33378,11 @@
       "path": "native/test-audio-callback.ps1",
       "sha256": "6051903127f8d899652b2157dc154855f7a4b4f3456adf55d365846e84e6c114",
       "gitBlobSha": "ba3c6b76f406994ad72eac478528f1b5ff067f79"
+    },
+    {
+      "path": "native/test-audio-catalog-initialization.ps1",
+      "sha256": "5099472ba5e4f7d6a63097510fdecd002fbc55f8b344f3acfcccd5cca9b38d89",
+      "gitBlobSha": "6d63dc77800afd16f64b5fa52906011c3519325a"
     },
     {
       "path": "native/test-audio-command.ps1",
@@ -33428,6 +33463,11 @@
       "path": "native/test-audio-report.ps1",
       "sha256": "88c5f9dfc7f3d11832e6164032140b76bddedcbd2d56e1a8b9eed0d50b6ee423",
       "gitBlobSha": "8af7394455feda6e1dbf71e0c74c355264dc0b79"
+    },
+    {
+      "path": "native/test-audio-section-allocation.ps1",
+      "sha256": "39f5b66082c9421df58a15a18b9fc4cb05cfd9d68d6b6044f2f38fc08eceb764",
+      "gitBlobSha": "3d019be5f352d7f808c73919e568fe4f5b0f3529"
     },
     {
       "path": "native/test-audio-support.ps1",
@@ -34550,6 +34590,11 @@
       "gitBlobSha": "cf77bb63121a9fdf53c8266212baf5720ba10b44"
     },
     {
+      "path": "native/test-retail-music-sequence.ps1",
+      "sha256": "31255c78a7c94204c99af148b5a1762f412ff5647fe5ec46bb8fef5d4027afc5",
+      "gitBlobSha": "258eea28c410bc1e228fb0d5d9ff4531a9218719"
+    },
+    {
       "path": "native/test-retail-sampled-note.ps1",
       "sha256": "8b1ed6e2002dec460bf74afb5803134e3705e630df9f45217b85a9bea48816e1",
       "gitBlobSha": "cf96f972138cd8d22d7494874bbc5f5830856a85"
@@ -35035,5 +35080,5 @@
       "gitBlobSha": "ba404027f21cd1fad13d3d18fee3fb3f1126d20a"
     }
   ],
-  "lastPublicationCheck": "2026-11-01T14:16:58.7276468Z"
+  "lastPublicationCheck": "2026-11-04T19:11:29.554746+00:00"
 }

@@ -52,7 +52,7 @@ const char sJaiSeqResArc[] = "/AudioRes/JaiSeq.arc";
 AudSystem* AudSystem::msBasic;
 
 AudSystem* AudNewAudSystem_(JAUSectionHeap* pHeap, JKRArchive* pChordArchive, JKRArchive* pMeArchive, JKRArchive* pRemixArchive, int maxChannels) {
-    AudSystem* system = new AudSystem(pHeap, pChordArchive, pMeArchive, pRemixArchive);
+    AudSystem* system = new (pHeap->getHeap(), alignof(AudSystem)) AudSystem(pHeap, pChordArchive, pMeArchive, pRemixArchive);
     system->mAudience.mMaxChannels = maxChannels;
     return system;
 }
@@ -147,7 +147,7 @@ static JAUStdSoundInfo* newSoundInfo(JAUSection* pSection) {
     JAUSection* heap = pSection;
     JKRHeap* prevHeap = heap->getHeap_()->becomeCurrentHeap();
 
-    JAUDisposerObject_< JAUStdSoundInfo >* soundInfo = new JAUDisposerObject_< JAUStdSoundInfo >(true);
+    JAUDisposerObject_< JAUStdSoundInfo >* soundInfo = new (heap->getHeap_(), alignof(JAUDisposerObject_< JAUStdSoundInfo >)) JAUDisposerObject_< JAUStdSoundInfo >(true);
 
     heap->get_C4().append(soundInfo);
     prevHeap->becomeCurrentHeap();
@@ -175,7 +175,7 @@ AudSystem::AudSystem(JAUSectionHeap* pSectionHeap, JKRArchive* pChordArchive, JK
 
     setAudience(&mAudience);
 
-    JAUStreamStaticAramMgr* streamAramMgr = new JAUStreamStaticAramMgr();
+    JAUStreamStaticAramMgr* streamAramMgr = new (mSectionHeap->getHeap(), alignof(JAUStreamStaticAramMgr)) JAUStreamStaticAramMgr();
     streamAramMgr->alloc(AudParams::streamAramBlocks_perChunk, JASKernel::getAramHeap());
     mStreamAramMgr = streamAramMgr;
     mStreamMgr.setStreamAramMgr(mStreamAramMgr);

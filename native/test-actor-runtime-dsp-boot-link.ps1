@@ -23,6 +23,12 @@ $soundIdRefreshUnits=@(
  @{Unit='AudBgmSetting';Source=(Join-Path $native 'src\generated\AudBgmSetting.cpp')},
  @{Unit='AudSeStrategy';Source=(Join-Path $root 'Petari\src\Game\AudioLib\AudSeStrategy.cpp')},
  @{Unit='JAUSoundMgr';Source=(Join-Path $root 'Petari\src\JSystem\JAudio2\JAUSoundMgr.cpp')},
+ @{Unit='JAISoundStarter';Source=(Join-Path $root 'Petari\src\JSystem\JAudio2\JAISoundStarter.cpp')},
+ @{Unit='JAISeq';Source=(Join-Path $root 'Petari\src\JSystem\JAudio2\JAISeq.cpp')},
+ @{Unit='JAISeqMgr';Source=(Join-Path $root 'Petari\src\JSystem\JAudio2\JAISeqMgr.cpp')},
+ @{Unit='JASResArcLoader';Source=(Join-Path $native 'src\generated\JASResArcLoader.cpp')},
+ @{Unit='JAUSeqDataBlockMgr';Source=(Join-Path $root 'Petari\src\JSystem\JAudio2\JAUSeqDataBlockMgr.cpp')},
+ @{Unit='JKRDvdArchive';Source=(Join-Path $native 'src\generated\JKRDvdArchive.cpp')},
  @{Unit='JAUStreamFileTable';Source=(Join-Path $native 'src\generated\JAUStreamFileTable.cpp')},
  @{Unit='JAUSeqCollection';Source=(Join-Path $native 'src\generated\JAUSeqCollection.cpp')},
  @{Unit='JAUStdSoundInfo';Source=(Join-Path $native 'src\generated\JAUStdSoundInfo.cpp')}
@@ -46,6 +52,9 @@ foreach($provider in $soundIdRefreshUnits){
 & (Join-Path $native 'generate-native-audio-dvd-thread.ps1')
 & (Join-Path $native 'generate-native-jas-aram-stream.ps1')
 & (Join-Path $native 'generate-native-track.ps1')
+& (Join-Path $native 'generate-native-res-arc-loader.ps1')
+& (Join-Path $native 'generate-audio-section-heap.ps1')
+& (Join-Path $native 'generate-native-audio-arc-loader.ps1')
 & (Join-Path $native 'generate-audio-frame.ps1')
 & (Join-Path $native 'generate-audio-dsp-host.ps1')
 & (Join-Path $native 'generate-native-audio-thread.ps1')
@@ -75,6 +84,7 @@ $objects=@(
  @{Source=(Join-Path $native 'src\generated\JASAramStream.cpp');Name='JASAramStream.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\generated\JASTrack.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASTrack.cpp');Name='JASTrack.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\generated\JASBank.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASBank.cpp');Name='JASBank.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\generated\AudioArcLoaderKernel.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JAudio2\JAUAudioArcLoader.cpp');Name='JAUAudioArcLoader.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\native_jkr_aram_port.cpp');Name='native_jkr_aram_port.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\remix_sequence_data.cpp');Name='remix_sequence_data.obj'},
  @{Source=(Join-Path $native 'src\generated\DspUcodeImage.cpp');Name='DspUcodeImage.obj'},
@@ -1765,7 +1775,7 @@ $npcFunctionMatches=[regex]::Matches($response,'"[^"\r\n]*\\NPCFunction\.obj"')
 if($npcFunctionMatches.Count-ne 1){throw 'Expected one original NPCFunction provider.'}
 $response=$response.Replace($npcFunctionMatches[0].Value,'"'+$npcFunctionObject+'"')
 $response='-DGALAXY_NATIVE_JAI_SOUND_ID=1 -DGALAXY_NATIVE_JPA_USERWORK_64=1 '+$response
-# These cached units inline JAISoundID accessors. Keep every numeric-ID consumer coherent.
+# Refresh sound-ID consumers and the shared starter/sequence manager against current native headers.
 $soundIdProviderReceipts=@()
 foreach($provider in $soundIdRefreshUnits){
  $soundIdObject=Join-Path $tmp ($provider.Unit+'-native-id.obj')
@@ -2353,6 +2363,10 @@ $seRequestReceipts=@(foreach($unit in $seRequestSources){
  if([regex]::Matches($response,[regex]::Escape('"'+$source+'"')).Count-ne 1){throw "SE request source selection failed: $unit"}
  [pscustomobject]@{Source=$source;BeforeSHA256=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash;Mode='source compiled directly in full response'}
 })
+$musicDirectReceipts=@(foreach($source in @($sectionHeapSource,(Join-Path $native 'src\native_jkr_archive_port.cpp'))){
+ if([regex]::Matches($response,[regex]::Escape('"'+$source+'"')).Count-ne 1){throw "Music resource source selection failed: $source"}
+ [pscustomobject]@{Source=$source;BeforeSHA256=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash;Mode='source compiled directly in full response'}
+})
 $oldErrorActionPreference=$ErrorActionPreference
 $ErrorActionPreference='Continue'
 & $zig c++ "@$probeResponse" *> $log
@@ -2373,6 +2387,12 @@ foreach($receipt in $seRequestReceipts){
 $seRequestReceipts|ConvertTo-Json -Depth 3|Set-Content -LiteralPath (Join-Path $tmp 'native-se-request-providers.json')
 
 
+foreach($receipt in $musicDirectReceipts){
+ $after=(Get-FileHash -LiteralPath $receipt.Source -Algorithm SHA256).Hash
+ if($after-ne $receipt.BeforeSHA256){throw "Music resource source changed during compilation: $($receipt.Source)"}
+ $receipt|Add-Member -NotePropertyName AfterSHA256 -NotePropertyValue $after
+}
+$musicDirectReceipts|ConvertTo-Json -Depth 3|Set-Content -LiteralPath (Join-Path $tmp 'native-music-resource-sources.json')
 if($DllOnly){
  [pscustomobject]@{Library=$dll;LibrarySHA256=(Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash;BuiltAt=(Get-Date -Format o);DllOnly=$true;LauncherBuilt=$false;GameRun=$false} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $tmp 'dll-build.json')
  Write-Output ("PASS actor-runtime DLL-only full link: {0:N0} bytes; no launcher built or game run" -f (Get-Item -LiteralPath $dll).Length)
