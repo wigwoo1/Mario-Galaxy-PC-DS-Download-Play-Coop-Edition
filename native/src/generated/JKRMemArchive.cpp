@@ -74,7 +74,7 @@ bool JKRMemArchive::mountFixed(void* a1, JKRMemBreakFlag breakFlag) {
     prependVolumeList(&mLoaderLink);
 
     mIsMounted = true;
-    _6C = false;
+    _6C = breakFlag == JKR_MEM_BREAK_FLAG_1;
 
     return true;
 }
@@ -88,43 +88,19 @@ bool JKRMemArchive::open(long entryNum, EMountDirection mountDir) {
     mStringTable = nullptr;
     _6C = false;
     mMountDir = mountDir;
-
-    if (mountDir == MOUNT_DIRECTION_1) {
-        u32 size;
-
-        void* pData = JKRDvdRipper::loadToMainRAM(entryNum, nullptr, EXPAND_SWITCH_UNKNOWN1, 0, mHeap, JKRDvdRipper::ALLOC_DIRECTION_FORWARD, 0,
-                                                  reinterpret_cast< int* >(&_5C), &size);
-
-        mHeader = reinterpret_cast< RarcHeader* >(pData);
-
-        if (pData != nullptr) {
-            DCInvalidateRange(pData, size);
-        }
-    } else {
-        u32 size;
-
-        void* pData = JKRDvdRipper::loadToMainRAM(entryNum, nullptr, EXPAND_SWITCH_UNKNOWN1, 0, mHeap, JKRDvdRipper::ALLOC_DIRECTION_BACKWARD, 0,
-                                                  reinterpret_cast< int* >(&_5C), &size);
-
-        mHeader = reinterpret_cast< RarcHeader* >(pData);
-
-        if (pData != nullptr) {
-            DCInvalidateRange(pData, size);
-        }
-    }
-
-    if (mHeader == nullptr) {
-        mMountMode = MOUNT_MODE_0;
-    } else {
-        mInfoBlock = reinterpret_cast< RarcInfoBlock* >(reinterpret_cast< u8* >(mHeader) + mHeader->mHeaderSize);
-        mDirs = reinterpret_cast< SDIDirEntry* >(&reinterpret_cast< u8* >(mInfoBlock)[mInfoBlock->mDirOffset]);
-        mFiles = reinterpret_cast< SDIFileEntry* >(&reinterpret_cast< u8* >(mInfoBlock)[mInfoBlock->mFileOffset]);
-        mStringTable = reinterpret_cast< char* >(&reinterpret_cast< u8* >(mInfoBlock)[mInfoBlock->mStringTableOffset]);
-        mFileDataStart = reinterpret_cast< u8* >(mHeader->mFileDataOffset + (reinterpret_cast<std::uintptr_t>(mHeader) + mHeader->mHeaderSize));
-        _6C = true;
-    }
-
-    return mMountMode != MOUNT_MODE_0;
+    u32 expandedSize = 0;
+    const auto direction = mountDir == MOUNT_DIRECTION_1
+        ? JKRDvdRipper::ALLOC_DIRECTION_FORWARD : JKRDvdRipper::ALLOC_DIRECTION_BACKWARD;
+    void* data = JKRDvdRipper::loadToMainRAM(entryNum, nullptr, EXPAND_SWITCH_UNKNOWN1,
+        0, mHeap, direction, 0, reinterpret_cast<int*>(&_5C), &expandedSize);
+    if (!data) { mMountMode = MOUNT_MODE_0; return false; }
+    DCInvalidateRange(data, expandedSize);
+    const bool registered = nativeRegisterRarc(data, expandedSize);
+    const bool attached = registered && nativeAttachRarc(this, data);
+    if (registered) nativeUnregisterRarc(data);
+    JKRHeap::free(data, mHeap);
+    if (!attached) mMountMode = MOUNT_MODE_0;
+    return attached;
 }
 
 bool JKRMemArchive::open(void* pData, u32 a2, JKRMemBreakFlag breakFlag) {

@@ -57,6 +57,7 @@
 #include <Game/AudioLib/AudEffector.hpp>
 #include <Game/AudioLib/AudSoundObject.hpp>
 #include <Game/RhythmLib/AudMePlayer.hpp>
+#include <Game/RhythmLib/AudMeObject.hpp>
 #include <Game/AudioLib/AudRemixMgr.hpp>
 #include <Game/Speaker/SpkSystem.hpp>
 #include <Game/Speaker/SpkSpeakerCtrl.hpp>
@@ -86,6 +87,29 @@ void run(const char* path){
  void* memory=VirtualAlloc(nullptr,0x1000000,MEM_RESERVE|MEM_COMMIT,PAGE_READWRITE);assert(memory);
  {
  JKRExpHeap root(memory,0x1000000,nullptr,false);JKRHeap::sRootHeap=JKRHeap::sSystemHeap=&root;root.becomeCurrentHeap();const auto initial=root.getTotalFreeSize();
+ // Exercise actual handle-owner construction/destruction on reclaimable heaps.
+ for(unsigned generation=0;generation<2;++generation){
+  auto* handlesHeap=JKRExpHeap::create(0x10000,&root,false);assert(handlesHeap);
+  const auto handlesFree=handlesHeap->getTotalFreeSize();
+  for(unsigned cycle=0;cycle<8;++cycle)for(u8 count:{u8(0),u8(1),u8(8),u8(10),u8(16),u8(255)}){
+   {
+    JAUSoundObject object(nullptr,count,handlesHeap);
+    assert(object.mNumHandles==count&&object.mIsAllocated);
+    assert(count?JKRHeap::findFromRoot(object.mHandles)==handlesHeap:object.mHandles==nullptr);
+    for(u32 i=0;i<count;++i)assert(!object.mHandles[i].isSoundAttached());
+   }
+   assert(handlesHeap->check()&&handlesHeap->getTotalFreeSize()==handlesFree);
+   {
+    AudMeObject object(nullptr,count,handlesHeap);
+    assert(object.mNumHandles==count&&object.mIsAllocated);
+    assert(count?JKRHeap::findFromRoot(object.mHandles)==handlesHeap:object.mHandles==nullptr);
+    for(u32 i=0;i<count;++i)assert(!object.mHandles[i].isMeAttached());
+   }
+   assert(handlesHeap->check()&&handlesHeap->getTotalFreeSize()==handlesFree);
+  }
+  JKRHeap::destroy(handlesHeap);assert(root.check()&&root.getTotalFreeSize()==initial);
+ }
+ std::puts("PASS original sound-object handle lifetime: 96 SE and 96 ME cycles; counts 0/1/8/10/16/255; two real heaps fully reclaimed");
  auto* platformHeap=JKRExpHeap::create(0x200000,&root,false);assert(platformHeap);JKRHeap::sSystemHeap=platformHeap;
  auto* dram=JKRSolidHeap::create(0xC00000,&root,false);assert(dram);JASKernel::setupRootHeap(dram,0x200000);
  std::vector<u8> aramBytes(0xE00000,0xcd);auto aram=std::make_shared<NativeAramMemory>(aramBytes.data(),aramBytes.size());assert(nativeBindAramTransport(aram));
@@ -135,10 +159,13 @@ void run(const char* path){
  std::printf("PASS actual AudSystem constructor: stream buffers=%u bytesEach=%u; ME entries=%u remix groups=%d; chord archive retained\n",system->mStreamAramMgr->mSize,system->mStreamAramMgr->mHeaps[0].mSize,system->mRhythmMeSystem->mMeMgr->mParams.mNumEntries,system->mRemixMgr->mGroupCount);
  audioWorker->stop();auto stopDeadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);while(!OSIsThreadTerminated(audioWorker->getThreadRecord())&&std::chrono::steady_clock::now()<stopDeadline)std::this_thread::yield();assert(OSIsThreadTerminated(audioWorker->getThreadRecord())&&!nativeDspAudioRuntimeActive());audioWorker->~JASAudioThread();JKRHeap::free(audioWorker,dram);audioWorker=nullptr;
  system->getSeMgr().resetSeqDataMgr();system->getSeqMgr().resetSeqDataMgr();
- for(auto* link=sectionHeap->mDisposerList.getFirst();link;){
-  auto* next=link->getNext();auto* disposer=link->getObject();
-  if(auto* sound=dynamic_cast<AudSoundObject*>(disposer)){std::printf("CLEANUP sound object %p while AudSystem and holder remain alive\n",static_cast<void*>(sound));sound->~AudSoundObject();}
-  link=next;
+ // AudSoundObject inherits JKRDisposer privately, so an external dynamic_cast
+ // from the disposer list cannot find it. Destroy the three owned objects
+ // through their original public owner pointers while AudSystem is alive.
+ for(auto* sound:{system->mSystemSeObject,system->mAtmosphereSeObject,system->mRemixMgr->mSoundObj}){
+  assert(sound&&JKRHeap::findFromRoot(sound)==sectionHeap);
+  std::printf("CLEANUP owned sound object %p while AudSystem and holder remain alive\n",static_cast<void*>(sound));
+  sound->~AudSoundObject();
  }
 
  system->mStreamAramMgr->~JAUStreamStaticAramMgr();

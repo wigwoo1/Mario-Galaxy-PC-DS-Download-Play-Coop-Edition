@@ -11,6 +11,24 @@ Set-Content "$n\src\generated\SoundHandlesKernel.cpp" ($source.Replace('getHandl
 $source=Get-Content "$p\Petari\src\Game\AudioLib\AudAnmSoundObject.cpp" -Raw
 Set-Content "$n\src\generated\AnimationSoundObjectKernel.cpp" ($source.Replace('(u32)sound','reinterpret_cast<std::uintptr_t>(sound)'))
 $source=Get-Content "$p\Petari\src\JSystem\JAudio2\JAUSoundObject.cpp" -Raw
+
+# Preserve matching game-heap allocation/free without a native array cookie.
+$handleArray='new(pHeap, 0) JAISoundHandle[numHandles]'
+if([regex]::Matches($source,[regex]::Escape($handleArray)).Count-ne 1 -or [regex]::Matches($source,[regex]::Escape('delete[] mHandles;')).Count-ne 1){throw 'Original JAUSoundObject handle allocation anchors changed'}
+$nativeHandles=@'
+namespace {
+JAISoundHandle* allocateNativeSoundHandles(u8 count, JKRHeap* heap) {
+    if (!count) return nullptr;
+    auto* handles = static_cast<JAISoundHandle*>(JKRHeap::alloc(u32(count) * sizeof(JAISoundHandle), alignof(JAISoundHandle), heap));
+    if (!handles) throw std::bad_alloc();
+    for (u32 i = 0; i < count; ++i) new (handles + i) JAISoundHandle();
+    return handles;
+}
+}
+'@
+$source=$source.Replace('JAUSoundObject::JAUSoundObject(TVec3f*', $nativeHandles+[Environment]::NewLine+'JAUSoundObject::JAUSoundObject(TVec3f*')
+$source=$source.Replace($handleArray,'allocateNativeSoundHandles(numHandles, pHeap)')
+$source=$source.Replace('delete[] mHandles;','if (mHandles) { for (int i = mNumHandles; i > 0; --i) mHandles[i - 1].~JAISoundHandle(); JKRHeap::free(mHandles, nullptr); }')
 Set-Content "$n\src\generated\JAUSoundObjectKernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+$source.Replace('== FALSE','== 0'))
 $source=Get-Content "$p\Petari\src\Game\AudioLib\AudSoundObjHolder.cpp" -Raw
 Set-Content "$n\src\generated\SoundObjectHolderKernel.cpp" ('#include <Native/HeapPlacement.hpp>'+[Environment]::NewLine+$source.Replace('== FALSE','== 0'))

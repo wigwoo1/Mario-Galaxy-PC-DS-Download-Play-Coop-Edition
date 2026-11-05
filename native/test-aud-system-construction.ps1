@@ -1,6 +1,8 @@
 param([string]$CacheDirectory)
 $ErrorActionPreference='Stop'
 $n=$PSScriptRoot;$p=Split-Path $n -Parent
+& (Join-Path $n 'generate-animation-sound-object.ps1')
+& (Join-Path $n 'generate-native-me-object.ps1')
 & (Join-Path $n 'generate-native-track.ps1')
 & (Join-Path $n 'generate-audio-section-heap.ps1')
 & (Join-Path $n 'generate-audio-system.ps1')

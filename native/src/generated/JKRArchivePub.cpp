@@ -88,7 +88,9 @@ JKRArchive* JKRArchive::mount(s32 entryNum, EMountMode mountMode, JKRHeap* pHeap
     }
 
     if (archive != nullptr && archive->mMountMode == MOUNT_MODE_0) {
-        delete archive;
+        JKRHeap* allocationHeap = JKRHeap::findFromRoot(archive);
+        archive->~JKRArchive();
+        JKRHeap::free(archive, allocationHeap);
         archive = nullptr;
     }
 

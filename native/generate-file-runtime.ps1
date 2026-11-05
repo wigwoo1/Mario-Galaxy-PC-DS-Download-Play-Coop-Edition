@@ -56,6 +56,7 @@ $s=[IO.File]::ReadAllText("$p\Petari\src\JSystem\JKernel\JKRArchivePub.cpp")
 $s=$s.Replace('unsigned long','u32').Replace('check_mount_already(long entryNum','check_mount_already(std::intptr_t entryNum').Replace('mount(long entryNum','mount(s32 entryNum')
 $s="#include <JSystem/JKernel/JKRArchive.hpp>`n#include <Native/HeapPlacement.hpp>`n"+$s
 [IO.File]::WriteAllText("$n\src\generated\JKRArchivePub.cpp",$s)
+& (Join-Path $n 'adapt-native-archive-mount-release.ps1')
 
 $s=[IO.File]::ReadAllText("$p\Petari\src\JSystem\JKernel\JKRThread.cpp")
 $s="#include <Native/HeapPlacement.hpp>`n"+$s
@@ -82,17 +83,7 @@ $start=$s.IndexOf('#define READU32_BE');$end=$s.IndexOf('JKRDecompCommand::JKRDe
 
 
 
-$s=[IO.File]::ReadAllText("$n\src\generated\JKRMemArchive.cpp")
-$s='#include "../native_jkr_archive_port.hpp"'+[Environment]::NewLine+$s
-$signature='bool JKRMemArchive::open(void* pData, u32 a2, JKRMemBreakFlag breakFlag)'
-$b=$s.IndexOf($signature);if($b -lt 0){throw 'memory archive open anchor'};$o=$s.IndexOf('{',$b);$d=1;$e=$o+1;while($d){if($s[$e] -eq '{'){$d++};if($s[$e] -eq '}'){$d--};$e++}
-$body="{`n    if (!nativeAttachRarc(this, pData)) return false;`n    mHeap = JKRHeap::findFromRoot(pData);`n    _5C = 0;`n    return true;`n}"
-$s=$s.Remove($o,$e-$o).Insert($o,$body)
-$s=$s.Replace('_6C = breakFlag == JKR_MEM_BREAK_FLAG_1;','_6C = false;')
-# Owned host tables are not heap allocations belonging to the source buffer.
-$s=$s.Replace('JKRMemArchive::~JKRMemArchive() {','JKRMemArchive::~JKRMemArchive() { nativeDetachRarc(this);')
-[IO.File]::WriteAllText("$n\src\generated\JKRMemArchive.cpp",$s)
-
+& (Join-Path $n 'generate-native-mem-archive.ps1')
 
 $s=[IO.File]::ReadAllText("$n\src\generated\FileRipper.cpp")
 $s='#include "../native_jkr_archive_port.hpp"'+[Environment]::NewLine+$s

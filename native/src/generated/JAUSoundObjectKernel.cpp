@@ -7,14 +7,23 @@
 #include "JSystem/JAudio2/JASGlobal.hpp"
 #include "JSystem/JKernel/JKRHeap.hpp"
 
+namespace {
+JAISoundHandle* allocateNativeSoundHandles(u8 count, JKRHeap* heap) {
+    if (!count) return nullptr;
+    auto* handles = static_cast<JAISoundHandle*>(JKRHeap::alloc(u32(count) * sizeof(JAISoundHandle), alignof(JAISoundHandle), heap));
+    if (!handles) throw std::bad_alloc();
+    for (u32 i = 0; i < count; ++i) new (handles + i) JAISoundHandle();
+    return handles;
+}
+}
 JAUSoundObject::JAUSoundObject(TVec3f* pPos, u8 numHandles, JKRHeap* pHeap)
-    : JAISoundHandles(new(pHeap, 0) JAISoundHandle[numHandles], numHandles), _10(0), mPos(pPos) {
+    : JAISoundHandles(allocateNativeSoundHandles(numHandles, pHeap), numHandles), _10(0), mPos(pPos) {
     mIsAllocated = true;
 }
 
 JAUSoundObject::~JAUSoundObject() {
     dispose();
-    delete[] mHandles;
+    if (mHandles) { for (int i = mNumHandles; i > 0; --i) mHandles[i - 1].~JAISoundHandle(); JKRHeap::free(mHandles, nullptr); }
 }
 
 void JAUSoundObject::dispose() {

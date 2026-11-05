@@ -51,6 +51,11 @@ foreach($provider in $soundIdRefreshUnits){
 & (Join-Path $native 'generate-native-audio-heap.ps1')
 & (Join-Path $native 'generate-native-audio-dvd-thread.ps1')
 & (Join-Path $native 'generate-native-jas-aram-stream.ps1')
+& (Join-Path $native 'generate-animation-sound-object.ps1')
+& (Join-Path $native 'generate-native-me-object.ps1')
+& (Join-Path $native 'generate-native-mem-archive.ps1')
+& (Join-Path $native 'adapt-native-archive-mount-release.ps1')
+& (Join-Path $native 'generate-audio-system.ps1')
 & (Join-Path $native 'generate-native-track.ps1')
 & (Join-Path $native 'generate-native-res-arc-loader.ps1')
 & (Join-Path $native 'generate-audio-section-heap.ps1')
@@ -83,6 +88,9 @@ $objects=@(
  @{Source=(Join-Path $native 'src\generated\AudioAiCtrlHost.cpp');Name='JASAiCtrl.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\generated\JASAramStream.cpp');Name='JASAramStream.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\generated\JASTrack.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASTrack.cpp');Name='JASTrack.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\generated\JKRMemArchive.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JKernel\JKRMemArchive.cpp');Name='JKRMemArchive.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\generated\JAUSoundObjectKernel.cpp');Name='JAUSoundObject.obj';HeapPlacement=$true},
+ @{Source=(Join-Path $native 'src\generated\AudMeObject.cpp');InputSource=(Join-Path $root 'Petari\src\Game\RhythmLib\AudMeObject.cpp');Name='AudMeObject.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\generated\JASBank.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JAudio2\JASBank.cpp');Name='JASBank.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\generated\AudioArcLoaderKernel.cpp');InputSource=(Join-Path $root 'Petari\src\JSystem\JAudio2\JAUAudioArcLoader.cpp');Name='JAUAudioArcLoader.obj';HeapPlacement=$true},
  @{Source=(Join-Path $native 'src\native_jkr_aram_port.cpp');Name='native_jkr_aram_port.obj';HeapPlacement=$true},
@@ -890,7 +898,7 @@ $constructorSteps=@(
  @('        getSeMgr().setSeqDataMgr(seSeqDataMgr);','SE sequence manager bind'),
  @('        getSeqMgr().setSeqDataMgr(seqSeqDataMgr);','music sequence manager bind'),
  @('    setAudience(&mAudience);','audience initialization'),
- @('    JAUStreamStaticAramMgr* streamAramMgr = new JAUStreamStaticAramMgr();','stream ARAM manager allocate'),
+ @('    JAUStreamStaticAramMgr* streamAramMgr = new (mSectionHeap->getHeap(), alignof(JAUStreamStaticAramMgr)) JAUStreamStaticAramMgr();','stream ARAM manager allocate'),
  @('    streamAramMgr->alloc(AudParams::streamAramBlocks_perChunk, JASKernel::getAramHeap());','stream ARAM buffers allocate'),
  @('    mStreamMgr.setStreamAramMgr(mStreamAramMgr);','stream manager bind'),
  @('        mSoundInfo = newSoundInfo(mSectionHeap);','sound info allocate'),
@@ -1182,8 +1190,14 @@ $archivePubCommon=@('-DGALAXY_NATIVE_JAI_SOUND_ID=1','-std=c++17','-O2','-ffunct
  "-I$root\Petari\libs\JSystem\include", "-I$root\Petari\libs\RVL_SDK\include", "-I$root\Petari\libs\RVLFaceLib\include",
  "-I$root\Petari\libs\nw4r\include", '-include','revolution/types.h','-include',"$native\include-runtime\nw4r\ut\TagProcessorBase.h",
  '-include',"$native\include-runtime\nw4r\ut\Color.h",'-c')
+$nativeArchivePubSource=Join-Path $native 'src\generated\JKRArchivePub.cpp'
+$nativeArchivePubBefore=(Get-FileHash -LiteralPath $nativeArchivePubSource -Algorithm SHA256).Hash
 & $zig c++ @archivePubCommon (Join-Path $native 'src\generated\JKRArchivePub.cpp') '-o' $archivePubObject
 if($LASTEXITCODE){throw 'Native JKRArchivePub provider failed to compile.'}
+$nativeArchivePubAfter=(Get-FileHash -LiteralPath $nativeArchivePubSource -Algorithm SHA256).Hash
+if($nativeArchivePubBefore-ne $nativeArchivePubAfter){throw 'Archive mount source changed during compilation'}
+[pscustomobject]@{Source=$nativeArchivePubSource;BeforeSHA256=$nativeArchivePubBefore;AfterSHA256=$nativeArchivePubAfter;Object=$archivePubObject;ObjectSHA256=(Get-FileHash -LiteralPath $archivePubObject -Algorithm SHA256).Hash}|ConvertTo-Json|Set-Content -LiteralPath (Join-Path $tmp 'native-archive-mount-provider.json')
+
 $archiveHolderObject=Join-Path $tmp 'ArchiveHolder.obj'
 $archiveHolderSource=Join-Path $tmp 'ArchiveHolder-boot-traced.cpp'
 $archiveHolderText=Get-Content -LiteralPath (Join-Path $native 'src\generated\ArchiveHolder.cpp') -Raw
@@ -2367,6 +2381,8 @@ $musicDirectReceipts=@(foreach($source in @($sectionHeapSource,(Join-Path $nativ
  if([regex]::Matches($response,[regex]::Escape('"'+$source+'"')).Count-ne 1){throw "Music resource source selection failed: $source"}
  [pscustomobject]@{Source=$source;BeforeSHA256=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash;Mode='source compiled directly in full response'}
 })
+if([regex]::Matches($response,[regex]::Escape('"'+$audKernelSource+'"')).Count-ne 1){throw 'AudSystem compiled source selection failed'}
+$audSystemDirectReceipt=[pscustomobject]@{Source=$audKernelSource;BeforeSHA256=(Get-FileHash -LiteralPath $audKernelSource -Algorithm SHA256).Hash;Mode='source compiled directly in full response'}
 $oldErrorActionPreference=$ErrorActionPreference
 $ErrorActionPreference='Continue'
 & $zig c++ "@$probeResponse" *> $log
@@ -2393,6 +2409,11 @@ foreach($receipt in $musicDirectReceipts){
  $receipt|Add-Member -NotePropertyName AfterSHA256 -NotePropertyValue $after
 }
 $musicDirectReceipts|ConvertTo-Json -Depth 3|Set-Content -LiteralPath (Join-Path $tmp 'native-music-resource-sources.json')
+$audSystemAfter=(Get-FileHash -LiteralPath $audKernelSource -Algorithm SHA256).Hash
+if($audSystemAfter-ne $audSystemDirectReceipt.BeforeSHA256){throw 'AudSystem source changed during compilation'}
+$audSystemDirectReceipt|Add-Member -NotePropertyName AfterSHA256 -NotePropertyValue $audSystemAfter
+$audSystemDirectReceipt|ConvertTo-Json -Depth 3|Set-Content -LiteralPath (Join-Path $tmp 'native-aud-system-sources.json')
+
 if($DllOnly){
  [pscustomobject]@{Library=$dll;LibrarySHA256=(Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash;BuiltAt=(Get-Date -Format o);DllOnly=$true;LauncherBuilt=$false;GameRun=$false} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $tmp 'dll-build.json')
  Write-Output ("PASS actor-runtime DLL-only full link: {0:N0} bytes; no launcher built or game run" -f (Get-Item -LiteralPath $dll).Length)

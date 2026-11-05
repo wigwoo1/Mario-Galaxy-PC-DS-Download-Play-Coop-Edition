@@ -1,12 +1,21 @@
 #include <Native/HeapPlacement.hpp>
 #include "Game/RhythmLib/AudMeObject.hpp"
 
+namespace {
+AudMeHandle* allocateNativeMeHandles(u8 count, JKRHeap* heap) {
+    if (!count) return nullptr;
+    auto* handles = static_cast<AudMeHandle*>(JKRHeap::alloc(u32(count) * sizeof(AudMeHandle), alignof(AudMeHandle), heap));
+    if (!handles) throw std::bad_alloc();
+    for (u32 i = 0; i < count; ++i) new (handles + i) AudMeHandle();
+    return handles;
+}
+}
 AudMeObject::AudMeObject(TVec3f* pPos, u8 numHandles, JKRHeap* pHeap)
-    : AudMeHandles(new(pHeap, 0) AudMeHandle[numHandles], numHandles), mPos(pPos), mIsAllocated(true) {
+    : AudMeHandles(allocateNativeMeHandles(numHandles, pHeap), numHandles), mPos(pPos), mIsAllocated(true) {
 }
 
 AudMeObject::~AudMeObject() {
-    delete[] mHandles;
+    if (mHandles) { for (int i = mNumHandles; i > 0; --i) mHandles[i - 1].~AudMeHandle(); JKRHeap::free(mHandles, nullptr); }
 }
 
 void AudMeObject::dispose() {
