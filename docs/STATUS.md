@@ -1,6 +1,6 @@
-# Current status — November 4, 2026 catalog follow-up
+# Current status — November 5, 2026 audio scenario follow-up
 
-**Not playable. Development remains active; publication does not change goal status.**
+**Not playable. Native development is paused; publication leaves that goal status unchanged.**
 
 The original sound router now passes a real simultaneous coin/prologue test. Original music loading, dynamic/static sequence allocation and complete catalog initialization also have passing scoped component checks, including coordinated resource cleanup. See the [verification details and limits](verification/2026-11-04-router-music-catalog.md).
 

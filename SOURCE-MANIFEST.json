@@ -23146,8 +23146,8 @@
     },
     {
       "path": "builds/manifest.json",
-      "sha256": "46cb46cf9448e624758f90217dc543f97b04035197aae7c4638bf5c6b74bcc12",
-      "gitBlobSha": "993e71f99bde5b6fb532794937a82c8686d288f5"
+      "sha256": "21ed5517fc5a3fe1480be99baf58fe2ba72f09c2bd28ea980bd6fe1a091d2f5f",
+      "gitBlobSha": "5c1677383dc453339bb59eb44e82fe1e9a02e705"
     },
     {
       "path": "builds/windows-x64-diagnostics.zip",
@@ -23156,13 +23156,13 @@
     },
     {
       "path": "docs/DAILY-STATUS.md",
-      "sha256": "82e59dac41776b62d0b1a42f3380f96ea12b119c3bf3e8a5eba06ef2b6d27013",
-      "gitBlobSha": "3398651ee267827ee2e8e4d6da467831d323af12"
+      "sha256": "2580b2f2a3706b190899887ab90fc5397ce38955cbd95ecfb317fad1a0723667",
+      "gitBlobSha": "e8a1bcaac47732d6cca078eefb6271c68759aa2f"
     },
     {
       "path": "docs/STATUS.md",
-      "sha256": "a37d68b24176eab322ef9dce3baa996a6fdab675398c4bfeb3ac9306ecd60f34",
-      "gitBlobSha": "fbf051a28b5ee5069c35393b298e31e2c74c749f"
+      "sha256": "08dd60fa115d851bbd4399b9e11233e67c9fa34de23f2bf2f8c3e891f76642bc",
+      "gitBlobSha": "4ec6122cf7bdc6233f686a81f31a53f4a8419966"
     },
     {
       "path": "docs/verification/2026-10-16-bloom-factory.md",
@@ -23226,8 +23226,8 @@
     },
     {
       "path": "native/AUDIO-DSP-ROADMAP.md",
-      "sha256": "0e9fbdccfbb5b7c9f3b924d1b34da37813d79cd454be541d6a2807146e618a35",
-      "gitBlobSha": "170e6eff9bf9d86f4732e8e7021ce1def87b6528"
+      "sha256": "f1137b33458031ef3d7c227ab219286f84dc174c823e2827582114147ecc0264",
+      "gitBlobSha": "b038ebca56c9e351523ed7b59cbebbc7d812d5f8"
     },
     {
       "path": "native/CMakeLists.txt",
@@ -23251,8 +23251,8 @@
     },
     {
       "path": "native/PROGRESS.md",
-      "sha256": "45c2ee0d0996d6915e4f328ba0782d19a5352b82e9ed87489c88e56ef0f0103f",
-      "gitBlobSha": "b572ac1c14d9645a0ee2b135ee6fbd84495db755"
+      "sha256": "f5c696048519484abdc71a8615c260a534fa3edc4c4d6c9f80fbf3a74e449537",
+      "gitBlobSha": "d7fae73f3a7d3b357b4fcd49095945e46b9fd151"
     },
     {
       "path": "native/README.md",
@@ -35140,5 +35140,5 @@
       "gitBlobSha": "ba404027f21cd1fad13d3d18fee3fb3f1126d20a"
     }
   ],
-  "lastPublicationCheck": "2026-11-05T03:16:11Z"
+  "lastPublicationCheck": "2026-11-05T14:04:34Z"
 }

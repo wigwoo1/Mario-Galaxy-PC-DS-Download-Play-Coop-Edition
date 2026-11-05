@@ -142,3 +142,10 @@ The fixture prints the same solid-heap individual-free diagnostics seen in the p
 Evidence: `native/build/aud-scene-stage/RESULT.txt`, `component-result.json`, `run.txt`, `run-repeat.txt`, `fresh-compile.txt`, `retained-dll-audit.txt`, and `component-input-comparison.json`. The EXE is only a diagnostic test harness. No actual GameSystem/MainLoopFramework scene rendering, camera, controls, stage entry, full gameplay or launcher test occurred. The held-launcher security review remains a separate gate. Overall planning estimate~3% (not measured); verified playable0%. Goal remains active.
 
 Next bounded task: select an original Mario stage with a scenario-specific wave set from the source tables, then test its original scenario-load/completion path after base stage loading with exact DVD-byte comparison and unchanged ARAM/stream constraints. Reuse the main/retrace playback and cleanup. If production inputs remain unchanged, re-audit the retained DLL rather than rebuilding it.
+
+
+## 2026-11-04 original EggStar scenario wave load
+
+The same original Mario stage harness now exercises EggStar scenario 1 after base resources finish. It confirms scenario-map entry 0 selects WS20, checks the original completion predicate, compares the added archive to exact DVD bytes, and verifies wave/stream extents remain inside and disjoint in the unchanged 14MiB ARAM partition. Fresh-cache build/run and same-binary repeat pass. No production fix or full DLL build was required. This is audio resource setup only; it does not prove BGM playback or stage rendering.
+
+Next: choose a stage/scenario with a non-empty original BGM wave mapping and verify resource completion and exact archive bytes using the existing harness. Invoke actual music playback only if its original request path and resources are established. Keep the runtime package unchanged and do not claim playable gameplay.

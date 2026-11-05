@@ -2359,3 +2359,16 @@ The fixture prints the same solid-heap individual-free diagnostics seen in the p
 Evidence: `native/build/aud-scene-stage/RESULT.txt`, `component-result.json`, `run.txt`, `run-repeat.txt`, `fresh-compile.txt`, `retained-dll-audit.txt`, and `component-input-comparison.json`. The EXE is only a diagnostic test harness. No actual GameSystem/MainLoopFramework scene rendering, camera, controls, stage entry, full gameplay or launcher test occurred. The held-launcher security review remains a separate gate. Overall planning estimate~3% (not measured); verified playable0%. Goal remains active.
 
 Next bounded task: select an original Mario stage with a scenario-specific wave set from the source tables, then test its original scenario-load/completion path after base stage loading with exact DVD-byte comparison and unchanged ARAM/stream constraints. Reuse the main/retrace playback and cleanup. If production inputs remain unchanged, re-audit the retained DLL rather than rebuilding it.
+
+
+## 2026-11-04 Mario EggStar scenario audio resources
+
+STATUS: VERIFIED scoped original scenario-wave load; overall native port PARTIALLY VERIFIED, not playable.
+
+Added a test-only driver around the original Mario EggStar stage load and `AudSceneMgr::loadScenarioResource("Game", "EggStarGalaxy", 1)`. The original scenario table maps scenario 1 to wave-set 0 and WS20; the original scenario completion predicate passes. Fresh-cache compile/run and a second process of the same executable both exit 0. Each run compares loaded archives against exact WBFS/DVD bytes: 13 base archives / 13,252,224 bytes plus one WS20 archive / 402,336 bytes. Combined total is 14 archives / 13,654,560 bytes. The two unchanged stream buffers total 725,760 bytes; waves plus buffers use 14,380,320 of the original 14,680,064-byte ARAM partition and leave 299,744 bytes. Every range stays within the partition and is disjoint.
+
+Both runs also pass the three natural main-thread coin cycles, audio progress through an 80ms main-thread stall, natural tail retirement, exact pool counts and containing-heap integrity/free-size checks. Known solid-heap individual-free diagnostics still print; processes return normally and full containing-heap checks pass. Component input comparison finds only the expected driver/wrapper rename; all 252 shared inputs are unchanged.
+
+Retained DLL/source audit passes for 23 audio providers, 13 sound providers, 16 sampled/transfer inputs, 8 SE/sequence inputs, 2 music-source receipts and 269 source snapshots. Retained DLL `89CF3F8711E0EBE7BD5CDF2C7233A2D18E3CB6B06DA6AEF8239969A3FFE81999` (10,335,744 bytes) was read as data only, not rebuilt, loaded or run. No production code changed. Actual stage rendering, GameSystem/MainLoopFramework gameplay, camera, controls, graphics and launcher remain unverified. The held-launcher security gate remains. Overall estimate about 3% (not measured); verified playable 0%; goal active.
+
+Evidence: `native/build/aud-scenario-stage/RESULT.txt`, `component-result.json`, `run.txt`, `run-repeat.txt`, `fresh-build-and-run.txt`, `component-input-comparison.json` and `retained-dll-audit.txt`.
