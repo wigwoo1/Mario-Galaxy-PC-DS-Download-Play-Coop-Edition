@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "sourceRoot": "D:/Desktop/Games/Mario galaxy",
-  "publishedOn": "2026-11-04",
+  "publishedOn": "2026-11-06",
   "petariRevision": "0d9b80c569b954562c80206113e6936378c90c27",
   "files": [
     {
@@ -23226,8 +23226,8 @@
     },
     {
       "path": "native/AUDIO-DSP-ROADMAP.md",
-      "sha256": "f1137b33458031ef3d7c227ab219286f84dc174c823e2827582114147ecc0264",
-      "gitBlobSha": "b038ebca56c9e351523ed7b59cbebbc7d812d5f8"
+      "sha256": "aa7f2a63e3797d1ee8c5fcd395d768023a2c62b200346ecd73e54388f9792338",
+      "gitBlobSha": "708ad8ae3bc404aee19a5c5af7542cec09ccc16e"
     },
     {
       "path": "native/CMakeLists.txt",
@@ -23251,8 +23251,8 @@
     },
     {
       "path": "native/PROGRESS.md",
-      "sha256": "f5c696048519484abdc71a8615c260a534fa3edc4c4d6c9f80fbf3a74e449537",
-      "gitBlobSha": "d7fae73f3a7d3b357b4fcd49095945e46b9fd151"
+      "sha256": "751501f1a5dcf70705e1fa454266bf074e741fa19ae9743d8ceb8f8388c5a524",
+      "gitBlobSha": "5907fb701d6ce1f09c84ff059da01edd2cbf89ac"
     },
     {
       "path": "native/README.md",
@@ -32581,8 +32581,8 @@
     },
     {
       "path": "native/src/retail_catalog_stream_tests.cpp",
-      "sha256": "17bca75ac9f3aea89a8463ca9f0a7fe5340c2956c8544619d3698eccdde32d16",
-      "gitBlobSha": "d828ca59c76319ff029d47c56a0012e00fd3e6dd"
+      "sha256": "939502b264276745f8a7c07f08fa7fbedbb22e5cf85aa49b35756fc7a23cbdb2",
+      "gitBlobSha": "67a8dccfc3d42608b1fd4e7fed1c39ca1c425c06"
     },
     {
       "path": "native/src/retail_coin_se_tests.cpp",
@@ -35140,5 +35140,5 @@
       "gitBlobSha": "ba404027f21cd1fad13d3d18fee3fb3f1126d20a"
     }
   ],
-  "lastPublicationCheck": "2026-11-05T14:04:34Z"
+  "lastPublicationCheck": "2026-11-06T12:36:57Z"
 }

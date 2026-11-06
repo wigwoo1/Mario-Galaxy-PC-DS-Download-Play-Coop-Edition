@@ -114,6 +114,18 @@ struct Controller {
         root.initRootHeap(reinterpret_cast<void*>(0x8000),0x300000);aram.alloc(36,&root);
         assert(aram.mSize==2);manager.setStreamDataMgr(&info);manager.setStreamAramMgr(&aram);
     }
+    void exhaustedRequest() {
+        std::array<JAIStream*,3> reserved{};
+        assert(JAIStream::memPool_.getFreeMemCount()==reserved.size());
+        for(auto& stream:reserved){stream=manager.newStream_();assert(stream);}
+        assert(JAIStream::memPool_.getFreeMemCount()==0&&manager.getNumActiveStreams()==3);
+        JAISoundHandle denied;
+        assert(!manager.startSound(JAISoundID(soundId),&denied,nullptr));
+        assert(!denied.isSoundAttached()&&JAIStream::memPool_.getFreeMemCount()==0&&manager.getNumActiveStreams()==3);
+        for(auto* stream:reserved){assert(manager.getStreamList()->remove(stream));delete stream;}
+        assert(!manager.isActive()&&JAIStream::memPool_.getFreeMemCount()==3);
+        std::puts("PASS full original stream pool rejects one more catalog-backed request without damaging existing slots");
+    }
     void start() {
         assert(manager.startSound(JAISoundID(soundId),&handle,nullptr));
         assert(handle.isSoundAttached()&&JAIStream::memPool_.getFreeMemCount()==2);
@@ -252,6 +264,7 @@ int main(int argc,char** argv) {
     JAIStream::newMemPool(3);JAISoundChild::newMemPool(160);assert(JASDvd::createThread(16,64,0x4000));JASAramStream::initSystem(header.block_size,2);
     {
         Controller state(catalog.bst,catalog.bytes);controller=&state;
+        state.exhaustedRequest();
         DSPInit();Native::nativeDspAddressSpace().clear();JASDsp::setDSPMixerLevel(.25f);
         assert(JASDriver::registerDspSyncCallback(sync,nullptr));JASDriver::dacCallbackFunc=pcm;
         std::puts("Starting original audio and DVD workers with retail WBFS stream; no manual DSP stepping or worker fences");

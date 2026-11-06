@@ -2372,3 +2372,15 @@ Both runs also pass the three natural main-thread coin cycles, audio progress th
 Retained DLL/source audit passes for 23 audio providers, 13 sound providers, 16 sampled/transfer inputs, 8 SE/sequence inputs, 2 music-source receipts and 269 source snapshots. Retained DLL `89CF3F8711E0EBE7BD5CDF2C7233A2D18E3CB6B06DA6AEF8239969A3FFE81999` (10,335,744 bytes) was read as data only, not rebuilt, loaded or run. No production code changed. Actual stage rendering, GameSystem/MainLoopFramework gameplay, camera, controls, graphics and launcher remain unverified. The held-launcher security gate remains. Overall estimate about 3% (not measured); verified playable 0%; goal active.
 
 Evidence: `native/build/aud-scenario-stage/RESULT.txt`, `component-result.json`, `run.txt`, `run-repeat.txt`, `fresh-build-and-run.txt`, `component-input-comparison.json` and `retained-dll-audit.txt`.
+
+## 2026-11-06 original stream-pool exhaustion check
+
+STATUS: VERIFIED scoped full-pool rejection; overall native port PARTIALLY VERIFIED, not playable.
+
+Extended the existing actual-WBFS retail catalog stream component to reserve all three original `JAIStream` pool slots and request the actual Prologue stream ID `0x02000022` through the original `JAIStreamMgr::startSound`. The full-pool request returns false without attaching a handle or damaging the three occupied slots. After releasing those test streams, the pool returns to three free entries.
+
+Fresh component build/run and a second process of the exact executable both exit 0. Both also pass the prior real catalog path checks, three original pause/resume/stop cycles, natural Prologue stream EOF, normal worker cleanup, and heap/pool reclamation. The existing solid-heap individual-free diagnostics still print; the process returns normally and full containing-heap checks pass.
+
+This rules out simple three-slot stream-pool exhaustion as a reproduction of the saved game crash in this component setup; it does not establish the live game's pool state or identify the crash cause. No production source or full DLL changed. No launcher or game DLL was loaded/run, no renderer frame was captured, and this is not BGM playback or gameplay. Evidence: `native/build/stream-pool-exhaustion/RESULT.txt`, `run.txt`, `run-repeat.txt`, `build.txt`, and `sources.json`. The held-launcher review remains untouched. Overall planning estimate about 3% (not measured); verified playable 0%.
+
+Next: use the initialized full `AudNewAudSystem` fixture to exercise `AudWrap::startStageBgm` / `AudBgmMgr::start` for the authentic Prologue stream ID and compare it with this direct manager call. Keep the launcher/DLL untouched; do not claim gameplay.
