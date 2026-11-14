@@ -1,6 +1,6 @@
-# Daily publication check - 2026-11-13
+# Daily publication check - 2026-11-14
 
-- **No source code or build artifacts changed since November 7.** Compared all 7,027 paths in the remote source manifest with the local project: zero hash differences and 21 remote-only paths, which remain preserved. Petari source, production runtime code, launcher, DLL, and standalone probe are unchanged.
+- **No source code or build artifacts changed since November 13.** Compared all 7,027 paths in the remote source manifest with the local project: zero hash differences and 21 remote-only paths, which remain preserved. Petari source, production runtime code, launcher, DLL, and standalone probe are unchanged.
 - No development build or tests were run as part of this publication check. The latest saved component test record is November 6; it reports two passing runs for clean rejection of a fourth stream when all three stream-pool slots are used. It did not reproduce the saved game crash or verify BGM playback or gameplay.
 - Verified the unchanged diagnostic ZIP: 5,681,143 bytes, SHA-256 `ab7d25d98c2e79a73de660435e162e81620f8f78859a7ad1441c19e5c310b28c`. All eight member sizes and SHA-256 hashes match the build manifest. The packaged probe binary still matches its recorded hash, so its self-test was not repeated; the last recorded pass remains October 18.
 - The held launcher remains excluded under its unresolved security review; it was not restored, renamed, or executed. Game images/assets, HD packs, saves, credentials, raw logs, dumps, compilers, and caches remain excluded.
