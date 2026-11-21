@@ -1,6 +1,6 @@
-# Daily publication check - 2026-11-20
+# Daily publication check - 2026-11-21
 
-- No source code or build artifacts changed since the November 19 check. Compared all 7,027 paths in the remote source manifest: all 7,006 paths present in the local project match their recorded SHA-256 values, and the 21 remote-only paths remain preserved. A scoped text/code scan found no additional eligible files to publish. Petari source edits and provenance are unchanged.
+- No source code or build artifacts changed since the November 20 check. Compared all 7,027 paths in the remote source manifest: all 7,006 paths present locally match their recorded SHA-256 values; the 21 remote-only paths remain preserved. The local Petari source edits and provenance match the published hashes.
 - No development build or tests were run for this publication check. The latest saved component test remains November 6: two runs passed for clean rejection of a fourth authentic Prologue stream request when the fixture pool is full. This does not reproduce the saved BGM-constructor crash or establish BGM playback, stage rendering, or gameplay.
 - Verified the existing diagnostic ZIP is unchanged: 5,681,143 bytes, SHA-256 `ab7d25d98c2e79a73de660435e162e81620f8f78859a7ad1441c19e5c310b28c`. All 8 archive members match the sizes and SHA-256 hashes in the build manifest. The packaged probe binary hash is unchanged, so its self-test was not repeated; the last recorded pass is October 18. No newer matching launcher/DLL pair is available locally.
 - The launcher held under the unresolved security review remains excluded. Game images/assets, HD packs, saves, credentials, raw logs, crash dumps, compilers, and caches remain excluded.
